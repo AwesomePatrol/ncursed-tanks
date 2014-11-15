@@ -1,6 +1,29 @@
 Game
 ====
 
+Menu
+----
 Before the game actually starts all players choose what "ability"
 they want to have and what weaponry they buy. Weapons' prices and damage
-is written in 'weapons.conf' file in directory where binary is run.
+is set in 'weapons.conf' file in directory where server binary is run,
+the similar goes with abilites.
+
+Host menu consists of:
+*ability choice
+*number of bought weapons (note: you cannot 'sell' weapons you bought earlier,
+                           but you can change the order)
+*wind (on|off, random every {shoot, turn})
+
+Client menu consists of:
+*ability choice
+*number of bought weapons
+
+Gameplay
+--------
+Each tank can shoot or use ability every turn.
+Only one tank shoots at the time.
+
+Victory
+-------
+The winner is the tank that stays last alive.
+In other words, all other tanks are destroyed.

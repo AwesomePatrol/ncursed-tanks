@@ -1,16 +1,23 @@
 ncursed-tanks
 =============
 
-ncursed-tanks is a game written in C using ncurses interface.
+ncursed-tanks is a net-based multiplayer game written in C using ncurses interface.
 This solution gives a user capability to run it on all *nix platforms.
+NOTE: all clients must have greater or equal terminal width and height as the server.
 
 Usage
 -----
 Run compiled 'menu' or 'game'.
 'Menu' is used to set up a game in user-friendly interface
-which then runs 'game' with neccessary command options.
+which then runs 'game' with neccessary command line options.
+
+#to run a server
+./menu --server NAME
+#to run a client and connect to the sever
+./menu SERVER_IP NAME
+
 If you want to go straight to the game run 'game' specifing
-options or config file.
+options or config file in command line.
 
 Gameplay
 --------
@@ -25,6 +32,10 @@ https://www.gnu.org/software/make/
 ##ncurses
 > Free software emulation of curses
 http://www.gnu.org/software/ncurses/ncurses.html
+
+##protobuf
+> Protocol buffers
+https://github.com/google/protobuf/
 
 Optional dependencies
 ---------------------
