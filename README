@@ -1,0 +1,33 @@
+ncursed-tanks
+=============
+
+ncursed-tanks is a game written in C using ncurses interface.
+This solution gives a user capability to run it on all *nix platforms.
+
+Usage
+-----
+Run compiled 'menu' or 'game'.
+'Menu' is used to set up a game in user-friendly interface
+which then runs 'game' with neccessary command options.
+If you want to go straight to the game run 'game' specifing
+options or config file.
+
+Gameplay
+--------
+Gameplay is explained in 'doc/game'.
+
+Dependencies
+------------
+##make
+> Build managemen tool
+https://www.gnu.org/software/make/
+
+##ncurses
+> Free software emulation of curses
+http://www.gnu.org/software/ncurses/ncurses.html
+
+Optional dependencies
+---------------------
+##doxygen
+> Standard tool for generating documentation
+http://www.stack.nl/~dimitri/doxygen/

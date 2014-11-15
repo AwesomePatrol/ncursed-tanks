@@ -16,10 +16,6 @@ tags
 *.la
 *.a
 
-# Doxygen docs (generate it yourself using doxygen.conf)
-doc/*
-doc
-
 # Makefile locals 
 localdefs.mk
 

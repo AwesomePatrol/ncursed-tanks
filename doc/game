@@ -1,0 +1,6 @@
+Game
+====
+
+Before the game actually starts all players choose what "ability"
+they want to have and what weaponry they buy. Weapons' prices and damage
+is written in 'weapons.conf' file in directory where binary is run.
