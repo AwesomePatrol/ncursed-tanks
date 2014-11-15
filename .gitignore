@@ -1,0 +1,43 @@
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.d
+
+# Ctags
+tags
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+
+# Doxygen docs (generate it yourself using doxygen.conf)
+doc/*
+doc
+
+# Makefile locals 
+localdefs.mk
+
+# Compiled binary
+game
+menu
+
+# Vim garbage
+*.sw*
+*\~
+*.vim
+
+# Generated protobuf files
+*.pb.h
+*.pb.cpp
+
+# Logs
+*.log
+
+#Core dumps
+.core.*
