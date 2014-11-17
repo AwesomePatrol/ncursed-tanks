@@ -7,7 +7,7 @@ OBJS_server := server.o
 server: $(OBJS_server)
 
 game: $(OBJS) $(COBJS)
-	gcc -o $@ -lm -L/usr/lib -lncurses-lprotobuf -lz $(OBJS) $(COBJS) 
+	gcc -o $@ -lm -L/usr/lib -lncurses -lz $(OBJS) $(COBJS) 
 
 -include *.d
 

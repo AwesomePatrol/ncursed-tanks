@@ -2,7 +2,8 @@
 
 int main()
 {
-    char msg[] = "Hello!\n";    
+    char buffer[MAXRCVLEN + 1]; /* +1 so we can add null terminator */
+    int len;
 
     struct sockaddr_in dest; /* socket info about the machine connecting to us */
     struct sockaddr_in serv; /* socket info about our server */
@@ -25,8 +26,10 @@ int main()
  
     while(consocket)
     {
-        if (DEBUG <3) printf("Incoming connection from %s\n", inet_ntoa(dest.sin_addr));
-        send(consocket, msg, strlen(msg), 0); 
+        if (DEBUG <= 3) printf("Incoming connection from %s\n", inet_ntoa(dest.sin_addr));
+        len = recv(mysocket, buffer, MAXRCVLEN, 0); /*receive data*/
+        buffer[len] = '\0'; /*add null terminator*/
+        if (DEBUG <= 5) printf("Received: %s", buffer);
         close(consocket);
         consocket = accept(mysocket, (struct sockaddr *)&dest, &socksize);
     }
