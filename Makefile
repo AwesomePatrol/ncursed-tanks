@@ -2,7 +2,7 @@ all: game server
 
 DOXYGENCONF=doxygen.conf
 
-OBJS_server := server.o
+OBJS_server := server.o parser.o
 
 server: $(OBJS_server)
 

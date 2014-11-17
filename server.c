@@ -1,6 +1,6 @@
 #include "server.h"
 
-int main()
+int main(int argc, char *argv[])
 {
     char buffer[MAXRCVLEN + 1]; /* +1 so we can add null terminator */
     int len;
@@ -27,9 +27,10 @@ int main()
     while(consocket)
     {
         if (DEBUG <= 3) printf("Incoming connection from %s\n", inet_ntoa(dest.sin_addr));
-        len = recv(mysocket, buffer, MAXRCVLEN, 0); /*receive data*/
-        buffer[len] = '\0'; /*add null terminator*/
-        if (DEBUG <= 5) printf("Received: %s", buffer);
+        len = recv(mysocket, buffer, MAXRCVLEN, 0); /* receive data */
+        buffer[len] = '\0'; /* add null terminator */
+        if (DEBUG <= 3) printf("Received: %s", buffer);
+        parse(buffer, len);
         close(consocket);
         consocket = accept(mysocket, (struct sockaddr *)&dest, &socksize);
     }
