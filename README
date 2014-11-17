@@ -3,7 +3,6 @@ ncursed-tanks
 
 ncursed-tanks is a net-based multiplayer game written in C using ncurses interface.
 This solution gives a user capability to run it on all *nix platforms.
-NOTE: all clients must have greater or equal terminal width and height as the server.
 
 Usage
 -----

@@ -1,5 +1,7 @@
 all: game
 
+DOXYGENCONF=doxygen.conf
+
 OBJS :=
 
 game: $(OBJS) $(COBJS)
@@ -16,3 +18,6 @@ clean:
 	rm -rf $(COBJS) game menu
 
 test: all
+
+doc:
+	doxygen $(DOXYGENCONF)

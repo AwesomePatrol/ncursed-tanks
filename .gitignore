@@ -4,6 +4,9 @@
 *.o
 *.d
 
+#Doxygen generated files
+dox/*
+
 # Ctags
 tags
 
