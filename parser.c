@@ -33,6 +33,6 @@ Command get_command(const char *str, size_t length)
 
 void parse(const char *buffer, size_t length)
 {
-    Command command = get_command(*buffer,length);
+    Command command = get_command(buffer,length);
     if ( command == ERR && DEBUG <= 5 ) printf("ERROR: invalid command %s\n",buffer);
 }
