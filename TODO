@@ -1,8 +1,13 @@
 #TRY to keep the list in order
 Write documentation (gameplay, usage, syntax, etc.).
-Gather ideas for weaponry and abilities.
-Document every weapon and ability.
 Code core game stuff.
+    * server
+        ** map generation and distribution
+        ** collision detection -> place,dmg
+    * client
+        ** map, tanks, bullet rendering
 Test core game stuff.
 Code menu.
 Test all.
+Gather ideas for weaponry and abilities.
+Document every weapon and ability.
