@@ -15,7 +15,7 @@
 
 #define DEBUG 0 /* DEBUG: set 5 for ERROR, set 3 for INFO, set 0 for DEBUG */
 
-typedef enum Command {GET_STATE, SHOOT, GET_MAP} Command;
+typedef enum Command {GET_STATE, SHOOT, GET_MAP, ERR} Command;
 
 void parse(const char *buffer, size_t length);
 #endif /* SERVER_H */

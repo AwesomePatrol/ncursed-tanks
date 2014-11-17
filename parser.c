@@ -18,11 +18,22 @@ int cmd_cmp(const char *a, const char *b, size_t end)
 Command get_command(const char *str, size_t length)
 {
     int cmd_len = get_whitespace(str,length);
-    const char cmd[] = "GET_STATE";
-    if ( cmd_len == 9 && cmd_cmp(str,cmd,cmd_len) ) return GET_STATE;
+    char cmd[MAXRCVLEN + 1];
+    cmd[] = "GET_STATE";
+    if ( cmd_len == sizeof(cmd)/sizeof(char)
+            && cmd_cmp(str,cmd,cmd_len) ) return GET_STATE;
+    /* the best way is to Copy-Paste here for now, but need to refactor later */
+    cmd[] = "SHOOT";
+    if ( cmd_len == sizeof(cmd)/sizeof(char)
+            && cmd_cmp(str,cmd,cmd_len) ) return SHOOT;
+    cmd[] = "GET_MAP";
+    if ( cmd_len == sizeof(cmd)/sizeof(char)
+            && cmd_cmp(str,cmd,cmd_len) ) return GET_MAP;
+    return ERR;
 }
 
 void parse(const char *buffer, size_t length)
 {
     Command command = get_command(*buffer,length);
+    if ( command == ERR && DEBUG <= 5 ) printf("ERROR: invalid command %s\n",buffer);
 }
