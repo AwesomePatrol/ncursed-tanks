@@ -2,7 +2,9 @@ all: game server
 
 DOXYGENCONF=doxygen.conf
 
-OBJS_server := server.o parser.o
+CFLAGS += -std=c99
+
+OBJS_server := server.o parser.o map_gen.o
 
 server: $(OBJS_server) $(COBJS_server)
 	gcc -o $@ -lm -L/usr/lib -lz $(OBJS_server) $(COBJS_server) 
@@ -13,7 +15,7 @@ game: $(OBJS) $(COBJS)
 -include *.d
 
 %.o: %.c
-	gcc -c -g3 -o $@ $<
+	gcc $(CFLAGS) -c -g3 -o $@ $<
 	gcc -MM $< > $*.d
 
 clean:
