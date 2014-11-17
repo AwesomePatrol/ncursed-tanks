@@ -4,7 +4,8 @@ DOXYGENCONF=doxygen.conf
 
 OBJS_server := server.o parser.o
 
-server: $(OBJS_server)
+server: $(OBJS_server) $(COBJS_server)
+	gcc -o $@ -lm -L/usr/lib -lz $(OBJS_server) $(COBJS_server) 
 
 game: $(OBJS) $(COBJS)
 	gcc -o $@ -lm -L/usr/lib -lncurses -lz $(OBJS) $(COBJS) 
@@ -16,8 +17,9 @@ game: $(OBJS) $(COBJS)
 	gcc -MM $< > $*.d
 
 clean:
-	rm -rf $(OBJS) game menu
-	rm -rf $(COBJS) game menu
+	rm -rf $(OBJS) $(OBJS_server)
+	rm -rf $(COBJS) $(COBJS_server)
+	rm -rf server game menu
 
 test: all
 

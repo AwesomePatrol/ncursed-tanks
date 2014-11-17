@@ -13,7 +13,8 @@
 #define PORTNUM 7979 /* Port Number */
 #define MAXRCVLEN 100 /* Maximal Length of Received Value */
 
-#define DEBUG 0 /* DEBUG: set 5 for ERROR, set 3 for INFO, set 0 for DEBUG */
+#define DEBUG 0 /* DEBUG: set 5 for ERROR, set 3 for INFO, set 0 for DEBUG
+                   VALUES higher than 5 will result in silent execution*/
 
 typedef enum Command {GET_STATE, SHOOT, GET_MAP, ERR} Command;
 
