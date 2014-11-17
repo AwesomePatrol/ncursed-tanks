@@ -23,6 +23,7 @@ tags
 localdefs.mk
 
 # Compiled binary
+server
 game
 menu
 
