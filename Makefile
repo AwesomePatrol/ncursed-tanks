@@ -1,16 +1,17 @@
-all: game server
+all: client server
 
 DOXYGENCONF=doxygen.conf
 
 CFLAGS += -std=c99
 
 OBJS_server := server.o parser.o map_gen.o
+OBJS_client := client.o
 
 server: $(OBJS_server) $(COBJS_server)
 	gcc -o $@ -lm -L/usr/lib -lz $(OBJS_server) $(COBJS_server) 
 
-game: $(OBJS) $(COBJS)
-	gcc -o $@ -lm -L/usr/lib -lncurses -lz $(OBJS) $(COBJS) 
+client: $(OBJS_client) $(COBJS_client)
+	gcc -o $@ -lm -L/usr/lib -lz $(OBJS_client) $(COBJS_client)
 
 -include *.d
 
@@ -19,9 +20,9 @@ game: $(OBJS) $(COBJS)
 	gcc -MM $< > $*.d
 
 clean:
-	rm -rf $(OBJS) $(OBJS_server)
-	rm -rf $(COBJS) $(COBJS_server)
-	rm -rf server game menu
+	rm -rf $(OBJS) $(OBJS_server) $(OBJS_client)
+	rm -rf $(COBJS) $(COBJS_server) $(COBJS_client)
+	rm -rf server client
 
 test: all
 
