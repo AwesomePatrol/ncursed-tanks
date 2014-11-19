@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
  
    memset(&dest, 0, sizeof(dest));                /* zero the struct */
    dest.sin_family = AF_INET;
-   dest.sin_addr.s_addr = htonl(argv[1]); /* set destination IP number */ 
+   dest.sin_addr.s_addr = htonl((int) argv[1]); /* set destination IP number */ 
    dest.sin_port = htons(PORTNUM);                /* set destination port number */
  
    connect(mysocket, (struct sockaddr *)&dest, sizeof(struct sockaddr));

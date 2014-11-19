@@ -4,8 +4,8 @@ DOXYGENCONF=doxygen.conf
 
 CFLAGS += -std=c99
 
-OBJS_server := server.o parser.o map_gen.o
-OBJS_client := client.o parser.o
+OBJS_server := server.o map_gen.o
+OBJS_client := client.o
 
 server: $(OBJS_server) $(COBJS_server)
 	gcc -o $@ -lm -L/usr/lib -lz $(OBJS_server) $(COBJS_server) 
@@ -21,7 +21,7 @@ client: $(OBJS_client) $(COBJS_client)
 
 clean:
 	rm -rf $(OBJS) $(OBJS_server) $(OBJS_client)
-	rm -rf $(COBJS) $(COBJS_server) $(COBJS_client)
+	rm -rf *.d
 	rm -rf server client
 
 test: all
