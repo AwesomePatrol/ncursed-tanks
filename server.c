@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
         len = recv(mysocket, buffer, MAXRCVLEN, 0); /* receive data */
         buffer[len] = '\0'; /* add null terminator */
         if (DEBUG <= 3) printf("Received: %s", buffer);
-        parse(buffer, len);
+
         close(consocket);
         consocket = accept(mysocket, (struct sockaddr *)&dest, &socksize);
     }

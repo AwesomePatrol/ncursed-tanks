@@ -1,4 +1,4 @@
-#include "server.h"
+#include "parser.h"
 
 int get_whitespace(const char *str, size_t length)
 {
@@ -21,18 +21,32 @@ int check_command(const char *str, const char cmd[], size_t cmd_len)
             && cmd_cmp(str,cmd,cmd_len);
 }
 
-Command get_command(const char *str, size_t length)
+Command char_to_command(const char *str, size_t length)
 {
-    int cmd_len = get_whitespace(str,length);
-    if ( cmd_len == 0 ) return ERR;
-    if (check_command(str,"GET_STATE",cmd_len)) return GET_STATE;
-    if (check_command(str,"GET_SHOOT",cmd_len)) return SHOOT;
-    if (check_command(str,"GET_MAP",cmd_len)) return GET_MAP;
-    return ERR;
+    switch (str[0])
+    {
+        case 'S':
+            return GET_STATE;
+        case 'M':
+            return GET_MAP;
+        case 'F':
+            return SHOOT;
+        default:
+            return ERR;
+    }
 }
 
-void parse(const char *buffer, size_t length)
+char command_to_char(Command cmd)
 {
-    Command command = get_command(buffer,length);
-    if ( command == ERR && DEBUG <= 5 ) printf("ERROR: invalid command %s\n",buffer);
+    switch (cmd)
+    {
+        case GET_STATE:
+            return 'S';
+        case GET_MAP:
+            return 'M';
+        case SHOOT:
+            return 'F';
+        default:
+            return '\0';
+    }
 }
