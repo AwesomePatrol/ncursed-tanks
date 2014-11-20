@@ -8,17 +8,20 @@ int main(int argc, char *argv[])
  
    mysocket = socket(AF_INET, SOCK_STREAM, 0);
  
-   memset(&dest, 0, sizeof(dest));                /* zero the struct */
+   /* zero the struct */
+   memset(&dest, 0, sizeof(dest));
+   
+   /* support for IPv4 */
    dest.sin_family = AF_INET;
-   dest.sin_addr.s_addr = htonl((int) argv[1]); /* set destination IP number */ 
-   dest.sin_port = htons(PORTNUM);                /* set destination port number */
+   
+   /* set destination IP number */ 
+   dest.sin_addr.s_addr = inet_addr(argv[1]);
+   if ( DEBUG <= 1 ) printf("%s\n", inet_ntoa(dest.sin_addr));
+   
+   /* set destination port number */
+   dest.sin_port = htons(PORTNUM);
  
    connect(mysocket, (struct sockaddr *)&dest, sizeof(struct sockaddr));
- 
-   len = recv(mysocket, buffer, MAXRCVLEN, 0);
- 
-   /* We have to null terminate the received data ourselves */
-   buffer[len] = '\0';
  
    if ( DEBUG <= 3 ) printf("Received %s (%d bytes).\n", buffer, len);
  
