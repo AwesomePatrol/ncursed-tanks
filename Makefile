@@ -11,7 +11,7 @@ server: $(OBJS_server) $(COBJS_server)
 	gcc -o $@ -lm -L/usr/lib -lz $(OBJS_server) $(COBJS_server) 
 
 client: $(OBJS_client) $(COBJS_client)
-	gcc -o $@ -lm -L/usr/lib -lz $(OBJS_client) $(COBJS_client)
+	gcc -o $@ -lm -lncurses -L/usr/lib -lz $(OBJS_client) $(COBJS_client)
 
 -include *.d
 
