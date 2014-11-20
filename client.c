@@ -22,6 +22,14 @@ void init_curses()
 
 int main(int argc, char *argv[])
 {
+    /* Be sure we have proper arguments */
+    if ( argc <= 2 || strlen(argv[1]) < 7
+            || strlen(argv[2]) < 3) return EXIT_FAILURE;
+
+    /* Init ncurses */
+    init_curses();
+    
+    /* Get connection to server */
     char buffer[MAXRCVLEN + 1]; /* +1 so we can add null terminator */
     int len, cl_sock;
     struct sockaddr_in dest; 
@@ -45,6 +53,7 @@ int main(int argc, char *argv[])
         connect(cl_sock, (struct sockaddr *)&dest, sizeof(struct sockaddr)) )
             return EXIT_FAILURE;
 
+    /* Close connection */
     close(cl_sock);
     return EXIT_SUCCESS;
 }
