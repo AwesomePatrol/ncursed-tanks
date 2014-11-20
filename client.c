@@ -23,10 +23,10 @@ void init_curses()
 int main(int argc, char *argv[])
 {
     char buffer[MAXRCVLEN + 1]; /* +1 so we can add null terminator */
-    int len, mysocket;
+    int len, cl_sock;
     struct sockaddr_in dest; 
  
-    mysocket = socket(AF_INET, SOCK_STREAM, 0);
+    cl_sock = socket(AF_INET, SOCK_STREAM, 0);
 
     /* zero the struct */
     memset(&dest, 0, sizeof(dest));
@@ -40,8 +40,11 @@ int main(int argc, char *argv[])
     /* set destination port number */
     dest.sin_port = htons(PORTNUM);
  
-    connect(mysocket, (struct sockaddr *)&dest, sizeof(struct sockaddr));
- 
-    close(mysocket);
+    /* in case socket or connection is broken we should fail here */
+    if ( cl_sock == -1 ||
+        connect(cl_sock, (struct sockaddr *)&dest, sizeof(struct sockaddr)) )
+            return EXIT_FAILURE;
+
+    close(cl_sock);
     return EXIT_SUCCESS;
 }
