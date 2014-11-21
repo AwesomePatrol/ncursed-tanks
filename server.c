@@ -4,9 +4,9 @@ int mysocket;            /* socket used to listen for incoming connections */
 
 int map_seed;
 
-void interpret_request(char *request)
+void process_request(char *request)
 {
-    if (strlen(request) <= 1)
+    if (strlen(request) < 1)
     {
         if (DEBUG <= 5) puts("Received data length is <1 !");
         return;
@@ -20,7 +20,7 @@ void interpret_request(char *request)
     case GET_MAP:
         /* TODO send */
         map_seed = rand();
-        if (DEBUG == 0) printf("Map seed is %u\n", map_seed);
+        if (DEBUG == 0) printf("Map seed is %d\n", map_seed);
 
         snprintf(answer, MAXRCVLEN + 1, "%d", map_seed);
         send(mysocket, answer, strlen(answer), 0);
@@ -64,19 +64,22 @@ int main(int argc, char *argv[])
     listen(mysocket, 16);
     int consocket = accept(mysocket, (struct sockaddr *)&dest, &socksize);
  
-    while(consocket)
+    if (consocket)
     {
-        if (DEBUG <= 3) printf("Incoming connection from %s\n", inet_ntoa(dest.sin_addr));
+        if (DEBUG <= 3) printf("Incoming connection from %s\n",
+                               inet_ntoa(dest.sin_addr));
         len = recv(mysocket, buffer, MAXRCVLEN, 0); /* receive data */
         buffer[len] = '\0'; /* add null terminator */
         if (DEBUG <= 3) printf("Received: %s", buffer);
 
-            interpret_request(buffer);
-
-        close(consocket);
-        consocket = accept(mysocket, (struct sockaddr *)&dest, &socksize);
+        process_request(buffer);
     }
- 
+    else
+    {
+        if (DEBUG <= 5) printf("Couldn't accept connection!\n");
+    }
+
+    close(consocket);
     close(mysocket);
     return EXIT_SUCCESS;
 }
