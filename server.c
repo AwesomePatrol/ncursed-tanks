@@ -1,19 +1,59 @@
 #include "server.h"
 
+int mysocket;            /* socket used to listen for incoming connections */
+
+int map_seed;
+
+void interpret_request(char *request)
+{
+    if (strlen(request) <= 1)
+    {
+        if (DEBUG <= 5) puts("Received data length is <1 !");
+        return;
+    }
+
+    Command cmd = request[0];
+    char answer[MAXRCVLEN + 1];
+
+    switch(cmd)
+    {
+    case GET_MAP:
+        /* TODO send */
+        map_seed = rand();
+        if (DEBUG == 0) printf("Map seed is %u\n", map_seed);
+
+        snprintf(answer, MAXRCVLEN + 1, "%d", map_seed);
+        send(mysocket, answer, strlen(answer), 0);
+
+        break;
+    default:
+        if (DEBUG <= 5) printf("Unrecognized command from client: '%c' !", cmd);
+    }
+}
+
 int main(int argc, char *argv[])
 {
+    unsigned int random_seed;
+
     char buffer[MAXRCVLEN + 1]; /* +1 so we can add null terminator */
     int len;
 
     struct sockaddr_in dest; /* socket info about the machine connecting to us */
     struct sockaddr_in serv; /* socket info about our server */
-    int mysocket;            /* socket used to listen for incoming connections */
     socklen_t socksize = sizeof(struct sockaddr_in);
- 
-    memset(&serv, 0, sizeof(serv));           /* zero the struct before filling the fields */
-    serv.sin_family = AF_INET;                /* set the type of connection to TCP/IP */
-    serv.sin_addr.s_addr = htonl(INADDR_ANY); /* set our address to any interface */
-    serv.sin_port = htons(PORTNUM);           /* set the server port number */ 
+
+    random_seed = time(NULL);
+    if (DEBUG == 0) printf("Initial random seed is %u\n", random_seed);
+    srand(random_seed);
+
+    /* zero the struct before filling the fields */
+    memset(&serv, 0, sizeof(serv));
+    /* set the type of connection to TCP/IP */
+    serv.sin_family = AF_INET;
+    /* set our address to any interface */
+    serv.sin_addr.s_addr = htonl(INADDR_ANY);
+    /* set the server port number */ 
+    serv.sin_port = htons(PORTNUM);
  
     mysocket = socket(AF_INET, SOCK_STREAM, 0);
  
@@ -30,6 +70,8 @@ int main(int argc, char *argv[])
         len = recv(mysocket, buffer, MAXRCVLEN, 0); /* receive data */
         buffer[len] = '\0'; /* add null terminator */
         if (DEBUG <= 3) printf("Received: %s", buffer);
+
+            interpret_request(buffer);
 
         close(consocket);
         consocket = accept(mysocket, (struct sockaddr *)&dest, &socksize);
