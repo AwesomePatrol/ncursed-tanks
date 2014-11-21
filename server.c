@@ -3,6 +3,8 @@
 int mysocket;            /* socket used to listen for incoming connections */
 
 int map_seed;
+map_t map = NULL;
+int map_length = 80, map_height = 24;
 
 void process_request(char *request)
 {
@@ -24,6 +26,8 @@ void process_request(char *request)
 
         snprintf(answer, MAXRCVLEN + 1, "%d", map_seed);
         send(mysocket, answer, strlen(answer), 0);
+
+        map = generate_map(map_seed, map_length, map_height);
 
         break;
     default:
