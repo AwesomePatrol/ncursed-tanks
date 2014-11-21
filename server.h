@@ -9,6 +9,8 @@
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
+// For getting seed for random
+#include <time.h>
 
 #include "net.h"
  
