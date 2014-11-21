@@ -13,6 +13,7 @@
 
 #include "net.h"
 #include "colors.h"
+#include "draw.h"
 
 typedef enum State {RENDER_SHOOT, MENU_SHOOT, WAIT} State;
 
