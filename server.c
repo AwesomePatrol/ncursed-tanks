@@ -3,8 +3,6 @@
 int mysocket;            /* socket used to listen for incoming connections */
 int consocket;
 
-struct sigaction sigaction_prev;
-
 int map_seed;
 map_t map = NULL;
 int map_length = 80, map_height = 24;
@@ -32,7 +30,7 @@ int main(int argc, char *argv[])
 "Warning! Couldn't register exit handler. Won't be able to clean up on exit!");
     /* Handle SIGINT (Control-c) */
     sigaction_new.sa_handler = sigint_handler;
-    if (sigaction(SIGINT, &sigaction_new, &sigaction_prev) != 0)
+    if (sigaction(SIGINT, &sigaction_new, NULL) != 0)
         if (DEBUG <= 5) puts(
 "Warning! Couldn't assign handler to SIGINT. If the server is terminated,\n"
 "won't be able to clean up!");
@@ -87,11 +85,7 @@ void exit_cleanup(void)
 
 void sigint_handler(int signum)
 {
-    if (DEBUG <= 3) puts(
-"Received SIGINT, cleaning up...\n"
-"Another SIGINT will terminate the server immediately");
-
-    sigaction(SIGINT, &sigaction_prev, NULL);
+    if (DEBUG <= 3) puts("Received SIGINT, cleaning up...\n");
 
     exit(EXIT_SUCCESS);
 }
