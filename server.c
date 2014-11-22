@@ -104,11 +104,11 @@ void process_request(char *request)
     switch (cmd)
     {
     case GET_MAP:
-        /* TODO send */
         map_seed = rand();
         if (DEBUG == 0) printf("Map seed is %d\n", map_seed);
 
-        snprintf(answer, MAXRCVLEN + 1, "%d", map_seed);
+        snprintf(answer, MAXRCVLEN + 1, "%d %d %d",
+                 map_seed, map_length, map_height);
         send(mysocket, answer, strlen(answer), 0);
 
         map = generate_map(map_seed, map_length, map_height);
