@@ -99,7 +99,7 @@ void process_request(char *request)
     }
 
     Command cmd = request[0];
-    char answer[MAXRCVLEN + 1];
+    char reply[MAXRCVLEN + 1];
 
     switch (cmd)
     {
@@ -107,9 +107,9 @@ void process_request(char *request)
         map_seed = rand();
         if (DEBUG == 0) printf("Map seed is %d\n", map_seed);
 
-        snprintf(answer, MAXRCVLEN + 1, "%d %d %d",
+        snprintf(reply, MAXRCVLEN + 1, "%d %d %d",
                  map_seed, map_length, map_height);
-        send(mysocket, answer, strlen(answer), 0);
+        send(mysocket, reply, strlen(reply), 0);
 
         map = generate_map(map_seed, map_length, map_height);
 
