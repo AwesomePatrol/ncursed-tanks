@@ -22,6 +22,9 @@ void init_curses()
 
 int main(int argc, char *argv[])
 {
+    /* Open debug_file */
+    debug_open("client.debug"); 
+
     /* Be sure we have proper arguments */
     if ( argc <= 2 || strlen(argv[1]) < 7
             || strlen(argv[2]) < 3)
@@ -62,13 +65,10 @@ int main(int argc, char *argv[])
     }
 
     sent = send(cl_sock, "M", 1, 0);
-    if (DEBUG <= 3)
-    {
-        printw("Sent %d bytes.", sent);
-        getch();
-    }
+    debug_d( 3, "bytes sent", sent);
 
     /* Close connection */
     close(cl_sock);
+    curs_set(TRUE); /* show cursor */
     return EXIT_SUCCESS;
 }

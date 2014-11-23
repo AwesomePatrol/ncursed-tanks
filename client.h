@@ -12,12 +12,10 @@
 #include <ncurses.h>
 
 #include "net.h"
+#include "debug.h"
 #include "colors.h"
 #include "draw.h"
 
 typedef enum State {RENDER_SHOOT, MENU_SHOOT, WAIT} State;
-
-#define DEBUG 0 /* DEBUG: set 5 for ERROR, set 3 for INFO, set 0 for DEBUG
-                   VALUES higher than 5 will result in silent execution*/
 
 #endif /* CLIENT_H */
