@@ -37,8 +37,7 @@ int main(int argc, char *argv[])
     init_curses();
     
     /* Get connection to server */
-    char buffer[MAXRCVLEN + 1]; /* +1 so we can add null terminator */
-    int len, sent, cl_sock;
+    int cl_sock;
     struct sockaddr_in dest; 
  
     cl_sock = socket(AF_INET, SOCK_STREAM, 0);
@@ -63,9 +62,6 @@ int main(int argc, char *argv[])
         if (DEBUG <= 5) puts("Socket or connection is broken!");
         return EXIT_FAILURE;
     }
-
-    sent = send(cl_sock, "M", 1, 0);
-    debug_d( 3, "bytes sent", sent);
 
     /* Close connection */
     close(cl_sock);
