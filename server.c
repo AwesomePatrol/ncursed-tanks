@@ -41,6 +41,9 @@ int main(int argc, char *argv[])
 
     /* zero the struct before filling the fields */
     memset(&serv, 0, sizeof(serv));
+    map_seed = rand();
+    if (DEBUG == 0) printf("Map seed is %d\n", map_seed);
+
     /* set the type of connection to TCP/IP */
     serv.sin_family = AF_INET;
     /* set our address to any interface */
@@ -104,9 +107,6 @@ void process_request(char *request)
     switch (cmd)
     {
     case GET_MAP:
-        map_seed = rand();
-        if (DEBUG == 0) printf("Map seed is %d\n", map_seed);
-
         snprintf(reply, MAXRCVLEN + 1, "%d %d %d",
                  map_seed, map_length, map_height);
         send(mysocket, reply, strlen(reply), 0);
