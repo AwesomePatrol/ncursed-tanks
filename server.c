@@ -1,6 +1,6 @@
 #include "server.h"
 
-int mysocket;            /* socket used to listen for incoming connections */
+int server_socket; /* socket used to listen for incoming connections */
 int consocket;
 
 int map_seed;
@@ -35,6 +35,7 @@ int main(int argc, char *argv[])
 "Warning! Couldn't assign handler to SIGINT. If the server is terminated,\n"
 "won't be able to clean up!");
 
+    /* Initialize random number renerator with current time */
     random_seed = time(NULL);
     if (DEBUG == 0) printf("Initial random seed is %u\n", random_seed);
     srand(random_seed);
@@ -48,25 +49,25 @@ int main(int argc, char *argv[])
     serv.sin_addr.s_addr = htonl(INADDR_ANY);
     /* set the server port number */ 
     serv.sin_port = htons(PORTNUM);
- 
-    mysocket = socket(AF_INET, SOCK_STREAM, 0);
- 
-    /* bind serv information to mysocket */
-    bind(mysocket, (struct sockaddr *)&serv, sizeof(struct sockaddr));
- 
+
+    server_socket = socket(AF_INET, SOCK_STREAM, 0);
+
+    /* bind serv information to server_socket */
+    bind(server_socket, (struct sockaddr *)&serv, sizeof(struct sockaddr));
+
     /* start listening, allowing a queue of up to 16 pending connection */
-    listen(mysocket, 16);
- 
+    listen(server_socket, 16);
+
     while (1)
     {
-        consocket = accept(mysocket, (struct sockaddr *)&dest, &socksize);
+        consocket = accept(server_socket, (struct sockaddr *)&dest, &socksize);
 
         if (!consocket)
         {
             if (DEBUG <= 5) puts("Couldn't accept connection!");
             continue;
         }
-        
+
         if (DEBUG <= 3) printf("Incoming connection from %s\n",
                                inet_ntoa(dest.sin_addr));
         /* receive data */
@@ -84,12 +85,11 @@ int main(int argc, char *argv[])
     return EXIT_SUCCESS;
 }
 
-
 void exit_cleanup(void)
 {
     if (map) free(map);
     close(consocket);
-    close(mysocket);
+    close(server_socket);
 }
 
 void sigint_handler(int signum)
@@ -116,7 +116,8 @@ void process_request(char *request)
         if (DEBUG == 0) puts("Received GET_MAP. Sending map...");
         snprintf(reply, MAXRCVLEN + 1, "%d %d %d",
                  map_seed, map_length, map_height);
-        send(mysocket, reply, strlen(reply), 0);
+        /* TODO check sent length */
+        send(consocket, reply, strlen(reply), 0);
 
         map = generate_map(map_seed, map_length, map_height);
 
