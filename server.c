@@ -56,21 +56,29 @@ int main(int argc, char *argv[])
  
     /* start listening, allowing a queue of up to 16 pending connection */
     listen(mysocket, 16);
-    consocket = accept(mysocket, (struct sockaddr *)&dest, &socksize);
  
-    if (consocket)
+    while (1)
     {
+        consocket = accept(mysocket, (struct sockaddr *)&dest, &socksize);
+
+        if (!consocket)
+        {
+            if (DEBUG <= 5) puts("Couldn't accept connection!");
+            continue;
+        }
+        
         if (DEBUG <= 3) printf("Incoming connection from %s\n",
                                inet_ntoa(dest.sin_addr));
-        len = recv(mysocket, buffer, MAXRCVLEN, 0); /* receive data */
-        buffer[len] = '\0'; /* add null terminator */
-        if (DEBUG <= 3) printf("Received: %s", buffer);
+        /* receive data */
+        while ((len = recv(consocket, buffer, MAXRCVLEN, 0)) != 0)
+        {
+            buffer[len] = '\0'; /* add null terminator */
+            if (DEBUG <= 3) printf("Received: %s\n", buffer);
 
-        process_request(buffer);
-    }
-    else
-    {
-        if (DEBUG <= 5) printf("Couldn't accept connection!\n");
+            process_request(buffer);
+        }
+
+        close(consocket);
     }
 
     return EXIT_SUCCESS;
@@ -105,6 +113,7 @@ void process_request(char *request)
     switch (cmd)
     {
     case GET_MAP:
+        if (DEBUG == 0) puts("Received GET_MAP. Sending map...");
         snprintf(reply, MAXRCVLEN + 1, "%d %d %d",
                  map_seed, map_length, map_height);
         send(mysocket, reply, strlen(reply), 0);
@@ -113,6 +122,7 @@ void process_request(char *request)
 
         break;
     default:
-        if (DEBUG <= 5) printf("Unrecognized command from client: '%c' !", cmd);
+        if (DEBUG <= 5) printf("Unrecognized command from client: '%c' !\n",
+                               cmd);
     }
 }
