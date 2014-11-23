@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
     int len;
 
     struct sockaddr_in dest; /* socket info about the machine connecting to us */
-    struct sockaddr_in serv; /* socket info about our server */
+    struct sockaddr_in serv = {0}; /* socket info about our server */
     socklen_t socksize = sizeof(struct sockaddr_in);
 
     /* Cleanup on normal exit */
@@ -39,8 +39,6 @@ int main(int argc, char *argv[])
     if (DEBUG == 0) printf("Initial random seed is %u\n", random_seed);
     srand(random_seed);
 
-    /* zero the struct before filling the fields */
-    memset(&serv, 0, sizeof(serv));
     map_seed = rand();
     if (DEBUG == 0) printf("Map seed is %d\n", map_seed);
 
