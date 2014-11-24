@@ -21,6 +21,8 @@ void process_request(Command cmd);
 
 int main(int argc, char *argv[])
 {
+    debug_open("server.debug");
+
     init_signals();
 
     init_game();
@@ -38,14 +40,14 @@ void init_signals(void)
 
     /* Cleanup on normal exit */
     if (atexit(exit_cleanup) != 0)
-        if (DEBUG <= 5) puts(
+        debug_s( 5, "atexit",
 "Warning! Couldn't register exit handler. Won't be able to clean up on exit!");
     /* Handle SIGINT (Control-c) */
     sigaction_new.sa_handler = sigint_handler;
     if (sigaction(SIGINT, &sigaction_new, NULL) != 0)
-        if (DEBUG <= 5) puts(
-"Warning! Couldn't assign handler to SIGINT. If the server is terminated,\n"
-"won't be able to clean up!");
+        debug_s( 5, "sigaction",
+"Warning! Couldn't assign handler to SIGINT. If the server is terminated, \
+won't be able to clean up!");
 }
 
 void init_game(void)
@@ -54,11 +56,11 @@ void init_game(void)
 
     /* Initialize random number renerator with current time */
     random_seed = time(NULL);
-    if (DEBUG == 0) printf("Initial random seed is %u\n", random_seed);
+    debug_d( 0, "initial random seed", (signed long long)random_seed);
     srand(random_seed);
 
     map_seed = rand();
-    if (DEBUG == 0) printf("Map seed is %d\n", map_seed);
+    debug_d( 0, "map seed", map_seed);
 }
 
 void init_server(void)
@@ -93,16 +95,15 @@ void server_listen(void)
 
         if (!consocket)
         {
-            if (DEBUG <= 5) puts("Couldn't accept connection!");
+            debug_s( 5, "accept", "Couldn't accept connection!");
             continue;
         }
 
-        if (DEBUG <= 3) printf("Incoming connection from %s\n",
-                               inet_ntoa(client_sa.sin_addr));
+        debug_s( 3, "incoming connection", inet_ntoa(client_sa.sin_addr));
         /* receive command - 1 char */
         while ((len = recvall(consocket, buffer, 1)) != 0)
         {
-            if (DEBUG <= 3) printf("Received command: %c\n", buffer[0]);
+            debug_c( 3, "received command", buffer[0]);
 
             process_request(buffer[0]);
         }
@@ -120,7 +121,7 @@ void exit_cleanup(void)
 
 void sigint_handler(int signum)
 {
-    if (DEBUG <= 3) puts("Received SIGINT, cleaning up...\n");
+    debug_s( 3, "sigint", "Received SIGINT, cleaning up...");
 
     exit(EXIT_SUCCESS);
 }
@@ -132,7 +133,7 @@ void process_request(Command cmd)
     switch (cmd)
     {
     case GET_MAP:
-        if (DEBUG == 0) puts("Received GET_MAP. Sending map...");
+        debug_s( 0, "send map", "Received GET_MAP. Sending map...");
         snprintf(reply, MAXRCVLEN + 1, "%d %d %d",
                  map_seed, map_length, map_height);
         /* TODO check sent length */
@@ -142,7 +143,6 @@ void process_request(Command cmd)
 
         break;
     default:
-        if (DEBUG <= 5) printf("Unrecognized command from client: '%c' !\n",
-                               cmd);
+        debug_c( 5, "unrecognized command", cmd);
     }
 }

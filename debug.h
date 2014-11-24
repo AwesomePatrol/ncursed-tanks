@@ -6,6 +6,7 @@
 
 void debug_open(const char *filename);
 void debug_s(int lvl, const char *name, const char *str);
-void debug_d(int lvl, const char *name, int dec);
+void debug_d(int lvl, const char *name, long long dec);
+void debug_c(int lvl, const char *name, char ch);
 
 #endif /* DEBUG_H */

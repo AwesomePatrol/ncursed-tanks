@@ -6,33 +6,51 @@
 FILE *debug_file = NULL;
 
 void debug_open(const char *filename) {
-        debug_file = fopen(filename, "a");
+    debug_file = fopen(filename, "a");
+}
+
+void debug_do(int lvl, const char *name, void (*action)(void))
+{
+    if (DEBUG <= lvl) {
+        time_t tmp = time(NULL);
+        struct tm *t;
+        t = localtime(&tmp);
+        char date[100];
+        strftime(date, 100, "%F %T", t);
+        fprintf(debug_file, "%s [%s] ", date, name);
+
+        action();
+
+        fflush(debug_file);
+    }
 }
 
 void debug_s(int lvl, const char *name, const char *str)
 {
-    if (DEBUG <= lvl) {
-        time_t tmp = time(NULL);
-        struct tm *t;
-        t = localtime(&tmp);
-        char date[100];
-        strftime(date, 100, "%T", t);
-        fprintf(debug_file, "%s [%s] ", date, name);
+    void print(void)
+    {
         fprintf(debug_file, "%s\n", str);
-        fflush(debug_file);
     }
+
+    debug_do(lvl, name, print);
 }
 
-void debug_d(int lvl, const char *name, int dec)
+void debug_d(int lvl, const char *name, long long dec)
 {
-    if (DEBUG <= lvl) {
-        time_t tmp = time(NULL);
-        struct tm *t;
-        t = localtime(&tmp);
-        char date[100];
-        strftime(date, 100, "%T", t);
-        fprintf(debug_file, "%s [%s] ", date, name);
-        fprintf(debug_file, "%d\n", dec);
-        fflush(debug_file);
+    void print(void)
+    {
+        fprintf(debug_file, "%lld\n", dec);
     }
+
+    debug_do(lvl, name, print);
+}
+
+void debug_c(int lvl, const char *name, char ch)
+{
+    void print(void)
+    {
+        fprintf(debug_file, "%c\n", ch);
+    }
+
+    debug_do(lvl, name, print);
 }
