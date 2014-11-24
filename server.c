@@ -6,18 +6,19 @@ int consocket;
 struct sockaddr_in client_sa;
 socklen_t socksize = sizeof(struct sockaddr_in);
 
-int map_seed;
+struct map_info map_info = {0, 80, 24};
 map_t map = NULL;
-int map_length = 80, map_height = 24;
 
 void init_signals(void);
 void init_game(void);
 void init_server(void);
+void server_listen(void);
+
+void process_command(Command cmd);
 
 void exit_cleanup(void);
+void sigchld_handler(int signum);
 void sigint_handler(int signum);
-void server_listen(void);
-void process_request(Command cmd);
 
 int main(int argc, char *argv[])
 {
@@ -42,12 +43,22 @@ void init_signals(void)
     if (atexit(exit_cleanup) != 0)
         debug_s( 5, "atexit",
 "Warning! Couldn't register exit handler. Won't be able to clean up on exit!");
+
     /* Handle SIGINT (Control-c) */
     sigaction_new.sa_handler = sigint_handler;
-    if (sigaction(SIGINT, &sigaction_new, NULL) != 0)
+    if (sigaction(SIGINT, &sigaction_new, NULL) == -1)
         debug_s( 5, "sigaction",
 "Warning! Couldn't assign handler to SIGINT. If the server is terminated, \
 won't be able to clean up!");
+
+    sigaction_new = (struct sigaction) {0};
+    /* reap all dead processes */
+    sigaction_new.sa_handler = sigchld_handler;
+    sigemptyset(&sigaction_new.sa_mask);
+    sigaction_new.sa_flags = SA_RESTART;
+    if (sigaction(SIGCHLD, &sigaction_new, NULL) == -1)
+        debug_s( 5, "sigaction",
+                 "Warning! Couldn't assign handler to SIGCHLD!");
 }
 
 void init_game(void)
@@ -59,8 +70,8 @@ void init_game(void)
     debug_d( 0, "initial random seed", (signed long long)random_seed);
     srand(random_seed);
 
-    map_seed = rand();
-    debug_d( 0, "map seed", map_seed);
+    map_info.seed = rand();
+    debug_d( 0, "map seed", map_info.seed);
 }
 
 void init_server(void)
@@ -100,15 +111,23 @@ void server_listen(void)
         }
 
         debug_s( 3, "incoming connection", inet_ntoa(client_sa.sin_addr));
-        /* receive command - 1 char */
-        while ((len = recvall(consocket, buffer, 1)) != 0)
-        {
-            debug_c( 3, "received command", buffer[0]);
 
-            process_request(buffer[0]);
+        if (fork() == 0)
+        {
+            /* this is the child process */
+            close(server_socket); /* child doesn't need the listener */
+            /* receive command - 1 char */
+            /* process commands until disconnect */
+            while ((len = recvall(consocket, buffer, 1)) != 0)
+            {
+                debug_c( 3, "received command", buffer[0]);
+                process_command(buffer[0]);
+            }
+            close(consocket);
+            exit(0);
         }
 
-        close(consocket);
+        close(consocket); /* parent doesn't need this */
     }
 }
 
@@ -126,7 +145,12 @@ void sigint_handler(int signum)
     exit(EXIT_SUCCESS);
 }
 
-void process_request(Command cmd)
+void sigchld_handler(int signum)
+{
+    while(waitpid(-1, NULL, WNOHANG) > 0);
+}
+
+void process_command(Command cmd)
 {
     char reply[MAXRCVLEN + 1];
 
@@ -134,12 +158,10 @@ void process_request(Command cmd)
     {
     case GET_MAP:
         debug_s( 0, "send map", "Received GET_MAP. Sending map...");
-        snprintf(reply, MAXRCVLEN + 1, "%d %d %d",
-                 map_seed, map_length, map_height);
         /* TODO check sent length */
-        send(consocket, reply, strlen(reply), 0);
+        sendall(consocket, &map_info, sizeof(map_info));
 
-        map = generate_map(map_seed, map_length, map_height);
+        map = generate_map(map_info);
 
         break;
     default:

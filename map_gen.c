@@ -1,14 +1,14 @@
 #include "map_gen.h"
 
-map_t generate_map(unsigned int seed, int length, int height)
+map_t generate_map(struct map_info info)
 {
     // TODO map terrain types, for now just flat terrain
-    map_t map = malloc(length * sizeof(map_elt_t));
-    int cur_height = height / 2;
+    map_t map = malloc(info.length * sizeof(map_elt_t));
+    int cur_height = info.height / 2;
 
-    srand(seed);
+    srand(info.seed);
 
-    for (int i=0; i < length; i++)
+    for (int i=0; i < info.length; i++)
     {
         if (rand() % 2 == 1)
             map[i] = cur_height - (rand() % 2);

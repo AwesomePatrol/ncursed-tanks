@@ -1,7 +1,7 @@
 #ifndef SERVER_H
 #define SERVER_H
 
-#define _POSIX_C_SOURCE 1
+#define _POSIX_C_SOURCE 200809L
 
 #include "common.h"
 
@@ -10,6 +10,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <signal.h>
+#include <sys/wait.h>
 #include <arpa/inet.h>
 #include <sys/types.h>
 #include <netinet/in.h>

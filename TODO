@@ -18,6 +18,5 @@ Code core game stuff.
     * common
         ** minor changes
             *** switch to using getaddrinfo for parsing IP, ...
-            *** dedupulicate debug.c
 Gather ideas for weaponry and abilities.
 Document every weapon and ability.
