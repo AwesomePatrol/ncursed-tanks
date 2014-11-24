@@ -6,7 +6,7 @@
 /*
  * command        args        reply
  *
- * GET_MAP        none        map_seed map_length map_height
+ * GET_MAP        none        struct map_info
  */
 typedef enum Command {GET_STATE = 'S',
     SHOOT = 'F', GET_MAP = 'M', ERROR = 'E'} Command;
@@ -22,7 +22,7 @@ struct map_info
 };
 
 
-int sendall(int socket, char *msg, int len);
-int recvall(int socket, char *msg, int len);
+int sendall(int socket, void *data, int len);
+int recvall(int socket, void *data, int len);
 
 #endif /* COMMON_H */
