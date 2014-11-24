@@ -14,11 +14,13 @@
 
 #include "debug.h"
 #include "colors.h"
+#include "map_gen.h"
 #include "draw.h"
 
 /* GLOBAL variables >>use extern? */
 typedef enum State {RENDER_SHOOT, MENU_SHOOT, WAIT} State;
-int map_seed, map_length, map_height;
+struct map_info map_data;
+map_t g_map;
 
 /* cl_proto.c */
 void fetch_map(int sock);

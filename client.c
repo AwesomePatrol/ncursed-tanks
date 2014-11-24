@@ -62,9 +62,16 @@ int main(int argc, char *argv[])
         if (DEBUG <= 5) puts("Socket or connection is broken!");
         return EXIT_FAILURE;
     }
+    
+    fetch_map(cl_sock);
+    debug_d( 1, "lines", LINES);
+    debug_d( 1, "columns", COLS);
+    render_map();
+    refresh();
+    getch();
 
     /* Close connection */
     close(cl_sock);
-    curs_set(TRUE); /* show cursor */
+    endwin();
     return EXIT_SUCCESS;
 }
