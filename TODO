@@ -8,11 +8,16 @@ Code core game stuff.
         ** end-game statistics
         ** start a new match? set number of games in config
         ** menu: interface, config distribution
+        ** handle SIGTERM in addition to SIGINT
     * client
         ** get map, player list
         ** map, tanks, bullet rendering
         ** winner/loser and statistics and screen
         ** reconnect
         ** get config
+    * common
+        ** minor changes
+            *** switch to using getaddrinfo for parsing IP, ...
+            *** dedupulicate debug.c
 Gather ideas for weaponry and abilities.
 Document every weapon and ability.
