@@ -6,7 +6,7 @@ int consocket;
 struct sockaddr_in client_sa;
 socklen_t socksize = sizeof(struct sockaddr_in);
 
-struct map_info map_info = {0, 80, 24};
+struct map_info map_info = {.length = 80, .height = 24};
 map_t map = NULL;
 
 void init_signals(void);
@@ -15,10 +15,11 @@ void init_server(void);
 void server_listen(void);
 
 void process_command(Command cmd);
+struct map_info map_info_to_net(struct map_info *i);
 
 void exit_cleanup(void);
 void sigchld_handler(int signum);
-void sigint_handler(int signum);
+void terminate_handler(int signum);
 
 int main(int argc, char *argv[])
 {
@@ -45,13 +46,19 @@ void init_signals(void)
 "Warning! Couldn't register exit handler. Won't be able to clean up on exit!");
 
     /* Handle SIGINT (Control-c) */
-    sigaction_new.sa_handler = sigint_handler;
+    sigaction_new.sa_handler = terminate_handler;
     if (sigaction(SIGINT, &sigaction_new, NULL) == -1)
         debug_s( 5, "sigaction",
 "Warning! Couldn't assign handler to SIGINT. If the server is terminated, \
 won't be able to clean up!");
 
-    sigaction_new = (struct sigaction) {0};
+    /* Handle SIGTERM with the same handler */
+    if (sigaction(SIGTERM, &sigaction_new, NULL) == -1)
+        debug_s( 5, "sigaction",
+"Warning! Couldn't assign handler to SIGINT. If the server is terminated, \
+won't be able to clean up!");
+
+    sigaction_new = (__typeof__(sigaction_new)) {0};
     /* reap all dead processes */
     sigaction_new.sa_handler = sigchld_handler;
     sigemptyset(&sigaction_new.sa_mask);
@@ -138,9 +145,9 @@ void exit_cleanup(void)
     close(server_socket);
 }
 
-void sigint_handler(int signum)
+void terminate_handler(int signum)
 {
-    debug_s( 3, "sigint", "Received SIGINT, cleaning up...");
+    debug_s( 3, "terminate", "Received SIGINT or SIGTERM, cleaning up...");
 
     exit(EXIT_SUCCESS);
 }
@@ -159,7 +166,8 @@ void process_command(Command cmd)
     case GET_MAP:
         debug_s( 0, "send map", "Received GET_MAP. Sending map...");
         /* TODO check sent length */
-        sendall(consocket, &map_info, sizeof(map_info));
+        struct map_info map_info_net = map_info_to_net(&map_info);
+        sendall(consocket, &map_info_net, sizeof(map_info));
 
         map = generate_map(map_info);
 
@@ -167,4 +175,10 @@ void process_command(Command cmd)
     default:
         debug_c( 5, "unrecognized command", cmd);
     }
+}
+
+struct map_info map_info_to_net(struct map_info *i)
+{
+    return
+        (struct map_info) {htonl(i->seed), htons(i->length), htons(i->height)};
 }
