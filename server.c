@@ -2,27 +2,39 @@
 
 int server_socket; /* socket used to listen for incoming connections */
 int consocket;
+/* socket info about the machine connecting to us */
+struct sockaddr_in client_sa;
+socklen_t socksize = sizeof(struct sockaddr_in);
 
 int map_seed;
 map_t map = NULL;
 int map_length = 80, map_height = 24;
 
+void init_signals(void);
+void init_game(void);
+void init_server(void);
+
 void exit_cleanup(void);
 void sigint_handler(int signum);
-void process_request(char *request);
+void server_listen(void);
+void process_request(Command cmd);
 
 int main(int argc, char *argv[])
 {
+    init_signals();
+
+    init_game();
+
+    init_server();
+
+    server_listen();
+
+    return EXIT_SUCCESS;
+}
+
+void init_signals(void)
+{
     struct sigaction sigaction_new = {0};
-
-    unsigned int random_seed;
-
-    char buffer[MAXRCVLEN + 1]; /* +1 so we can add null terminator */
-    int len;
-
-    struct sockaddr_in dest; /* socket info about the machine connecting to us */
-    struct sockaddr_in serv = {0}; /* socket info about our server */
-    socklen_t socksize = sizeof(struct sockaddr_in);
 
     /* Cleanup on normal exit */
     if (atexit(exit_cleanup) != 0)
@@ -34,6 +46,11 @@ int main(int argc, char *argv[])
         if (DEBUG <= 5) puts(
 "Warning! Couldn't assign handler to SIGINT. If the server is terminated,\n"
 "won't be able to clean up!");
+}
+
+void init_game(void)
+{
+    unsigned int random_seed;
 
     /* Initialize random number renerator with current time */
     random_seed = time(NULL);
@@ -42,6 +59,11 @@ int main(int argc, char *argv[])
 
     map_seed = rand();
     if (DEBUG == 0) printf("Map seed is %d\n", map_seed);
+}
+
+void init_server(void)
+{
+    struct sockaddr_in serv = {0}; /* socket info about our server */
 
     /* set the type of connection to TCP/IP */
     serv.sin_family = AF_INET;
@@ -54,13 +76,20 @@ int main(int argc, char *argv[])
 
     /* bind serv information to server_socket */
     bind(server_socket, (struct sockaddr *)&serv, sizeof(struct sockaddr));
+}
+
+void server_listen(void)
+{
+    char buffer[MAXRCVLEN + 1]; /* +1 so we can add null terminator */
+    int len;
 
     /* start listening, allowing a queue of up to 16 pending connection */
     listen(server_socket, 16);
 
     while (1)
     {
-        consocket = accept(server_socket, (struct sockaddr *)&dest, &socksize);
+        consocket = accept(server_socket,
+                           (struct sockaddr *)&client_sa, &socksize);
 
         if (!consocket)
         {
@@ -69,20 +98,17 @@ int main(int argc, char *argv[])
         }
 
         if (DEBUG <= 3) printf("Incoming connection from %s\n",
-                               inet_ntoa(dest.sin_addr));
-        /* receive data */
-        while ((len = recv(consocket, buffer, MAXRCVLEN, 0)) != 0)
+                               inet_ntoa(client_sa.sin_addr));
+        /* receive command - 1 char */
+        while ((len = recvall(consocket, buffer, 1)) != 0)
         {
-            buffer[len] = '\0'; /* add null terminator */
-            if (DEBUG <= 3) printf("Received: %s\n", buffer);
+            if (DEBUG <= 3) printf("Received command: %c\n", buffer[0]);
 
-            process_request(buffer);
+            process_request(buffer[0]);
         }
 
         close(consocket);
     }
-
-    return EXIT_SUCCESS;
 }
 
 void exit_cleanup(void)
@@ -99,15 +125,8 @@ void sigint_handler(int signum)
     exit(EXIT_SUCCESS);
 }
 
-void process_request(char *request)
+void process_request(Command cmd)
 {
-    if (strlen(request) < 1)
-    {
-        if (DEBUG <= 5) puts("Received data length is <1 !");
-        return;
-    }
-
-    Command cmd = request[0];
     char reply[MAXRCVLEN + 1];
 
     switch (cmd)
