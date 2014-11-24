@@ -40,5 +40,8 @@ menu
 # Logs
 *.log
 
-#Core dumps
+# Debug files
+*.debug
+
+# Core dumps
 .core.*

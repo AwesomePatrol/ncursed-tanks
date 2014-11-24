@@ -3,11 +3,16 @@ Write documentation (gameplay, usage, syntax, etc.).
 Code core game stuff.
     * server
         ** map generation and distribution
+        ** player list: create and distribute
         ** collision detection -> place,dmg
+        ** end-game statistics
+        ** start a new match? set number of games in config
+        ** menu: interface, config distribution
     * client
+        ** get map, player list
         ** map, tanks, bullet rendering
-Test core game stuff.
-Code menu.
-Test all.
+        ** winner/loser and statistics and screen
+        ** reconnect
+        ** get config
 Gather ideas for weaponry and abilities.
 Document every weapon and ability.

@@ -22,6 +22,9 @@ void init_curses()
 
 int main(int argc, char *argv[])
 {
+    /* Open debug_file */
+    debug_open("client.debug"); 
+
     /* Be sure we have proper arguments */
     if ( argc <= 2 || strlen(argv[1]) < 7
             || strlen(argv[2]) < 3)
@@ -34,8 +37,7 @@ int main(int argc, char *argv[])
     init_curses();
     
     /* Get connection to server */
-    char buffer[MAXRCVLEN + 1]; /* +1 so we can add null terminator */
-    int len, sent, cl_sock;
+    int cl_sock;
     struct sockaddr_in dest; 
  
     cl_sock = socket(AF_INET, SOCK_STREAM, 0);
@@ -61,14 +63,8 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    sent = send(cl_sock, "M", 1, 0);
-    if (DEBUG <= 3)
-    {
-        printw("Sent %d bytes.", sent);
-        getch();
-    }
-
     /* Close connection */
     close(cl_sock);
+    curs_set(TRUE); /* show cursor */
     return EXIT_SUCCESS;
 }

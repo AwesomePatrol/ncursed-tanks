@@ -12,12 +12,15 @@
 #include <netinet/in.h>
 #include <ncurses.h>
 
+#include "debug.h"
 #include "colors.h"
 #include "draw.h"
 
+/* GLOBAL variables >>use extern? */
 typedef enum State {RENDER_SHOOT, MENU_SHOOT, WAIT} State;
+int map_seed, map_length, map_height;
 
-#define DEBUG 0 /* DEBUG: set 5 for ERROR, set 3 for INFO, set 0 for DEBUG
-                   VALUES higher than 5 will result in silent execution*/
+/* cl_proto.c */
+void fetch_map(int sock);
 
 #endif /* CLIENT_H */
