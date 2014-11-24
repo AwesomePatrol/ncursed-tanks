@@ -16,7 +16,6 @@
 // For getting seed for random
 #include <time.h>
 
-#include "net.h"
 #include "map_gen.h"
  
 #define DEBUG 0 /* DEBUG: set 5 for ERROR, set 3 for INFO, set 0 for DEBUG

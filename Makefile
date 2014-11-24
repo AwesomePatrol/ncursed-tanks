@@ -5,7 +5,7 @@ DOXYGENCONF=doxygen.conf
 CFLAGS += -std=c99
 
 OBJS_server := server.o common.o map_gen.o
-OBJS_client := client.o map_gen.o render.o draw.o
+OBJS_client := client.o common.o map_gen.o render.o draw.o
 
 server: $(OBJS_server) $(COBJS_server)
 	gcc -o $@ -lm -L/usr/lib $(OBJS_server) $(COBJS_server) 
