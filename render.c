@@ -1,4 +1,4 @@
-#include "draw.h"
+#include "client.h"
 
 void draw_map(map_t map, int pos_x, int pos_y, int width, int height)
 {
@@ -6,13 +6,14 @@ void draw_map(map_t map, int pos_x, int pos_y, int width, int height)
     for (int i = pos_x; i < end && i < map_data.length; i++)
     {
         int yy = map[i]-pos_y;
-        put_col_str(COL_G, yy, i, "V");
-        put_col_str(COL_C, yy+1, i, "H");
-        put_col_str(COL_M, yy+2, i, "W");
+        int xx = i-pos_x;
+        put_col_str(COL_G, yy, xx, "V");
+        put_col_str(COL_C, yy+1, xx, "H");
+        put_col_str(COL_M, yy+2, xx, "W");
     }
 }
 
 void render_map()
 {
-    draw_map(g_map, 0, 0, COLS, LINES);
+    draw_map(g_map, dx, dy, COLS, LINES);
 }

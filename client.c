@@ -1,10 +1,15 @@
 #include "client.h"
 
+int dx=0, dy=0;
+State state = WAIT;
+
 void init_curses()
 {
     initscr(); /* initialize screen to draw on */
     noecho(); /* do not echo any keypress */
     curs_set(FALSE); /* do not show cursor */
+    keypad(stdscr, TRUE); /* get special keys (arrows) */
+    cbreak(); /* get one char at the time */
 
     /* Initialize colors */
     start_color();
@@ -66,9 +71,47 @@ int main(int argc, char *argv[])
     fetch_map(cl_sock);
     debug_d( 1, "lines", LINES);
     debug_d( 1, "columns", COLS);
-    render_map();
-    refresh();
-    getch();
+
+    short int change = 1;
+    while (state == WAIT)
+    {
+        if (change) clear();
+        render_map();
+        refresh();
+        char input_ch = getch();
+        change = 1;
+        switch (input_ch)
+        {
+            case 'i':
+                if (dy > 0)
+                    dy--;
+                else change = 0;
+                break;
+            case 'k':
+                if (dy < (map_data.height-LINES))
+                    dy++;
+                else change = 0;
+                break;
+            case 'j':
+                if (dx > 0)
+                    dx--;
+                else change = 0;
+                break;
+            case 'l':
+                if (dx < (map_data.length-COLS))
+                    dx++;
+                else change = 0;
+                break;
+            case 'q':
+                state = EXIT;
+                break;
+            default:
+                debug_c(1, "unsupported key", input_ch);
+        }
+        debug_d(1, "dx", dx);
+        debug_d(1, "dy", dx);
+    }
+
 
     /* Close connection */
     close(cl_sock);
