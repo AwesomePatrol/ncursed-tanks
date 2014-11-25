@@ -1,5 +1,19 @@
 #include "client.h"
 
+void draw_tank(int pos_x, int pos_y, int x, int y, int angle)
+{
+    int xx = x-pos_x;
+    int yy = y-pos_y;
+    if (yy > 0 && yy < (LINES-1))
+        if (xx > 0 && xx < (COLS-1))
+            put_col_str(COL_W, yy, xx-1, "<*>");
+        else
+            if (xx == 0)
+                put_col_str(COL_W, yy, xx, "*>");
+            else if (xx == (COLS-1))
+                put_col_str(COL_W, yy, xx-1, "<*");
+}
+
 void draw_map(map_t map, int pos_x, int pos_y, int width, int height)
 {
     int end = pos_x+width;
