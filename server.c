@@ -167,7 +167,7 @@ void process_command(Command cmd)
         debug_s( 0, "send map", "Received GET_MAP. Sending map...");
         /* TODO check sent length */
         struct map_info map_info_net = map_info_to_net(&map_info);
-        sendall(consocket, &map_info_net, sizeof(map_info));
+        sendall(consocket, &map_info_net, sizeof(map_info_net));
 
         map = generate_map(map_info);
 
