@@ -24,6 +24,9 @@ map_t g_map;
 extern int dx,dy;
 extern State state;
 
+/* game.c */
+int camera_move(char input_character);
+
 /* cl_proto.c */
 void fetch_map(int sock);
 
