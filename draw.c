@@ -1,4 +1,4 @@
-#include "draw.h"
+#include "client.h"
 
 void put_col_str(Color color, int y, int x, const char *str)
 {
