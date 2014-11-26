@@ -1,7 +1,6 @@
 #include "server.h"
 
 int server_socket; /* socket used to listen for incoming connections */
-int consocket;
 /* socket info about the machine connecting to us */
 struct sockaddr_in client_sa;
 socklen_t socksize = sizeof(struct sockaddr_in);
@@ -14,10 +13,11 @@ void init_game(void);
 void init_server(void);
 void server_listen(void);
 
-void process_command(Command cmd);
+void *connection_thread(void *consock);
+
+void process_command(int socket, Command cmd);
 
 void exit_cleanup(void);
-void sigchld_handler(int signum);
 void terminate_handler(int signum);
 
 int main(int argc, char *argv[])
@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
 
     server_listen();
 
-    return EXIT_SUCCESS;
+    pthread_exit(NULL);
 }
 
 void init_signals(void)
@@ -56,15 +56,6 @@ won't be able to clean up!");
         debug_s( 5, "sigaction",
 "Warning! Couldn't assign handler to SIGINT. If the server is terminated, \
 won't be able to clean up!");
-
-    sigaction_new = (__typeof__(sigaction_new)) {0};
-    /* reap all dead processes */
-    sigaction_new.sa_handler = sigchld_handler;
-    sigemptyset(&sigaction_new.sa_mask);
-    sigaction_new.sa_flags = SA_RESTART;
-    if (sigaction(SIGCHLD, &sigaction_new, NULL) == -1)
-        debug_s( 5, "sigaction",
-                 "Warning! Couldn't assign handler to SIGCHLD!");
 }
 
 void init_game(void)
@@ -99,18 +90,16 @@ void init_server(void)
 
 void server_listen(void)
 {
-    char buffer[MAXRCVLEN + 1]; /* +1 so we can add null terminator */
-    int len;
-
     /* start listening, allowing a queue of up to 16 pending connection */
     listen(server_socket, 16);
 
-    while (1)
+    for (int i = 0; i < NUM_THREADS; i++)
     {
-        consocket = accept(server_socket,
-                           (struct sockaddr *)&client_sa, &socksize);
+        conn_sockets[i] = accept(server_socket,
+                                 (struct sockaddr *)&client_sa,
+                                 &socksize);
 
-        if (!consocket)
+        if (!conn_sockets[i])
         {
             debug_s( 5, "accept", "Couldn't accept connection!");
             continue;
@@ -118,29 +107,37 @@ void server_listen(void)
 
         debug_s( 3, "incoming connection", inet_ntoa(client_sa.sin_addr));
 
-        if (fork() == 0)
-        {
-            /* this is the child process */
-            close(server_socket); /* child doesn't need the listener */
-            /* receive command - 1 char */
-            /* process commands until disconnect */
-            while ((len = recvall(consocket, buffer, 1)) != 0)
-            {
-                debug_c( 3, "received command", buffer[0]);
-                process_command(buffer[0]);
-            }
-            close(consocket);
-            exit(0);
-        }
-
-        close(consocket); /* parent doesn't need this */
+        pthread_create(&threads[i], NULL,
+                       connection_thread, (void *)&conn_sockets[i]);
     }
+
+    debug_s( 5, "listen",
+"Maximum thread number exceeded! No new connections will be accepted");
+}
+
+void *connection_thread(void *consock)
+{
+    int consocket = *(int *)consock;
+
+    char buffer[MAXRCVLEN];
+    int len;
+
+    /* receive command - 1 char */
+    /* process commands until disconnect */
+    while ((len = recvall(consocket, buffer, 1)) != 0)
+    {
+        debug_c( 3, "received command", buffer[0]);
+        process_command(consocket, buffer[0]);
+    }
+    close(consocket);
 }
 
 void exit_cleanup(void)
 {
     if (map) free(map);
-    close(consocket);
+    /* close connection sockets from every thread */
+    for (int i = 0; i < NUM_THREADS; i++)
+        close(conn_sockets[i]);
     close(server_socket);
 }
 
@@ -151,12 +148,7 @@ void terminate_handler(int signum)
     exit(EXIT_SUCCESS);
 }
 
-void sigchld_handler(int signum)
-{
-    while(waitpid(-1, NULL, WNOHANG) > 0);
-}
-
-void process_command(Command cmd)
+void process_command(int socket, Command cmd)
 {
     char reply[MAXRCVLEN + 1];
 
@@ -166,7 +158,7 @@ void process_command(Command cmd)
         debug_s( 0, "send map", "Received GET_MAP. Sending map...");
         /* TODO check sent length */
         struct map_info map_info_net = map_info_to_net(&map_info);
-        sendall(consocket, &map_info_net, sizeof(map_info_net));
+        sendall(socket, &map_info_net, sizeof(map_info_net));
 
         map = generate_map(map_info);
 

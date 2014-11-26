@@ -15,6 +15,8 @@ typedef enum Command {GET_STATE = 'S',
 #define PORTNUM 7979 /* Port Number */
 #define MAXRCVLEN 128 /* Maximal Length of Received Value */
 
+#define NUM_PLAYERS 16
+
 struct map_info
 {
     u_int32_t seed;
