@@ -30,6 +30,6 @@ int recvall(int socket, void *data, int len);
 
 
 struct map_info map_info_to_net(struct map_info *i);
-struct map_info net_to_map_info(struct map_info *i);
+struct map_info map_info_from_net(struct map_info *i);
 
 #endif /* COMMON_H */

@@ -52,7 +52,7 @@ struct map_info map_info_to_net(struct map_info *i)
         (struct map_info) {htonl(i->seed), htons(i->length), htons(i->height)};
 }
 
-struct map_info net_to_map_info(struct map_info *i)
+struct map_info map_info_from_net(struct map_info *i)
 {
     return
         (struct map_info) {ntohl(i->seed), ntohs(i->length), ntohs(i->height)};
