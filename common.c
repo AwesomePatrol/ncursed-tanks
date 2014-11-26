@@ -45,6 +45,36 @@ int recvall(int socket, void *data, int len)
     return do_all(recv, socket, data, len, 1);
 }
 
+/* returns 0 on success, -1 on failure */
+int send_string(int socket, char *str)
+{
+    int16_t size = strlen(str) + 1;
+    if (sendall(socket, &size, sizeof(size)) == -1)
+        return -1;
+    if (sendall(socket, str, size) == -1)
+        return -1;
+    return 0;
+}
+
+/* receive a string sent with send_string */
+char *recv_string(int socket)
+{
+    int received;
+    int16_t size;
+    char *str;
+
+    if ((received = recvall(socket, &size, sizeof(size))) == -1
+        || received == 0)
+        return NULL;
+    /* TODO free */
+    str = malloc(size);
+    if ((received = recvall(socket, str, size)) == -1
+        || received == 0)
+        return NULL;
+
+    return str;
+}
+
 
 struct map_info map_info_to_net(struct map_info *i)
 {

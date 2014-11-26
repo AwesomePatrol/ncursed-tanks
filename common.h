@@ -1,6 +1,8 @@
 #ifndef COMMON_H
 #define COMMON_H
 
+#include <stdlib.h>
+#include <string.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 
@@ -27,6 +29,9 @@ struct map_info
 
 int sendall(int socket, void *data, int len);
 int recvall(int socket, void *data, int len);
+
+int send_string(int socket, char *str);
+char *recv_string(int socket);
 
 
 struct map_info map_info_to_net(struct map_info *i);
