@@ -1,11 +1,5 @@
 #include "client.h"
 
-struct map_info net_to_map_info(struct map_info *i)
-{
-    return
-        (struct map_info) {ntohl(i->seed), ntohs(i->length), ntohs(i->height)};
-}
-
 /* fetch map from server and generate it */
 void fetch_map(int sock)
 {

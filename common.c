@@ -4,6 +4,7 @@
 typedef ssize_t (*socket_io_fun)(int, void *, size_t, int);
 
 /* do_all: sends/receives the whole buffer.
+ *         Do not use outside this file.
  *
  * action:            function pointer to either send or recv
  * socket, data, len: standard arguments to send/recv
@@ -42,4 +43,17 @@ int sendall(int socket, void *data, int len)
 int recvall(int socket, void *data, int len)
 {
     return do_all(recv, socket, data, len, 1);
+}
+
+
+struct map_info map_info_to_net(struct map_info *i)
+{
+    return
+        (struct map_info) {htonl(i->seed), htons(i->length), htons(i->height)};
+}
+
+struct map_info net_to_map_info(struct map_info *i)
+{
+    return
+        (struct map_info) {ntohl(i->seed), ntohs(i->length), ntohs(i->height)};
 }

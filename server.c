@@ -15,7 +15,6 @@ void init_server(void);
 void server_listen(void);
 
 void process_command(Command cmd);
-struct map_info map_info_to_net(struct map_info *i);
 
 void exit_cleanup(void);
 void sigchld_handler(int signum);
@@ -175,10 +174,4 @@ void process_command(Command cmd)
     default:
         debug_c( 5, "unrecognized command", cmd);
     }
-}
-
-struct map_info map_info_to_net(struct map_info *i)
-{
-    return
-        (struct map_info) {htonl(i->seed), htons(i->length), htons(i->height)};
 }

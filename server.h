@@ -11,7 +11,6 @@
 #include <unistd.h>
 #include <signal.h>
 #include <sys/wait.h>
-#include <arpa/inet.h>
 #include <sys/types.h>
 #include <netinet/in.h>
 // For getting seed for random
