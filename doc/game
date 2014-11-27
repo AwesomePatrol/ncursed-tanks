@@ -1,22 +1,16 @@
 Game
 ====
 
-Menu
-----
-Before the game actually starts all players choose what "ability"
-they want to have and what weaponry they buy. Weapons' prices and damage
-is set in 'weapons.conf' file in directory where server binary is run,
-the similar goes with abilites.
+Config
+------
+You can configure server using conf file. See config for further details.
+Client may be configured only by command line.
 
-Host menu consists of:
-*ability choice
-*number of bought weapons (note: you cannot 'sell' weapons you bought earlier,
-                           but you can change the order)
-*wind (on|off, random every {shoot, turn})
-
-Client menu consists of:
-*ability choice
-*number of bought weapons
+Client
+------
+First you connect to the server using comand line parameters.
+Once all the clients connect (players number >= 0.7 * number speciefied by server conf)
+every player set his ready and the game starts.
 
 Gameplay
 --------

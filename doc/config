@@ -1,0 +1,8 @@
+Config
+======
+players_number INT // {1..16}
+map_width INT // {48..1024}, values around 140 are the best
+map_height INT // {48..512}, these does not affect gameplay much
+tank_hp INT // {1..1000} choose 1 for one-shot game, 1000 is for very long games
+dmg_radius INT // {2..16} how does dmg scale with distance
+dmg_cap INT // {1..1000} what's the maximum dmg bullet can inflict to tank
