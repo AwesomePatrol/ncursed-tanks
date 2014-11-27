@@ -87,3 +87,17 @@ struct map_info map_info_from_net(struct map_info *i)
     return
         (struct map_info) {ntohl(i->seed), ntohs(i->length), ntohs(i->height)};
 }
+
+struct player_net player_to_net(struct player *p)
+{
+    /* trouble with signed shorts? */
+    return
+        (struct player_net) {htons(p->state), htons(p->hitpoints)};
+}
+
+struct player player_from_net(struct player_net *p)
+{
+    return (struct player) {
+        .state = ntohs(p->state), .hitpoints = ntohs(p->hitpoints)
+            };
+}

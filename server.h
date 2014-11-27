@@ -22,9 +22,6 @@
                    VALUES higher than 5 will result in silent execution*/
 
 
-#define NUM_THREADS NUM_PLAYERS
-
-pthread_t threads[NUM_THREADS];
-int conn_sockets[NUM_THREADS];
+#define MAX_THREADS MAX_PLAYERS
 
 #endif /* SERVER_H */
