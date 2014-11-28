@@ -48,6 +48,36 @@ struct map_info
     u_int16_t height;
 };
 
+/**** Game updates sent by server ****/
+
+/* map_updates -- list of map_update */
+/* map_update -- (index, new_height) */
+
+/* add_player_update -- struct player */
+/* player_update -- struct player */
+
+typedef enum UpdateType
+{
+    U_MAP, U_ADD_PLAYER, U_PLAYER,
+} UpdateType;
+
+typedef int           map_updates_t; /* placeholder */
+typedef struct player add_player_update_t;
+typedef struct player player_update_t;
+
+typedef union update_data_t
+{
+    map_updates_t map_updates_data;
+    add_player_update_t add_player_update_data;
+    player_update_t player_update_data;
+} update_data_t;
+
+struct update
+{
+    UpdateType type;
+    update_data_t *data;
+};
+
 
 int sendall(int socket, void *data, int len);
 int recvall(int socket, void *data, int len);
