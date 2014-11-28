@@ -9,7 +9,6 @@ struct thread_data
     struct updates_queue updates;
 };
 
-/* is this initialization going to work? */
 struct thread_data globals[MAX_THREADS] = {0};
 pthread_key_t thread_i;
 pthread_mutex_t players_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -187,7 +186,9 @@ void process_command(int socket, Command cmd)
     switch (cmd)
     {
     case JOIN:
+        pthread_mutex_lock(&players_mutex);
         globals[thr_i].player = new_player(recv_string(socket));
+        pthread_mutex_unlock(&players_mutex);
 
         debug_s( 3, "new player", globals[thr_i].player.nickname);
 
