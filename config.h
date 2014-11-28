@@ -4,6 +4,6 @@
 extern int config_min[];
 extern int config_max[];
 extern int config_values[];
-void config_open(const char *filename);
+void write_config();
 
 #endif /* CONFIG_H */

@@ -15,7 +15,7 @@ int c;
 MENU *my_menu;
 int n_choices, i;
 
-char *choices[] = {
+const char *choices[] = {
                         "number of players",
                         "map width",
                         "map height",

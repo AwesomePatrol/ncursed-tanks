@@ -45,7 +45,9 @@ int main(int argv, char *argc[])
     my_items[n_choices] = (ITEM *)NULL;
 
     my_menu = new_menu((ITEM **)my_items);
-    mvprintw(LINES - 2, 0, "q to quit");
+    mvprintw(LINES - 6, 1, "left and right arrow to change values");
+    mvprintw(LINES - 4, 1, "enter to write server.conf");
+    mvprintw(LINES - 2, 1, "q to quit");
     post_menu(my_menu);
     refresh();
 
@@ -63,10 +65,16 @@ int main(int argv, char *argc[])
             case KEY_LEFT:
                 item_change(current_item(my_menu),'-');
                 break;
+            case 10:
+                write_config();
+                mvprintw(LINES - 8, 0,
+                        "Configuration saved in \"server.conf\"");
+                break;
             default:
                 debug_c(1, "unsupported key", c);
         }
     }
+
 
     unpost_menu(my_menu);
     for(i = 0; i < n_choices; ++i)
