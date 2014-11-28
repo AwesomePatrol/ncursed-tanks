@@ -19,9 +19,16 @@
  * JOIN           string nickname     JoinReply
  * GET_MAP        none                struct map_info
  */
-typedef enum Command {
+typedef enum Command
+{
     JOIN = 'J', GET_CHANGES = 'C', GET_MAP = 'M', SHOOT = 'F', ERROR = 'E'
 } Command;
+
+/* JR_GAME_IN_PROGRESS - not allowed to join because game already started */
+typedef enum JoinReply
+{
+    JR_OK, JR_GAME_IN_PROGRESS, JR_FORBIDDEN
+} JoinReply;
 
 typedef enum PlayerState
 {

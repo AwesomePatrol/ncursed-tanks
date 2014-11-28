@@ -4,9 +4,12 @@ struct thread_data
 {
     pthread_t thread;
     int socket;
+
+    struct updates_queue updates;
 };
 
-struct thread_data globals[MAX_THREADS];
+/* is this initialization going to work? */
+struct thread_data globals[MAX_THREADS] = {0};
 pthread_key_t thread_i;
 
 int server_socket; /* socket used to listen for incoming connections */
@@ -27,7 +30,7 @@ void server_listen(void);
 void *connection_thread(void *thr_i);
 
 void process_command(int socket, Command cmd);
-void send_add_player(struct player *player);
+void all_uq_append(struct update p);
 
 void exit_cleanup(void);
 void terminate_handler(int signum);
@@ -131,10 +134,11 @@ void server_listen(void)
 "Maximum thread number exceeded! No new connections will be accepted");
 }
 
-void *connection_thread(void *thr_i)
+void *connection_thread(void *thr_i_)
 {
-    pthread_setspecific(thread_i, thr_i);
-    int consocket = globals[(long) pthread_getspecific(thread_i)].socket;
+    pthread_setspecific(thread_i, thr_i_);
+    long thr_i = (long)pthread_getspecific(thread_i);
+    int consocket = globals[thr_i].socket;
 
     char buffer[MAXRCVLEN];
     int len;
@@ -152,9 +156,15 @@ void *connection_thread(void *thr_i)
 void exit_cleanup(void)
 {
     if (map) free(map);
-    /* close connection sockets from every thread */
+    /* for every thread / player */
     for (int i = 0; i < MAX_THREADS; i++)
+    {
         close(globals[i].socket);
+        if (uq_is_nonempty(&globals[i].updates))
+            uq_clear(&globals[i].updates);
+        if (players[i].nickname)
+            free(players[i].nickname);
+    }
     close(server_socket);
 }
 
@@ -168,7 +178,7 @@ void terminate_handler(int signum)
 void process_command(int socket, Command cmd)
 {
     long thr_i = (long)pthread_getspecific(thread_i);
-    char reply[MAXRCVLEN + 1];
+    char reply[MAXRCVLEN];
 
     switch (cmd)
     {
@@ -178,6 +188,18 @@ void process_command(int socket, Command cmd)
             .state = PS_WAIT,
             .hitpoints = INITIAL_HP,
         };
+
+        debug_s( 3, "new player", players[thr_i].nickname);
+
+        reply[0] = JR_OK;
+        sendall(socket, &reply, 1);
+
+        /* Notify all other clients of the new player */
+        all_uq_append(
+            (struct update) {
+                .type = U_ADD_PLAYER,
+                .data = (update_data_t *)&players[thr_i]
+            });
     case GET_MAP:
         debug_s( 0, "send map", "Received GET_MAP. Sending map...");
         /* TODO check sent length */
@@ -190,4 +212,12 @@ void process_command(int socket, Command cmd)
     default:
         debug_c( 5, "unrecognized command", cmd);
     }
+}
+
+void all_uq_append(struct update p)
+{
+    /* TODO locking */
+    for (int i = 0; i < MAX_THREADS; i++)
+        if (globals[i].thread)
+            uq_append(&globals[i].updates, p);
 }

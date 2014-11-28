@@ -4,7 +4,7 @@ DOXYGENCONF=doxygen.conf
 
 CFLAGS += -std=c99
 
-OBJS_server := server.o common.o debug.o map_gen.o
+OBJS_server := server.o common.o server_updates_queue.o debug.o map_gen.o
 OBJS_client := client.o common.o debug.o cl_proto.o game.o map_gen.o render.o draw.o
 OBJS_menu := menu.o debug.o config.o
 
