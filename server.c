@@ -5,19 +5,19 @@ struct thread_data
     pthread_t thread;
     int socket;
 
+    struct player player;
     struct updates_queue updates;
 };
 
 /* is this initialization going to work? */
 struct thread_data globals[MAX_THREADS] = {0};
 pthread_key_t thread_i;
+pthread_mutex_t players_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 int server_socket; /* socket used to listen for incoming connections */
 /* socket info about the machine connecting to us */
 struct sockaddr_in client_sa;
 socklen_t socksize = sizeof(struct sockaddr_in);
-
-struct player players[MAX_PLAYERS];
 
 struct map_info map_info = {.length = 80, .height = 24};
 map_t map = NULL;
@@ -31,6 +31,9 @@ void *connection_thread(void *thr_i);
 
 void process_command(int socket, Command cmd);
 void all_uq_append(struct update p);
+
+struct player new_player(char *nickname);
+int new_player_x();
 
 void exit_cleanup(void);
 void terminate_handler(int signum);
@@ -156,14 +159,15 @@ void *connection_thread(void *thr_i_)
 void exit_cleanup(void)
 {
     if (map) free(map);
+    pthread_mutex_destroy(&players_mutex);
     /* for every thread / player */
     for (int i = 0; i < MAX_THREADS; i++)
     {
         close(globals[i].socket);
         if (uq_is_nonempty(&globals[i].updates))
             uq_clear(&globals[i].updates);
-        if (players[i].nickname)
-            free(players[i].nickname);
+        if (globals[i].player.state)
+            free(globals[i].player.nickname);
     }
     close(server_socket);
 }
@@ -183,13 +187,9 @@ void process_command(int socket, Command cmd)
     switch (cmd)
     {
     case JOIN:
-        players[thr_i] = (struct player) {
-            .nickname = recv_string(socket),
-            .state = PS_WAIT,
-            .hitpoints = INITIAL_HP,
-        };
+        globals[thr_i].player = new_player(recv_string(socket));
 
-        debug_s( 3, "new player", players[thr_i].nickname);
+        debug_s( 3, "new player", globals[thr_i].player.nickname);
 
         reply[0] = JR_OK;
         sendall(socket, &reply, 1);
@@ -198,7 +198,7 @@ void process_command(int socket, Command cmd)
         all_uq_append(
             (struct update) {
                 .type = U_ADD_PLAYER,
-                .data = (update_data_t *)&players[thr_i]
+                .data = (update_data_t *)&globals[thr_i].player
             });
     case GET_MAP:
         debug_s( 0, "send map", "Received GET_MAP. Sending map...");
@@ -214,10 +214,31 @@ void process_command(int socket, Command cmd)
     }
 }
 
+struct player new_player(char *nickname)
+{
+    int player_x = new_player_x();
+
+    return (struct player) {
+        .nickname = nickname,
+        .state = PS_WAIT,
+        .hitpoints = INITIAL_HP,
+        .pos_x = player_x,
+        .pos_y = map[player_x] - 1,
+    };
+}
+
+int new_player_x()
+{
+    return 25;
+}
+
 void all_uq_append(struct update p)
 {
-    /* TODO locking */
+    pthread_mutex_lock(&players_mutex);
+    
     for (int i = 0; i < MAX_THREADS; i++)
         if (globals[i].thread)
             uq_append(&globals[i].updates, p);
+
+    pthread_mutex_unlock(&players_mutex);
 }

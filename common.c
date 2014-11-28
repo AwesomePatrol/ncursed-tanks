@@ -91,13 +91,16 @@ struct map_info map_info_from_net(struct map_info *i)
 struct player_net player_to_net(struct player *p)
 {
     /* trouble with signed shorts? */
-    return
-        (struct player_net) {htons(p->state), htons(p->hitpoints)};
+    return (struct player_net) {
+        p->state, htons(p->hitpoints),
+        htons(p->pos_x), htons(p->pos_y),
+            };
 }
 
 struct player player_from_net(struct player_net *p)
 {
     return (struct player) {
-        .state = ntohs(p->state), .hitpoints = ntohs(p->hitpoints)
+        .state = ntohs(p->state), .hitpoints = ntohs(p->hitpoints),
+        .pos_x = ntohs(p->pos_x), .pos_y = ntohs(p->pos_y),
             };
 }

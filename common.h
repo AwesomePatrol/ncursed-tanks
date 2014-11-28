@@ -15,9 +15,12 @@
 
 /*
  * command        args                reply
- *
+ *   \- requirements
  * JOIN           string nickname     JoinReply
  * GET_MAP        none                struct map_info
+ * SHOOT          (direction, force)  target_point
+ *   \- game started, state == PS_SHOOT
+ * GET_CHANGES    none                list(update)
  */
 typedef enum Command
 {
@@ -40,12 +43,16 @@ struct player
     char *nickname;
     PlayerState state;
     int16_t hitpoints;
+    int16_t pos_x;
+    int16_t pos_y;
 };
 
 struct player_net
 {
-    u_int16_t state;
-    int16_t   hitpoints;
+    u_int8_t state;
+    int16_t  hitpoints;
+    int16_t  pos_x;
+    int16_t  pos_y;
 };
 
 struct map_info
