@@ -11,6 +11,9 @@ void init_curses()
 
 int main(int argv, char *argc[])
 {
+    /* Open debug_file */
+    debug_open("menu.debug");
+
     init_curses();
     
     n_choices = ARRAY_SIZE(choices);
@@ -21,7 +24,7 @@ int main(int argv, char *argc[])
     my_items[n_choices] = (ITEM *)NULL;
 
     my_menu = new_menu((ITEM **)my_items);
-    mvprintw(LINES - 2, 0, "q to quit or EXIT");
+    mvprintw(LINES - 2, 0, "EXIT or q to quit");
     post_menu(my_menu);
     refresh();
 
@@ -33,10 +36,12 @@ int main(int argv, char *argc[])
             case KEY_UP:
                 menu_driver(my_menu, REQ_UP_ITEM);
                 break;
+            default:
+                debug_c(1, "unsupported key", c);
         }
     }
 
-    npost_menu(my_menu);
+    unpost_menu(my_menu);
     for(i = 0; i < n_choices; ++i)
                 free_item(my_items[i]);
         free_menu(my_menu);

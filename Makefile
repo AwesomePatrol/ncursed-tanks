@@ -6,7 +6,7 @@ CFLAGS += -std=c99
 
 OBJS_server := server.o common.o debug.o map_gen.o
 OBJS_client := client.o common.o debug.o cl_proto.o game.o map_gen.o render.o draw.o
-OBJS_menu := menu.o debug.o
+OBJS_menu := menu.o debug.o config.o
 
 server: $(OBJS_server) $(COBJS_server)
 	gcc -o $@ -pthread -lm -L/usr/lib $(OBJS_server) $(COBJS_server) 
