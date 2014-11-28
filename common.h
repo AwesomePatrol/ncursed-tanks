@@ -12,6 +12,7 @@
 #define MAX_PLAYERS 16
 
 #define INITIAL_HP 1000
+#define MAP_NOTANK_MARGIN 5
 
 /*
  * command        args                reply

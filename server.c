@@ -229,7 +229,8 @@ struct player new_player(char *nickname)
 
 int new_player_x()
 {
-    return 25;
+    return MAP_NOTANK_MARGIN
+        + rand() % (map_info.length - 2 * MAP_NOTANK_MARGIN);
 }
 
 void all_uq_append(struct update p)
