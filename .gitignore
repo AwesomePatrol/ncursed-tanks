@@ -25,8 +25,10 @@ localdefs.mk
 # Compiled binary
 server
 client
-game
 menu
+
+# Server configuration
+server.conf
 
 # Vim garbage
 *.sw*
@@ -44,4 +46,4 @@ menu
 *.debug
 
 # Core dumps
-.core.*
+core.*
