@@ -1,0 +1,8 @@
+Controls
+========
+
+Use i, k, j, l to move around the map up, down, left, right
+Use z, c to change weapon, arrow_up and arrow_down to change shoot power
+and arrow_left and arrow_right to change the angle.
+Press return or space to shoot or set readiness.
+Press q to quit the game.
