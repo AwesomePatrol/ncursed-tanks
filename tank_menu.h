@@ -14,7 +14,6 @@ ITEM **my_items;
 int c;
 MENU *my_menu;
 int n_choices, i;
-ITEM *cur_item;
 
 char *choices[] = {
                         "number of players",
@@ -23,7 +22,6 @@ char *choices[] = {
                         "tank HP",
                         "dmg radius",
                         "dmg cap",
-                        "Exit",
                   };
 
 char *explanation[] = {
@@ -33,7 +31,6 @@ char *explanation[] = {
                         "INT {1..1000}",
                         "INT {2..16}",
                         "INT {1..1000}",
-                        "Exit",
                   };
 
 #endif /* TANK_MENU_H */

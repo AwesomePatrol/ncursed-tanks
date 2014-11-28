@@ -9,6 +9,27 @@ void init_curses()
     cbreak(); /* get one char at the time */
 }
 
+void draw_values()
+{
+    for (int i=0; i<n_choices; i++)
+    {
+        mvprintw(i, 50, " %d    ", config_values[i]);
+        /* spaces are added to overdraw prevoius output */
+    }
+}
+
+void item_change(ITEM *curr_it, const char cr)
+{
+    int index_it = item_index(curr_it);
+    if (cr == '+' && config_values[index_it] < config_max[index_it])
+        config_values[index_it]++;
+    else if (cr == '-' && config_values[index_it] > config_min[index_it])
+        config_values[index_it]--;
+    debug_d(1, "item_index", index_it);
+    debug_c(1, "item_char", cr);
+    draw_values();
+} 
+
 int main(int argv, char *argc[])
 {
     /* Open debug_file */
@@ -24,7 +45,7 @@ int main(int argv, char *argc[])
     my_items[n_choices] = (ITEM *)NULL;
 
     my_menu = new_menu((ITEM **)my_items);
-    mvprintw(LINES - 2, 0, "EXIT or q to quit");
+    mvprintw(LINES - 2, 0, "q to quit");
     post_menu(my_menu);
     refresh();
 
@@ -35,6 +56,12 @@ int main(int argv, char *argc[])
                 break;
             case KEY_UP:
                 menu_driver(my_menu, REQ_UP_ITEM);
+                break;
+            case KEY_RIGHT:
+                item_change(current_item(my_menu),'+');
+                break;
+            case KEY_LEFT:
+                item_change(current_item(my_menu),'-');
                 break;
             default:
                 debug_c(1, "unsupported key", c);
