@@ -22,9 +22,23 @@
                    VALUES higher than 5 will result in silent execution*/
 
 
-#define NUM_THREADS NUM_PLAYERS
+#define MAX_THREADS MAX_PLAYERS
 
-pthread_t threads[NUM_THREADS];
-int conn_sockets[NUM_THREADS];
+/* TODO move to separate .h */
+
+struct updates_queue
+{
+    struct updates_queue_elt *first;
+    struct updates_queue_elt *last;
+};
+
+struct updates_queue_elt
+{
+    struct update cur;
+
+    struct updates_queue_elt *next;
+};
+
+typedef struct updates_queue_elt uq_elt_t;
 
 #endif /* SERVER_H */

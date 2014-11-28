@@ -1,9 +1,15 @@
 #include "server.h"
 
+pthread_t threads[MAX_THREADS];
+int conn_sockets[MAX_THREADS];
+pthread_key_t thread_i;
+
 int server_socket; /* socket used to listen for incoming connections */
 /* socket info about the machine connecting to us */
 struct sockaddr_in client_sa;
 socklen_t socksize = sizeof(struct sockaddr_in);
+
+struct player players[MAX_PLAYERS];
 
 struct map_info map_info = {.length = 80, .height = 24};
 map_t map = NULL;
@@ -13,7 +19,7 @@ void init_game(void);
 void init_server(void);
 void server_listen(void);
 
-void *connection_thread(void *consock);
+void *connection_thread(void *thr_i);
 
 void process_command(int socket, Command cmd);
 
@@ -27,6 +33,8 @@ int main(int argc, char *argv[])
     init_signals();
 
     init_game();
+
+    pthread_key_create(&thread_i, NULL);
 
     init_server();
 
@@ -93,7 +101,8 @@ void server_listen(void)
     /* start listening, allowing a queue of up to 16 pending connection */
     listen(server_socket, 16);
 
-    for (int i = 0; i < NUM_THREADS; i++)
+    /* long for passing to thread */
+    for (long i = 0; i < MAX_THREADS; i++)
     {
         conn_sockets[i] = accept(server_socket,
                                  (struct sockaddr *)&client_sa,
@@ -107,17 +116,19 @@ void server_listen(void)
 
         debug_s( 3, "incoming connection", inet_ntoa(client_sa.sin_addr));
 
+        /* TODO check for errors */
         pthread_create(&threads[i], NULL,
-                       connection_thread, (void *)&conn_sockets[i]);
+                       connection_thread, (void *)i);
     }
 
     debug_s( 5, "listen",
 "Maximum thread number exceeded! No new connections will be accepted");
 }
 
-void *connection_thread(void *consock)
+void *connection_thread(void *thr_i)
 {
-    int consocket = *(int *)consock;
+    pthread_setspecific(thread_i, thr_i);
+    int consocket = conn_sockets[(long)pthread_getspecific(thread_i)];
 
     char buffer[MAXRCVLEN];
     int len;
@@ -136,7 +147,7 @@ void exit_cleanup(void)
 {
     if (map) free(map);
     /* close connection sockets from every thread */
-    for (int i = 0; i < NUM_THREADS; i++)
+    for (int i = 0; i < MAX_THREADS; i++)
         close(conn_sockets[i]);
     close(server_socket);
 }
@@ -150,10 +161,17 @@ void terminate_handler(int signum)
 
 void process_command(int socket, Command cmd)
 {
+    long thr_i = (long)pthread_getspecific(thread_i);
     char reply[MAXRCVLEN + 1];
 
     switch (cmd)
     {
+    case JOIN:
+        players[thr_i] = (struct player) {
+            .nickname = recv_string(socket),
+            .state = PS_WAIT,
+            .hitpoints = INITIAL_HP,
+        };
     case GET_MAP:
         debug_s( 0, "send map", "Received GET_MAP. Sending map...");
         /* TODO check sent length */
