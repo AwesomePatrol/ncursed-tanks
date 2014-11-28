@@ -25,7 +25,6 @@ localdefs.mk
 # Compiled binary
 server
 client
-game
 menu
 
 # Vim garbage
