@@ -46,4 +46,4 @@ server.conf
 *.debug
 
 # Core dumps
-.core.*
+core.*
