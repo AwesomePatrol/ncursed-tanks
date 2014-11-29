@@ -13,7 +13,7 @@ void draw_values()
 {
     for (int i=0; i<n_choices; i++)
     {
-        mvprintw(i, 50, " %d    ", config_values[i]);
+        mvprintw(i, 50, " %d    ", config[i].value);
         /* spaces are added to overdraw prevoius output */
     }
 }
@@ -21,10 +21,10 @@ void draw_values()
 void item_change(ITEM *curr_it, const char cr)
 {
     int index_it = item_index(curr_it);
-    if (cr == '+' && config_values[index_it] < config_max[index_it])
-        config_values[index_it]++;
-    else if (cr == '-' && config_values[index_it] > config_min[index_it])
-        config_values[index_it]--;
+    if (cr == '+' && config[index_it].value < config[index_it].max)
+        config[index_it].value++;
+    else if (cr == '-' && config[index_it].value > config[index_it].min)
+        config[index_it].value--;
     debug_d(1, "item_index", index_it);
     debug_c(1, "item_char", cr);
     draw_values();

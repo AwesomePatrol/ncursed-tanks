@@ -6,38 +6,36 @@
 #include "config.h"
 
 FILE *config_file = NULL;
-int config_min[] = {1, 48, 48, 1, 2, 1};
-int config_values[] = {2, 128, 64, 100, 4, 50};
-int config_max[] = {16, 1024, 512, 1000, 16, 1000};
 
-const char *config_names[] = {
-    "players_number",
-    "map_width",
-    "map_height",
-    "tank_hp",
-    "dmg_radius",
-    "dmg_cap"
+struct config_item config[] = {
+    {"players_number", 2, 1, 16},
+    {"map_width", 128, 48, 1024},
+    {"map_height", 64, 48, 512},
+    {"tank_hp", 100, 1, 1000},
+    {"dmg_radius", 4, 2, 16},
+    {"dmg_cap", 50, 1, 1000},
 };
 
 void read_config()
 {
-    config_file = fopen("server.conf", "r");
+    /* TODO error checking */
+    config_file = fopen(SERVER_CONFIG_FILENAME, "r");
     if (config_file != NULL)
     {
-        int n = sizeof(config_values)/sizeof(config_values[0]);
+        int n = sizeof(config)/sizeof(config[0]);
         for (int i=0; i<n; i++)
         {
             char buff[50], buff_int;
             fscanf(config_file, "%s %d", buff, &buff_int);
             //TODO sometimes reads negative value
-            debug_s(1, "string read", buff);
-            debug_d(1, "int read", buff_int);
+            debug_s(1, "config: string read", buff);
+            debug_d(1, "config: int read", buff_int);
             for (int j=0; j<n; j++)
             {
-                int cmp = strcmp(buff, config_names[j]);
+                int cmp = strcmp(buff, config[j].name);
                 if (cmp == 0)
                 {
-                    config_values[j] = buff_int;
+                    config[j].value = buff_int;
                     break;
                 }
             }
@@ -49,10 +47,10 @@ void read_config()
 
 void write_config()
 {
-    config_file = fopen("server.conf", "w");
-    int n = sizeof(config_values)/sizeof(config_values[0]);
+    config_file = fopen(SERVER_CONFIG_FILENAME, "w");
+    int n = sizeof(config)/sizeof(config[0]);
     for (int i=0; i<n; i++)
         fprintf(config_file, "%s %d\n",
-                config_names[i], config_values[i]);
+                config[i].name, config[i].value);
     fclose(config_file);
 }
