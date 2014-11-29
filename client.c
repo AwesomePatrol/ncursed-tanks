@@ -38,8 +38,6 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    /* Init ncurses */
-    init_curses();
     
     /* Get connection to server */
     int cl_sock;
@@ -68,7 +66,13 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
     
-    fetch_map(cl_sock);
+    /* join_game */
+    if (join_game(cl_sock, argv[2]) < 0)
+        return EXIT_FAILURE;/* some errors occured */
+
+    /* Init ncurses */
+    init_curses();
+    
     debug_d( 1, "lines", LINES);
     debug_d( 1, "columns", COLS);
 
