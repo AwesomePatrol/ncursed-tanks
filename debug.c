@@ -54,3 +54,8 @@ void debug_c(int lvl, const char *name, char ch)
 
     debug_do(lvl, name, print);
 }
+
+void debug_errno(const char *name)
+{
+    debug_s( 5, name, strerror(errno));
+}
