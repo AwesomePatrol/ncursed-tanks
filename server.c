@@ -181,7 +181,7 @@ void terminate_handler(int signum)
 void process_command(int socket, Command cmd)
 {
     long thr_i = (long)pthread_getspecific(thread_i);
-    char reply[MAXRCVLEN];
+    u_int8_t reply[MAXRCVLEN];
 
     switch (cmd)
     {
