@@ -19,6 +19,7 @@ struct config_item config[] = {
 };
 
 char *read_line(FILE *stream);
+char *read_delimited(FILE *stream, int delim);
 
 /*
  * Config file format:
@@ -38,23 +39,12 @@ void read_config()
         int n = sizeof(config)/sizeof(config[0]);
         for (int i = 0; i < n; i++)
         {
-            char *name = NULL;
-            size_t name_size = 0;
-            ssize_t name_len;
+            char *name;
             char *value_s;
             int value;
 
             /* read name */
-            /* getline() and getdelim()
-             * return -1 in case of {error or EOF} */
-            if ((name_len = getdelim(&name, &name_size, ' ', config_file))
-                == -1)
-            {
-                free(name);
-                break;
-            }
-            /* remove ' ' at the end */
-            name[name_len] = '\0';
+            name = read_delimited(config_file, ' ');
 
             /* read value */
             value_s = read_line(config_file);
@@ -79,6 +69,16 @@ void read_config()
     }
 }
 
+void write_config()
+{
+    config_file = fopen(SERVER_CONFIG_FILENAME, "w");
+    int n = sizeof(config)/sizeof(config[0]);
+    for (int i=0; i<n; i++)
+        fprintf(config_file, "%s %d\n",
+                config[i].name, config[i].value);
+    fclose(config_file);
+}
+
 /* Reads a whole line from stream, with trailing newline if it's present.
  * Returns NULL on {error or EOF} */
 char *read_line(FILE *stream)
@@ -96,12 +96,23 @@ char *read_line(FILE *stream)
     }
 }
 
-void write_config()
+/* Reads string with delimiter, removing delimiter from the end.
+ * Returns NULL on {error or EOF} */
+char *read_delimited(FILE *stream, int delim)
 {
-    config_file = fopen(SERVER_CONFIG_FILENAME, "w");
-    int n = sizeof(config)/sizeof(config[0]);
-    for (int i=0; i<n; i++)
-        fprintf(config_file, "%s %d\n",
-                config[i].name, config[i].value);
-    fclose(config_file);
+    char *str = NULL;
+    size_t buffer_len = 0;
+
+    ssize_t len = getline(&str, &buffer_len, stream);
+
+    if (len == -1) {
+        free(str);
+        return NULL;
+    }
+
+    /* remove delimiter at the end */
+    if (str[len] == delim)
+        str[len] = '\0';
+
+    return str;
 }
