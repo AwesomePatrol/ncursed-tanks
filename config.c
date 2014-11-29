@@ -45,11 +45,16 @@ void read_config()
 
             /* read name */
             name = read_delimited(config_file, ' ');
+            if (!name)
+                break;
 
             /* read value */
             value_s = read_line(config_file);
+            if (!value_s)
+                break;
             if (sscanf(value_s, "%d", &value) != 1)
                 break;
+            free(value_s);
 
             debug_s(1, "config: read name", name);
             debug_d(1, "config: read value", value);
@@ -64,6 +69,8 @@ void read_config()
                     break;
                 }
             }
+
+            free(name);
         }
         fclose(config_file);
     }
