@@ -66,15 +66,21 @@ void init_signals(void)
     /* Handle SIGINT (Control-c) */
     sigaction_new.sa_handler = terminate_handler;
     if (sigaction(SIGINT, &sigaction_new, NULL) == -1)
+    {
         debug_s( 5, "sigaction",
 "Warning! Couldn't assign handler to SIGINT. If the server is terminated, \
 won't be able to clean up!");
+        debug_errno("sigaction");
+    }
 
     /* Handle SIGTERM with the same handler */
     if (sigaction(SIGTERM, &sigaction_new, NULL) == -1)
+    {
         debug_s( 5, "sigaction",
 "Warning! Couldn't assign handler to SIGINT. If the server is terminated, \
 won't be able to clean up!");
+        debug_errno("sigaction");
+    }
 }
 
 void init_game(void)
@@ -103,8 +109,22 @@ void init_server(void)
 
     server_socket = socket(AF_INET, SOCK_STREAM, 0);
 
+    /* Make socket reuse address => get rid of "address already in use" */
+    int yes=1;
+    if (setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int))
+        == -1)
+    {
+        debug_errno("setsockopt");
+    }
+            
     /* bind serv information to server_socket */
-    bind(server_socket, (struct sockaddr *)&serv, sizeof(struct sockaddr));
+    int res = bind(server_socket,
+                   (struct sockaddr *)&serv, sizeof(struct sockaddr));
+    if (res == -1)
+    {
+        debug_errno("bind");
+        exit(EXIT_FAILURE);
+    }
 }
 
 void server_listen(void)
@@ -121,7 +141,7 @@ void server_listen(void)
 
         if (!globals[i].socket)
         {
-            debug_s( 5, "accept", "Couldn't accept connection!");
+            debug_errno("accept");
             continue;
         }
 
