@@ -1,3 +1,5 @@
+#define _POSIX_C_SOURCE 200809L
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -15,6 +17,8 @@ struct config_item config[] = {
     {"dmg_radius", 4, 2, 16},
     {"dmg_cap", 50, 1, 1000},
 };
+
+char *read_line(FILE *stream);
 
 /*
  * Config file format:
@@ -34,13 +38,10 @@ void read_config()
         int n = sizeof(config)/sizeof(config[0]);
         for (int i = 0; i < n; i++)
         {
-            char buff[50], buff_int;
-
             char *name = NULL;
-            int name_size = 0;
-            int name_len;
-            char *value_s = NULL;
-            int value_s_size = 0;
+            size_t name_size = 0;
+            ssize_t name_len;
+            char *value_s;
             int value;
 
             /* read name */
@@ -56,17 +57,12 @@ void read_config()
             name[name_len] = '\0';
 
             /* read value */
-            if (getline(&value_s, &value_s_size, config_file)
-                == -1)
-            {
-                free(value_s);
-                break;
-            }
+            value_s = read_line(config_file);
             if (sscanf(value_s, "%d", &value) != 1)
                 break;
 
-            debug_s(1, "config: string read", buff);
-            debug_d(1, "config: int read", buff_int);
+            debug_s(1, "config: read name", name);
+            debug_d(1, "config: read value", value);
             /* find a config item whose name matches current
              * and place the value there */
             for (int j=0; j<n; j++)
@@ -83,6 +79,22 @@ void read_config()
     }
 }
 
+/* Reads a whole line from stream, with trailing newline if it's present.
+ * Returns NULL on {error or EOF} */
+char *read_line(FILE *stream)
+{
+    char *line = NULL;
+    size_t buffer_len = 0;
+
+    ssize_t len = getline(&line, &buffer_len, stream);
+
+    if (len == -1) {
+        free(line);
+        return NULL;
+    } else {
+        return line;
+    }
+}
 
 void write_config()
 {
