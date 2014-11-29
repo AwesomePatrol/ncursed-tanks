@@ -37,6 +37,10 @@ int main(int argv, char *argc[])
 
     init_curses();
     
+    read_config();
+    
+    debug_s(1, "opened file", "server.conf");
+
     n_choices = ARRAY_SIZE(choices);
     my_items = (ITEM **)calloc(n_choices + 1, sizeof(ITEM *));
 
@@ -49,6 +53,7 @@ int main(int argv, char *argc[])
     mvprintw(LINES - 4, 1, "enter to write server.conf");
     mvprintw(LINES - 2, 1, "q to quit");
     post_menu(my_menu);
+    draw_values();
     refresh();
 
     while((c = getch()) != 'q')
@@ -67,14 +72,13 @@ int main(int argv, char *argc[])
                 break;
             case 10:
                 write_config();
-                mvprintw(LINES - 8, 0,
+                mvprintw(LINES - 8, 1,
                         "Configuration saved in \"server.conf\"");
                 break;
             default:
                 debug_c(1, "unsupported key", c);
         }
     }
-
 
     unpost_menu(my_menu);
     for(i = 0; i < n_choices; ++i)
