@@ -1,5 +1,14 @@
 #include "server_updates_queue.h"
 
+struct updates_queue *new_uq()
+{
+    struct updates_queue *result = malloc(sizeof(result));
+
+    *result = (struct updates_queue) {0};
+
+    return result;
+}
+
 void uq_append(struct updates_queue *q, struct update what)
 {
     uq_elt_t *elt = malloc(sizeof(elt));

@@ -195,7 +195,7 @@ void *connection_thread(void *thr_data)
 
 void exit_cleanup(void)
 {
-    if (map) free(map);
+    free(map);
     pthread_mutex_destroy(&clients_mutex);
     /* TODO close sockets from threads */
     /* for every player */
@@ -207,11 +207,11 @@ void exit_cleanup(void)
             uq_clear(cl->updates);
         if (cl->player)
         {
-            if (cl->player->state)
-                free(cl->player->nickname);
+            free(cl->player->nickname);
             free(cl->player);
         }
     }
+    dyn_arr_clear(&clients);
 
     close(server_socket);
 }
@@ -233,6 +233,7 @@ void process_command(Command cmd)
     switch (cmd)
     {
     case JOIN:
+        ; /* empty statement so that variable can be defined after label */
         char *nickname = recv_string(socket);
 
         struct client *cl = new_client(nickname);
@@ -273,6 +274,17 @@ struct client *new_client(char *nickname)
         .player = new_player(nickname),
         .updates = new_uq(),
     };
+}
+
+int new_client_id(void)
+{
+    player_id_counter++;
+    if (player_id_counter == 0)
+        debug_s( 5, "player id",
+"Player ID counter overflowed to the initial value! Hope that there won't be \
+collisions.");
+
+    return player_id_counter;
 }
 
 struct player *new_player(char *nickname)
