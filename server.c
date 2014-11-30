@@ -36,7 +36,7 @@ void server_listen(void);
 
 void *connection_thread(void *thr_data);
 
-void process_command(int socket, Command cmd);
+void process_command(Command cmd);
 void all_uq_append(struct update p);
 void add_client(struct client *cl);
 struct client *find_client(int id);
@@ -77,6 +77,7 @@ void init_signals(void)
 
     /* Handle SIGINT (Control-c) */
     sigaction_new.sa_handler = terminate_handler;
+    sigemptyset(&sigaction_new.sa_mask);
     if (sigaction(SIGINT, &sigaction_new, NULL) == -1)
     {
         debug_s( 5, "sigaction",
@@ -124,8 +125,8 @@ void init_server(void)
     server_socket = socket(AF_INET, SOCK_STREAM, 0);
 
     /* Make socket reuse address => get rid of "address already in use" */
-    int yes=1;
-    if (setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int))
+    int yes = 1;
+    if (setsockopt(server_socket, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes))
         == -1)
     {
         debug_errno("setsockopt");
@@ -163,8 +164,8 @@ void server_listen(void)
         debug_s( 3, "incoming connection", inet_ntoa(client_sa.sin_addr));
 
         /* TODO check for errors */
-        pthread_create(thr_data->thread, NULL,
-                       connection_thread, (void *)thr_data);
+        pthread_create(&thr_data->thread, NULL,
+                       connection_thread, thr_data);
     }
 }
 
@@ -182,7 +183,7 @@ void *connection_thread(void *thr_data)
     while ((len = recvall(socket, buffer, 1)) != 0)
     {
         debug_c( 3, "received command", buffer[0]);
-        process_command(socket, buffer[0]);
+        process_command(buffer[0]);
     }
     close(socket);
 
@@ -222,9 +223,11 @@ void terminate_handler(int signum)
     exit(EXIT_SUCCESS);
 }
 
-void process_command(int socket, Command cmd)
+void process_command(Command cmd)
 {
     struct thread_data *data = pthread_getspecific(thread_data);
+    int socket = data->socket;
+
     u_int8_t reply[MAXRCVLEN];
 
     switch (cmd)
