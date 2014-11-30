@@ -9,7 +9,6 @@
 #include <unistd.h>
 #include <signal.h>
 #include <pthread.h>
-#include <sys/wait.h>
 #include <sys/types.h>
 #include <netinet/in.h>
 // For getting seed for random

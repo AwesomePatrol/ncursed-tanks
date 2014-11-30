@@ -5,7 +5,7 @@ struct thread_data
     pthread_t thread;
     int socket;
 
-    struct player player;
+    struct player *player;
     struct updates_queue updates;
 };
 
@@ -31,7 +31,7 @@ void *connection_thread(void *thr_i);
 void process_command(int socket, Command cmd);
 void all_uq_append(struct update p);
 
-struct player new_player(char *nickname);
+struct player *new_player(char *nickname);
 int new_player_x();
 
 void exit_cleanup(void);
@@ -94,6 +94,8 @@ void init_game(void)
 
     map_info.seed = rand();
     debug_d( 0, "map seed", map_info.seed);
+
+    map = generate_map(map_info);
 }
 
 void init_server(void)
@@ -185,8 +187,12 @@ void exit_cleanup(void)
         close(globals[i].socket);
         if (uq_is_nonempty(&globals[i].updates))
             uq_clear(&globals[i].updates);
-        if (globals[i].player.state)
-            free(globals[i].player.nickname);
+        if (globals[i].player)
+        {
+            if (globals[i].player->state)
+                free(globals[i].player->nickname);
+            free(globals[i].player);
+        }
     }
     close(server_socket);
 }
@@ -206,11 +212,13 @@ void process_command(int socket, Command cmd)
     switch (cmd)
     {
     case JOIN:
+        char *nickname = recv_string(socket);
+
         pthread_mutex_lock(&players_mutex);
-        globals[thr_i].player = new_player(recv_string(socket));
+        globals[thr_i].player = new_player(nickname);
         pthread_mutex_unlock(&players_mutex);
 
-        debug_s( 3, "new player", globals[thr_i].player.nickname);
+        debug_s( 3, "new player", globals[thr_i].player->nickname);
 
         reply[0] = JR_OK;
         sendall(socket, &reply, 1);
@@ -219,15 +227,15 @@ void process_command(int socket, Command cmd)
         all_uq_append(
             (struct update) {
                 .type = U_ADD_PLAYER,
-                .data = (update_data_t *)&globals[thr_i].player
+                .data = (update_data_t *)globals[thr_i].player
             });
+
+        break;
     case GET_MAP:
         debug_s( 0, "send map", "Received GET_MAP. Sending map...");
         /* TODO check sent length */
         struct map_info map_info_net = map_info_to_net(&map_info);
         sendall(socket, &map_info_net, sizeof(map_info_net));
-
-        map = generate_map(map_info);
 
         break;
     default:
@@ -235,17 +243,20 @@ void process_command(int socket, Command cmd)
     }
 }
 
-struct player new_player(char *nickname)
+struct player *new_player(char *nickname)
 {
     int player_x = new_player_x();
+    struct player *result = malloc(sizeof(*result));
 
-    return (struct player) {
+    *result = (struct player) {
         .nickname = nickname,
         .state = PS_WAIT,
         .hitpoints = INITIAL_HP,
         .pos_x = player_x,
         .pos_y = map[player_x] - 1,
     };
+
+    return result;
 }
 
 int new_player_x()
