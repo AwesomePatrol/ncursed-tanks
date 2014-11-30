@@ -14,6 +14,7 @@
 // For getting seed for random
 #include <time.h>
 
+#include "dyn_arr.h"
 #include "debug.h"
 #include "map_gen.h"
 #include "server_updates_queue.h"

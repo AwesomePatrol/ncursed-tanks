@@ -1,5 +1,4 @@
 #include "common.h"
-#include <stdlib.h>
 
 typedef short map_elt_t;
 typedef map_elt_t *map_t;
