@@ -274,17 +274,19 @@ struct client *new_client(char *nickname)
         .player = new_player(nickname),
         .updates = new_uq(),
     };
+
+    return result;
 }
 
 int new_client_id(void)
 {
-    player_id_counter++;
+    int result = player_id_counter++;
     if (player_id_counter == 0)
         debug_s( 5, "player id",
-"Player ID counter overflowed to the initial value! Hope that there won't be \
-collisions.");
+"Player ID counter overflowed to 0 (which is ! Hope there won't be collisions \
+when the next ID is needed.");
 
-    return player_id_counter;
+    return result;
 }
 
 struct player *new_player(char *nickname)

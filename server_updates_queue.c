@@ -2,7 +2,7 @@
 
 struct updates_queue *new_uq()
 {
-    struct updates_queue *result = malloc(sizeof(result));
+    struct updates_queue *result = malloc(sizeof(*result));
 
     *result = (struct updates_queue) {0};
 
