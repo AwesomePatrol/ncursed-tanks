@@ -16,7 +16,7 @@
 
 /* GLOBAL variables >>use extern? */
 typedef enum State {RENDER_SHOOT, MENU_SHOOT, WAIT, EXIT} State;
-struct map_info map_data;
+struct map_info *map_data;
 map_t g_map;
 extern int dx,dy;
 extern State state;

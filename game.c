@@ -10,7 +10,7 @@ int camera_move(char input_character)
                 dy--;
             break;
         case 'k':
-            if (dy < (map_data.height-LINES))
+            if (dy < (map_data->height-LINES))
                 dy++;
             break;
         case 'j':
@@ -18,7 +18,7 @@ int camera_move(char input_character)
                 dx--;
             break;
         case 'l':
-            if (dx < (map_data.length-COLS))
+            if (dx < (map_data->length-COLS))
                 dx++;
             break;
         default:

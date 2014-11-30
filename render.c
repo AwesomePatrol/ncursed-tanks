@@ -17,7 +17,7 @@ void draw_tank(int pos_x, int pos_y, int x, int y, int angle)
 void draw_map(map_t map, int pos_x, int pos_y, int width, int height)
 {
     int end = pos_x+width;
-    for (int i = pos_x; i < end && i < map_data.length; i++)
+    for (int i = pos_x; i < end && i < map_data->length; i++)
     {
         int yy = map[i]-pos_y;
         int xx = i-pos_x;

@@ -48,14 +48,6 @@ struct player
     int16_t pos_y;
 };
 
-struct player_net
-{
-    u_int8_t state;
-    int16_t  hitpoints;
-    int16_t  pos_x;
-    int16_t  pos_y;
-};
-
 struct map_info
 {
     u_int32_t seed;
@@ -78,20 +70,31 @@ struct update
     /* for U_MAP */
     int16_t x;
     int16_t new_height;
-}
+};
 
 
 int sendall(int socket, void *data, int len);
 int recvall(int socket, void *data, int len);
 
+/* the following send_* functions with return type int
+ * return 0 on success or -1 on error */
+
+int send_int8(int socket, int8_t i);
+int send_int16(int socket, int16_t i);
+int send_int32(int socket, int32_t i);
+
+int recv_int8(int socket, int8_t *i);
+int recv_int16(int socket, int16_t *i);
+int recv_int32(int socket, int32_t *i);
+
 int send_string(int socket, char *str);
 char *recv_string(int socket);
 
 
-struct map_info map_info_to_net(struct map_info *i);
-struct map_info map_info_from_net(struct map_info *i);
+int send_map_info(int socket, struct map_info *i);
+struct map_info *recv_map_info(int socket);
 
-struct player_net player_to_net(struct player *p);
-struct player     player_from_net(struct player_net *p);
+int send_player(int socket, struct player *p);
+struct player *recv_player(int socket);
 
 #endif /* COMMON_H */

@@ -45,6 +45,48 @@ int recvall(int socket, void *data, int len)
     return do_all(recv, socket, data, len, 1);
 }
 
+int send_int8(int socket, int8_t i)
+{
+    return sendall(socket, &i, sizeof(i));
+}
+
+int send_int16(int socket, int16_t i)
+{
+    i = htons(i);
+
+    return sendall(socket, &i, sizeof(i));
+}
+
+int send_int32(int socket, int32_t i)
+{
+    i = htonl(i);
+
+    return sendall(socket, &i, sizeof(i));
+}
+
+int recv_int8(int socket, int8_t *i)
+{
+    return recvall(socket, i, sizeof(*i));
+}
+
+int recv_int16(int socket, int16_t *i)
+{
+    int test = recvall(socket, i, sizeof(*i));
+
+    if (test != -1 && test != 0)
+        *i = htons(*i);
+    return test;
+}
+
+int recv_int32(int socket, int32_t *i)
+{
+    int test = recvall(socket, i, sizeof(*i));
+
+    if (test != -1 && test != 0)
+        *i = htonl(*i);
+    return test;
+}
+
 /* returns 0 on success, -1 on failure */
 int send_string(int socket, char *str)
 {
@@ -76,31 +118,60 @@ char *recv_string(int socket)
 }
 
 
-struct map_info map_info_to_net(struct map_info *i)
+int send_map_info(int socket, struct map_info *i)
 {
-    return
-        (struct map_info) {htonl(i->seed), htons(i->length), htons(i->height)};
+    if (send_int32(socket, i->seed) == -1   ||
+        send_int16(socket, i->length) == -1 ||
+        send_int16(socket, i->height) == -1)
+        return -1;
+    return 0;
 }
 
-struct map_info map_info_from_net(struct map_info *i)
+struct map_info *recv_map_info(int socket)
 {
-    return
-        (struct map_info) {ntohl(i->seed), ntohs(i->length), ntohs(i->height)};
+    struct map_info *result = malloc(sizeof(*result));
+    int test;
+
+    if ((test = recv_int32(socket, &result->seed)) == -1   || test == 0 ||
+        (test = recv_int16(socket, &result->length)) == -1 || test == 0 ||
+        (test = recv_int16(socket, &result->height)) == -1 || test == 0)
+    {
+        free(result);
+        return NULL;
+    }
+    return result;
 }
 
-struct player_net player_to_net(struct player *p)
+int send_player(int socket, struct player *p)
 {
-    /* trouble with signed shorts? */
-    return (struct player_net) {
-        p->state, htons(p->hitpoints),
-        htons(p->pos_x), htons(p->pos_y),
-            };
+    if (send_string(socket, p->nickname) == -1 ||
+        send_int8(socket, p->state) == -1      ||
+        send_int16(socket, p->hitpoints) == -1 ||
+        send_int16(socket, p->pos_x) == -1     ||
+        send_int16(socket, p->pos_y) == -1)
+        return -1;
+    return 0;
 }
 
-struct player player_from_net(struct player_net *p)
+struct player *recv_player(int socket)
 {
-    return (struct player) {
-        .state = ntohs(p->state), .hitpoints = ntohs(p->hitpoints),
-        .pos_x = ntohs(p->pos_x), .pos_y = ntohs(p->pos_y),
-            };
+    struct player *result = malloc(sizeof(*result));
+    int test;
+    u_int8_t state_net;
+
+    if ((result->nickname = recv_string(socket)) == NULL                   ||
+        /* problems with putting int8 into enum? */
+        (test = recv_int8(socket, &state_net)) == -1          || test == 0 ||
+        (test = recv_int16(socket, &result->hitpoints)) == -1 || test == 0 ||
+        (test = recv_int16(socket, &result->pos_x)) == -1     || test == 0 ||
+        (test = recv_int16(socket, &result->pos_y)) == -1     || test == 0)
+    {
+        free(result);
+        return NULL;
+    }
+    else
+    {
+        result->state = state_net;
+        return result;
+    }
 }

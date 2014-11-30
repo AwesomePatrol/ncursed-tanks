@@ -3,19 +3,17 @@
 /* fetch map from server and generate it */
 void fetch_map(int sock)
 {
-    sendall(sock, "M", 1);
-    struct map_info map_info_net;
-    recvall(sock, &map_info_net, sizeof(map_info_net));
-    map_data = map_info_from_net(&map_info_net);
+    send_int8(sock, GET_MAP);
+    map_data = recv_map_info(sock);
     g_map = generate_map(map_data);
 }
 
 int join_game(int sock, char *nickname)
 {
-    sendall(sock, "J", 1);
+    send_int8(sock, JOIN);
     send_string(sock, nickname);
     u_int8_t j_net;
-    recvall(sock, &j_net, 1);
+    recv_int8(sock, &j_net);
     JoinReply jr = j_net;
     switch (jr) {
         case JR_OK:

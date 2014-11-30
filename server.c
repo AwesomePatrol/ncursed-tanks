@@ -108,7 +108,7 @@ void init_game(void)
     map_info.seed = rand();
     debug_d( 0, "map seed", map_info.seed);
 
-    map = generate_map(map_info);
+    map = generate_map(&map_info);
 }
 
 void init_server(void)
@@ -180,7 +180,7 @@ void *connection_thread(void *thr_data)
 
     /* receive command - 1 char */
     /* process commands until disconnect */
-    while ((len = recvall(socket, buffer, 1)) != 0)
+    while ((len = recv_int8(socket, buffer)) != 0)
     {
         debug_c( 3, "received command", buffer[0]);
         process_command(buffer[0]);
@@ -228,8 +228,6 @@ void process_command(Command cmd)
     struct thread_data *data = pthread_getspecific(thread_data);
     int socket = data->socket;
 
-    u_int8_t reply[MAXRCVLEN];
-
     switch (cmd)
     {
     case JOIN:
@@ -241,23 +239,21 @@ void process_command(Command cmd)
 
         debug_s( 3, "new player", cl->player->nickname);
 
-        reply[0] = JR_OK;
-        sendall(socket, &reply, 1);
+        send_int8(socket, JR_OK);
 
         /* Notify all other clients of the new player */
         all_uq_append(
             (struct update) {
                 .type = U_ADD_PLAYER,
-                .data = (update_data_t *)cl->player
+                .player = *cl->player,
             });
 
         free(cl);
         break;
     case GET_MAP:
         debug_s( 0, "send map", "Received GET_MAP. Sending map...");
-        /* TODO check sent length */
-        struct map_info map_info_net = map_info_to_net(&map_info);
-        sendall(socket, &map_info_net, sizeof(map_info_net));
+        /* TODO check if sent */
+        send_map_info(socket, &map_info);
 
         break;
     default:

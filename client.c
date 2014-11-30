@@ -95,6 +95,7 @@ int main(int argc, char *argv[])
         }
     }
 
+    free(map_data);
     /* Close connection */
     close(cl_sock);
     endwin();
