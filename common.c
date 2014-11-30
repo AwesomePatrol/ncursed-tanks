@@ -74,7 +74,7 @@ int recv_int16(int socket, int16_t *i)
     int test = recvall(socket, i, sizeof(*i));
 
     if (test != -1 && test != 0)
-        *i = htons(*i);
+        *i = ntohs(*i);
     return test;
 }
 
@@ -83,7 +83,7 @@ int recv_int32(int socket, int32_t *i)
     int test = recvall(socket, i, sizeof(*i));
 
     if (test != -1 && test != 0)
-        *i = htonl(*i);
+        *i = ntohl(*i);
     return test;
 }
 
