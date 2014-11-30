@@ -9,6 +9,7 @@
 void debug_open(const char *filename);
 void debug_s(int lvl, const char *name, const char *str);
 void debug_d(int lvl, const char *name, long long dec);
+void debug_x(int lvl, const char *name, long long hex);
 void debug_c(int lvl, const char *name, char ch);
 
 void debug_errno(const char *name);

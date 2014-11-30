@@ -45,6 +45,16 @@ void debug_d(int lvl, const char *name, long long dec)
     debug_do(lvl, name, print);
 }
 
+void debug_x(int lvl, const char *name, long long hex)
+{
+    void print(void)
+    {
+        fprintf(debug_file, "%llx\n", hex);
+    }
+
+    debug_do(lvl, name, print);
+}
+
 void debug_c(int lvl, const char *name, char ch)
 {
     void print(void)
