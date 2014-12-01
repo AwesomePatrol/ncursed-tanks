@@ -1,7 +1,7 @@
 #include "client.h"
 
-int dx=0, dy=0;
-State state = WAIT;
+int dx = 0, dy = 0;
+u_int16_t players_size = 0; 
 
 void init_curses()
 {
@@ -76,7 +76,10 @@ int main(int argc, char *argv[])
     debug_d( 1, "lines", LINES);
     debug_d( 1, "columns", COLS);
 
-    while (state == WAIT)
+    /* following code exists only for testing purposes */
+    players[0].state = PS_WAIT; 
+
+    while (players[0].state)
     {
         clear();
         render_map();
@@ -87,13 +90,15 @@ int main(int argc, char *argv[])
         switch(input_ch)
         {
             case 'q':
-                state = EXIT;
+                players[0].state = PS_NO_PLAYER;
                 break;
             default:
                 /* in this case we shouldn't redraw the screen */
                 debug_c(1, "unsupported key", input_ch);
         }
+        fetch_changes(cl_sock);
     }
+    /* the end of tests */
 
     free(map_data);
     /* Close connection */
