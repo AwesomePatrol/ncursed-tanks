@@ -11,7 +11,7 @@ struct updates_queue *new_uq()
 
 void uq_append(struct updates_queue *q, struct update what)
 {
-    uq_elt_t *elt = malloc(sizeof(elt));
+    uq_elt_t *elt = malloc(sizeof(*elt));
     *elt = (uq_elt_t) { .value = what };
 
     debug_x( 0, "uq_append: elt", (long)elt);
@@ -42,8 +42,8 @@ void uq_clear(struct updates_queue *q)
     {
         next = cur->next;
         /* Temporary workaround in order not to crash */
-        //debug_x( 0, "uq_clear: freeing cur", (long)cur);
-        //free(cur);
+        debug_x( 0, "uq_clear: freeing cur", (long)cur);
+        free(cur);
     }
 
     q->first = q->last = NULL;

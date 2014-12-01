@@ -151,7 +151,7 @@ void server_listen(void)
     /* listen until terminated */
     while (1)
     {
-        struct thread_data *thr_data = malloc(sizeof(thr_data));
+        struct thread_data *thr_data = malloc(sizeof(*thr_data));
         thr_data->socket = accept(server_socket,
                                   (struct sockaddr *)&client_sa,
                                   &socksize);
@@ -159,6 +159,8 @@ void server_listen(void)
         if (!thr_data->socket)
         {
             debug_errno("accept");
+            debug_x( 0, "accept failed: freeing thread data", (long)thr_data);
+            free(thr_data);
             continue;
         }
 
@@ -176,22 +178,22 @@ void *connection_thread(void *thr_data)
     struct thread_data *data = pthread_getspecific(thread_data);
     int socket = data->socket;
 
-    char buffer[MAXRCVLEN];
+    char command;
     int len;
 
     /* receive command - 1 char */
     /* process commands until disconnect */
-    while ((len = recv_int8(socket, buffer)) != 0)
+    while ((len = recv_int8(socket, &command)) != 0)
     {
-        debug_c( 3, "received command", buffer[0]);
-        process_command(buffer[0]);
+        debug_c( 3, "received command", command);
+        process_command(command);
     }
     close(socket);
 
     /* TODO print (stored) client IP */
     debug_s( 3, "client closed connection", "");
 
-    debug_x( 0, "connection: freeing data", (long)data);
+    debug_x( 0, "connection: freeing thread data", (long)data);
     free(data);
 }
 
@@ -278,7 +280,7 @@ int new_client_id(void)
     int result = player_id_counter++;
     if (player_id_counter == 0)
         debug_s( 5, "player id",
-"Player ID counter overflowed to 0 (which is ! Hope there won't be collisions \
+"Player ID counter overflowed to 0! Hope there won't be collisions \
 when the next ID is needed.");
 
     return result;

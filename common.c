@@ -91,7 +91,7 @@ int recv_int32(int socket, int32_t *i)
 int send_string(int socket, char *str)
 {
     int16_t size = strlen(str) + 1;
-    if (sendall(socket, &size, sizeof(size)) == -1)
+    if (send_int16(socket, size) == -1)
         return -1;
     if (sendall(socket, str, size) == -1)
         return -1;
@@ -105,7 +105,7 @@ char *recv_string(int socket)
     int16_t size;
     char *str;
 
-    if ((received = recvall(socket, &size, sizeof(size))) == -1
+    if ((received = recv_int16(socket, &size)) == -1
         || received == 0)
         return NULL;
     /* TODO free */

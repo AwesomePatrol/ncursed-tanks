@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 #include "debug.h"
 
@@ -13,8 +14,7 @@ void debug_do(int lvl, const char *name, void (*action)(void))
 {
     if (DEBUG <= lvl) {
         time_t tmp = time(NULL);
-        struct tm *t;
-        t = localtime(&tmp);
+        struct tm *t = localtime(&tmp);
         char date[100];
         strftime(date, 100, "%F %T", t);
         fprintf(debug_file, "%s [%s] ", date, name);
