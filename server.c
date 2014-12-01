@@ -251,6 +251,7 @@ void process_command(Command cmd)
         send_int8(socket, JR_OK);
         debug_s( 3, "new player", nickname);
         cl = new_client(nickname);
+        data->client_id = cl->id;
         add_client(cl);
 
         /* Notify all other clients of the new player */
