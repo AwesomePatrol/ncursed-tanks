@@ -1,4 +1,6 @@
 #include "common.h"
+/* Assume debug_open() is already called */
+#include "debug.h"
 
 /* function pointer to send or recv */
 typedef ssize_t (*socket_io_fun)(int, void *, size_t, int);
@@ -179,13 +181,16 @@ int send_update(int socket, struct update *u)
     switch(u->type)
     {
     case U_EMPTY:
+        debug_s( 0, "send update: type", "U_EMPTY");
         break;
     case U_ADD_PLAYER: case U_PLAYER:
+        debug_s( 0, "send update: type", "U_[ADD_]PLAYER");
         if (send_player(socket, &u->player) == -1)
             return -1;
 
         break;
     case U_MAP:
+        debug_s( 0, "send update: type", "U_MAP");
         if (send_int16(socket, u->x) == -1          ||
             send_int16(socket, u->new_height) == -1)
             return -1;
