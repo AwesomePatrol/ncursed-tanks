@@ -21,27 +21,28 @@ int find_player(u_int16_t player_id)
 void fetch_changes(int sock)
 {
     send_int8(sock, GET_CHANGES);
-    struct update UpdateNet;
+    struct update *UpdateNet;
     do {
-        UpdateNet = *recv_update(sock);
-        switch (UpdateNet.type) {
+        UpdateNet = recv_update(sock);
+        switch (UpdateNet->type) {
             case U_EMPTY:
                 break;
             case U_MAP:
-                g_map[UpdateNet.x] = UpdateNet.new_height;
+                g_map[UpdateNet->x] = UpdateNet->new_height;
                 break;
             case U_ADD_PLAYER:
-                players[players_size] = UpdateNet.player;
+                players[players_size] = UpdateNet->player;
                 players_size++;
                 break;
             case U_PLAYER:
-                players[find_player(UpdateNet.player.id)] = UpdateNet.player;
+                players[find_player(UpdateNet->player.id)] = UpdateNet->player;
                 break;
             default:
-                debug_d(3, "GetChangesType", UpdateNet.type);
+                debug_d(3, "GetChangesType", UpdateNet->type);
         }
 
-    } while (UpdateNet.type);
+    } while (UpdateNet->type);
+    free(UpdateNet);
 }
 
 /* join the game and fetch map if successful */

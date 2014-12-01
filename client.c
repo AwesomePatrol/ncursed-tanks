@@ -77,8 +77,6 @@ int main(int argc, char *argv[])
     debug_d( 1, "columns", COLS);
 
     /* following code exists only for testing purposes */
-    players[0].state = PS_WAIT; 
-
     while (players[0].state)
     {
         clear();
