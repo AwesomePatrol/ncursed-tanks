@@ -101,17 +101,14 @@ int send_string(int socket, char *str)
 /* receive a string sent with send_string */
 char *recv_string(int socket)
 {
-    int received;
     int16_t size;
     char *str;
 
-    if ((received = recv_int16(socket, &size)) == -1
-        || received == 0)
+    if (recv_int16(socket, &size) <= 0)
         return NULL;
     /* TODO free */
     str = malloc(size);
-    if ((received = recvall(socket, str, size)) == -1
-        || received == 0)
+    if (recvall(socket, str, size) <= 0)
         return NULL;
 
     return str;
@@ -130,11 +127,10 @@ int send_map_info(int socket, struct map_info *i)
 struct map_info *recv_map_info(int socket)
 {
     struct map_info *result = malloc(sizeof(*result));
-    int test;
 
-    if ((test = recv_int32(socket, &result->seed)) == -1   || test == 0 ||
-        (test = recv_int16(socket, &result->length)) == -1 || test == 0 ||
-        (test = recv_int16(socket, &result->height)) == -1 || test == 0)
+    if (recv_int32(socket, &result->seed) <= 0   ||
+        recv_int16(socket, &result->length) <= 0 ||
+        recv_int16(socket, &result->height) <= 0)
     {
         free(result);
         return NULL;
@@ -144,8 +140,9 @@ struct map_info *recv_map_info(int socket)
 
 int send_player(int socket, struct player *p)
 {
-    if (send_string(socket, p->nickname) == -1 ||
-        send_int8(socket, p->state) == -1      ||
+    if (send_int8(socket, p->state) == -1      ||
+        send_int16(socket, p->id) == -1        ||
+        send_string(socket, p->nickname) == -1 ||
         send_int16(socket, p->hitpoints) == -1 ||
         send_int16(socket, p->pos_x) == -1     ||
         send_int16(socket, p->pos_y) == -1)
@@ -156,15 +153,14 @@ int send_player(int socket, struct player *p)
 struct player *recv_player(int socket)
 {
     struct player *result = malloc(sizeof(*result));
-    int test;
     u_int8_t state_net;
 
-    if ((result->nickname = recv_string(socket)) == NULL                   ||
-        /* problems with putting int8 into enum? */
-        (test = recv_int8(socket, &state_net)) == -1          || test == 0 ||
-        (test = recv_int16(socket, &result->hitpoints)) == -1 || test == 0 ||
-        (test = recv_int16(socket, &result->pos_x)) == -1     || test == 0 ||
-        (test = recv_int16(socket, &result->pos_y)) == -1     || test == 0)
+    if (recv_int8(socket, &state_net) <= 0               ||
+        recv_int16(socket, &result->id) <= 0             ||
+        (result->nickname = recv_string(socket)) == NULL ||
+        recv_int16(socket, &result->hitpoints) <= 0      ||
+        recv_int16(socket, &result->pos_x) <= 0          ||
+        recv_int16(socket, &result->pos_y) <= 0)
     {
         free(result);
         return NULL;
@@ -202,11 +198,10 @@ int send_update(int socket, struct update *u)
 struct update *recv_update(int socket)
 {
     struct update *result = malloc(sizeof(*result));
-    int test;
     int8_t type_net;
     struct player *player;
 
-    if ((test = recv_int8(socket, &type_net)) == -1 || test == 0)
+    if (recv_int8(socket, &type_net) <= 0)
         goto fail;
     result->type = type_net;
 
@@ -223,10 +218,8 @@ struct update *recv_update(int socket)
 
         break;
     case U_MAP:
-        if ((test = recv_int16(socket, &result->x))
-            == -1 || test == 0 ||
-            (test = recv_int16(socket, &result->new_height))
-            == -1 || test == 0)
+        if (recv_int16(socket, &result->x) <= 0          ||
+            recv_int16(socket, &result->new_height) <= 0)
             goto fail;
 
         break;

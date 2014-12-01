@@ -43,8 +43,9 @@ typedef enum PlayerState
 
 struct player
 {
-    char *nickname;
     PlayerState state;
+    int16_t id;
+    char *nickname;
     int16_t hitpoints;
     int16_t pos_x;
     int16_t pos_y;
