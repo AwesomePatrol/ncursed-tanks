@@ -230,12 +230,27 @@ void process_command(Command cmd)
         ; /* empty statement so that variable can be defined after label */
         char *nickname = recv_string(socket);
 
-        struct client *cl = new_client(nickname);
-        add_client(cl);
+        /* Check if the nickname already used */
+        pthread_mutex_lock(&clients_mutex);
+        for (int i = 0; i < clients.count; i++)
+        {
+            struct client *old_cl = dyn_arr_get(&clients, i);
 
-        debug_s( 3, "new player", cl->player->nickname);
+            if (old_cl->player->state &&
+                strcmp(old_cl->player->nickname, nickname) == 0)
+            {
+                debug_s( 3, "nickname taken", nickname);
+                send_int8(socket, JR_NICKNAME_TAKEN);
+                pthread_mutex_unlock(&clients_mutex);
+                return;
+            }
+        }
+        pthread_mutex_unlock(&clients_mutex);
 
         send_int8(socket, JR_OK);
+        debug_s( 3, "new player", nickname);
+        struct client *cl = new_client(nickname);
+        add_client(cl);
 
         /* Notify all other clients of the new player */
         all_uq_append(

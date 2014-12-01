@@ -31,7 +31,7 @@ typedef enum Command
 /* JR_GAME_IN_PROGRESS - not allowed to join because game already started */
 typedef enum JoinReply
 {
-    JR_OK, JR_GAME_IN_PROGRESS, JR_FORBIDDEN
+    JR_OK, JR_GAME_IN_PROGRESS, JR_NICKNAME_TAKEN, JR_FORBIDDEN
 } JoinReply;
 
 typedef enum PlayerState
