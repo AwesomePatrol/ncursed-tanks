@@ -223,6 +223,7 @@ void process_command(Command cmd)
 {
     struct thread_data *data = pthread_getspecific(thread_data);
     int socket = data->socket;
+    struct client *cl;
 
     switch (cmd)
     {
@@ -249,7 +250,7 @@ void process_command(Command cmd)
 
         send_int8(socket, JR_OK);
         debug_s( 3, "new player", nickname);
-        struct client *cl = new_client(nickname);
+        cl = new_client(nickname);
         add_client(cl);
 
         /* Notify all other clients of the new player */
@@ -264,9 +265,14 @@ void process_command(Command cmd)
     case GET_CHANGES:
         debug_s( 0, "send changes", "Sending changes to client...");
 
-        for (uq_elt_t *i = cl->updates->first; i != NULL; i = i->next)
-            send_update(socket, &i->value);
-        
+        cl = find_client(data->client_id);
+
+        /* Send updates queue */
+        send_uq(socket, cl->updates);
+
+        uq_clear(cl->updates);
+
+        break;
     case GET_MAP:
         debug_s( 0, "send map", "Received GET_MAP. Sending map...");
         /* TODO check if sent */
@@ -355,4 +361,25 @@ void add_client(struct client *cl)
     dyn_arr_append(&clients, cl);
 
     pthread_mutex_unlock(&clients_mutex);
+}
+
+struct client *find_client(int id)
+{
+    struct client *result = NULL;
+
+    pthread_mutex_lock(&clients_mutex);
+
+    for (int i = 0; i < clients.count; i++)
+    {
+        struct client *cl = dyn_arr_get(&clients, i);
+        if (cl->id == id)
+        {
+            result = cl;
+            break;
+        }
+    }
+
+    pthread_mutex_unlock(&clients_mutex);
+
+    return result;
 }

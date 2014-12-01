@@ -44,3 +44,21 @@ void uq_clear(struct updates_queue *q)
 
     q->first = q->last = NULL;
 }
+
+
+int send_uq(int socket, struct updates_queue *q)
+{
+    struct update end = (struct update) {
+        .type = U_EMPTY
+    };
+    /* Send all queue elements */
+    for (uq_elt_t *i = q->first; i != NULL; i = i->next)
+        if (send_update(socket, &i->value) == -1)
+            return -1;
+
+    /* Send an empty update to indicate end of list transmission */
+    if (send_update(socket, &end) == -1)
+        return -1;
+
+    return 0;
+}

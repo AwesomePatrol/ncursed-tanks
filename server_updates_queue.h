@@ -23,4 +23,6 @@ void uq_append(struct updates_queue *q, struct update what);
 int uq_is_nonempty(struct updates_queue *q);
 void uq_clear(struct updates_queue *q);
 
+int send_uq(int socket, struct updates_queue *q);
+
 #endif /* SERVER_UPDATES_QUEUE_H */
