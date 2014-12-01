@@ -4,8 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "debug.h"
-
 struct dyn_arr
 {
     size_t el_size;

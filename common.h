@@ -6,8 +6,6 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 
-#include "debug.h"
-
 #define PORTNUM 7979 /* Port Number */
 #define MAXRCVLEN 128 /* Maximal Length of Received Value */
 

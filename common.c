@@ -137,7 +137,6 @@ struct map_info *recv_map_info(int socket)
         (test = recv_int16(socket, &result->height)) == -1 || test == 0)
     {
         free(result);
-        debug_x( 0, "recv_map_info: freed", (long)result);
         return NULL;
     }
     return result;
@@ -168,7 +167,6 @@ struct player *recv_player(int socket)
         (test = recv_int16(socket, &result->pos_y)) == -1     || test == 0)
     {
         free(result);
-        debug_x( 0, "recv_player: freed", (long)result);
         return NULL;
     }
     else

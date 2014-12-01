@@ -4,7 +4,6 @@ void dyn_arr_clear(struct dyn_arr *arr)
 {
     arr->count = 0;
     free(arr->data);
-    debug_x( 0, "dyn_arr_clear: freed", (long)arr->data);
     arr->data = NULL;
 }
 

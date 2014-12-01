@@ -159,7 +159,6 @@ void server_listen(void)
         if (!thr_data->socket)
         {
             debug_errno("accept");
-            debug_x( 0, "accept failed: freeing thread data", (long)thr_data);
             free(thr_data);
             continue;
         }
@@ -193,14 +192,12 @@ void *connection_thread(void *thr_data)
     /* TODO print (stored) client IP */
     debug_s( 3, "client closed connection", "");
 
-    debug_x( 0, "connection: freeing thread data", (long)data);
     free(data);
 }
 
 void exit_cleanup(void)
 {
     free(map);
-    debug_x( 0, "terminate: freed map", (long)map);
     pthread_mutex_destroy(&clients_mutex);
     /* TODO close sockets from threads */
     /* for every player */
@@ -211,7 +208,6 @@ void exit_cleanup(void)
         free_client(cl);
     }
     dyn_arr_clear(&clients);
-    debug_s( 0, "dyn_arr_clear(&clients)", "Working");
 
     close(server_socket);
 }
@@ -249,7 +245,6 @@ void process_command(Command cmd)
             });
 
         free(cl);
-        debug_x( 0, "JOIN: freed", (long)cl);
         break;
     case GET_MAP:
         debug_s( 0, "send map", "Received GET_MAP. Sending map...");
@@ -312,13 +307,10 @@ void free_client(struct client *cl)
 {
     if (uq_is_nonempty(cl->updates))
         uq_clear(cl->updates);
-    debug_s( 0, "uq_clear(cl->updates)", "Working");
     if (cl->player)
     {
         free(cl->player->nickname);
-        debug_x( 0, "freed nickname", (long)cl->player->nickname);
         free(cl->player);
-        debug_x( 0, "freed player", (long)cl->player);
     }
 }
 
