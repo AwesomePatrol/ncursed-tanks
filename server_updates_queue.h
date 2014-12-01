@@ -5,7 +5,7 @@
 
 struct updates_queue_elt
 {
-    struct update cur;
+    struct update value;
 
     struct updates_queue_elt *next;
 };

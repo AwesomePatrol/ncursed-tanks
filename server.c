@@ -43,6 +43,7 @@ struct client *find_client(int id);
 
 struct client *new_client(char *nickname);
 int new_client_id(void);
+void free_client(struct client *cl);
 struct player *new_player(char *nickname);
 int new_player_x(void);
 
@@ -190,12 +191,14 @@ void *connection_thread(void *thr_data)
     /* TODO print (stored) client IP */
     debug_s( 3, "client closed connection", "");
 
+    debug_x( 0, "connection: freeing data", (long)data);
     free(data);
 }
 
 void exit_cleanup(void)
 {
     free(map);
+    debug_x( 0, "terminate: freed map", (long)map);
     pthread_mutex_destroy(&clients_mutex);
     /* TODO close sockets from threads */
     /* for every player */
@@ -203,15 +206,10 @@ void exit_cleanup(void)
     {
         struct client *cl = dyn_arr_get(&clients, i);
 
-        if (uq_is_nonempty(cl->updates))
-            uq_clear(cl->updates);
-        if (cl->player)
-        {
-            free(cl->player->nickname);
-            free(cl->player);
-        }
+        free_client(cl);
     }
     dyn_arr_clear(&clients);
+    debug_s( 0, "dyn_arr_clear(&clients)", "Working");
 
     close(server_socket);
 }
@@ -249,6 +247,7 @@ void process_command(Command cmd)
             });
 
         free(cl);
+        debug_x( 0, "JOIN: freed", (long)cl);
         break;
     case GET_MAP:
         debug_s( 0, "send map", "Received GET_MAP. Sending map...");
@@ -305,6 +304,20 @@ int new_player_x(void)
 {
     return MAP_NOTANK_MARGIN
         + rand() % (map_info.length - 2 * MAP_NOTANK_MARGIN);
+}
+
+void free_client(struct client *cl)
+{
+    if (uq_is_nonempty(cl->updates))
+        uq_clear(cl->updates);
+    debug_s( 0, "uq_clear(cl->updates)", "Working");
+    if (cl->player)
+    {
+        free(cl->player->nickname);
+        debug_x( 0, "freed nickname", (long)cl->player->nickname);
+        free(cl->player);
+        debug_x( 0, "freed player", (long)cl->player);
+    }
 }
 
 void all_uq_append(struct update upd)
