@@ -45,6 +45,12 @@ void uq_clear(struct updates_queue *q)
     q->first = q->last = NULL;
 }
 
+void free_uq(struct updates_queue *q)
+{
+    uq_clear(q);
+    free(q);
+}
+
 
 int send_uq(int socket, struct updates_queue *q)
 {

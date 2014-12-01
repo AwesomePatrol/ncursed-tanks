@@ -42,11 +42,12 @@ void *connection_thread(void *thr_data);
 void process_command(Command cmd);
 void all_uq_append(struct update p);
 void add_client(struct client *cl);
+void delete_cur_client();
 struct client *find_client(client_id_t id);
 
 struct client *new_client(char *nickname);
 client_id_t new_client_id(void);
-void free_client(struct client *cl);
+void clear_client(struct client *cl);
 struct player *new_player(char *nickname, client_id_t id);
 int new_player_x(void);
 
@@ -194,6 +195,9 @@ void *connection_thread(void *thr_data)
     /* TODO print (stored) client IP */
     debug_s( 3, "client closed connection", "");
 
+    /* provided that game not started */
+    delete_cur_client();
+
     free(data);
 }
 
@@ -207,7 +211,7 @@ void exit_cleanup(void)
     {
         struct client *cl = dyn_arr_get(&clients, i);
 
-        free_client(cl);
+        clear_client(cl);
     }
     dyn_arr_clear(&clients);
 
@@ -335,15 +339,12 @@ int new_player_x(void)
         + rand() % (map_info.length - 2 * MAP_NOTANK_MARGIN);
 }
 
-void free_client(struct client *cl)
+void clear_client(struct client *cl)
 {
     if (uq_is_nonempty(cl->updates))
-        uq_clear(cl->updates);
-    if (cl->player)
-    {
-        free(cl->player->nickname);
-        free(cl->player);
-    }
+        free_uq(cl->updates);
+    free(cl->player->nickname);
+    free(cl->player);
 }
 
 void all_uq_append(struct update upd)
@@ -364,6 +365,30 @@ void add_client(struct client *cl)
     pthread_mutex_lock(&clients_mutex);
 
     dyn_arr_append(&clients, cl);
+
+    pthread_mutex_unlock(&clients_mutex);
+}
+
+void delete_cur_client()
+{
+    struct thread_data *data = pthread_getspecific(thread_data);
+
+    pthread_mutex_lock(&clients_mutex);
+
+    struct client *cl = find_client(data->client_id);
+    if (cl)
+    {
+        cl->player->state = PS_NO_PLAYER;
+        /* Notify clients of the player being deleted */
+        debug_s( 3, "removing player", cl->player->nickname);
+        all_uq_append(
+            (struct update) {
+                .type = U_PLAYER,
+                .player = *cl->player,
+            });
+        clear_client(cl);
+        dyn_arr_delete(&clients, cl);
+    }
 
     pthread_mutex_unlock(&clients_mutex);
 }

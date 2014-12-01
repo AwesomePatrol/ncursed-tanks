@@ -22,6 +22,7 @@ struct updates_queue *new_uq();
 void uq_append(struct updates_queue *q, struct update what);
 int uq_is_nonempty(struct updates_queue *q);
 void uq_clear(struct updates_queue *q);
+void free_uq(struct updates_queue *q);
 
 int send_uq(int socket, struct updates_queue *q);
 
