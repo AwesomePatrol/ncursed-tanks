@@ -198,3 +198,42 @@ int send_update(int socket, struct update *u)
     }
     return 0;
 }
+
+struct update *recv_update(int socket)
+{
+    struct update *result = malloc(sizeof(*result));
+    int test;
+    int8_t type_net;
+    struct player *player;
+
+    if ((test = recv_int8(socket, &type_net)) == -1 || test == 0)
+        goto fail;
+    result->type = type_net;
+
+    switch(result->type)
+    {
+    case U_EMPTY:
+        break;
+    case U_ADD_PLAYER: case U_PLAYER:
+        if ((player = recv_player(socket)) == NULL)
+            goto fail;
+
+        result->player = *player;
+        free(player);
+
+        break;
+    case U_MAP:
+        if ((test = recv_int16(socket, &result->x))
+            == -1 || test == 0 ||
+            (test = recv_int16(socket, &result->new_height))
+            == -1 || test == 0)
+            goto fail;
+
+        break;
+    }
+
+    return result;
+fail:
+    free(result);
+    return NULL;
+}
