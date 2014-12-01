@@ -81,6 +81,7 @@ int main(int argc, char *argv[])
     {
         clear();
         render_map();
+        render_tanks();
         refresh();
         char input_ch = getch();
         if (camera_move(input_ch))

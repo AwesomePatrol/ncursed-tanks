@@ -40,9 +40,8 @@ void fetch_changes(int sock)
             default:
                 debug_d(3, "GetChangesType", UpdateNet->type);
         }
-
+        free(UpdateNet);
     } while (UpdateNet->type);
-    free(UpdateNet);
 }
 
 /* join the game and fetch map if successful */

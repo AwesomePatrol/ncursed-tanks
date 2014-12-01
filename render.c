@@ -27,6 +27,12 @@ void draw_map(map_t map, int pos_x, int pos_y, int width, int height)
     }
 }
 
+void render_tanks()
+{
+    for (int i=0; i<players_size; i++)
+        draw_tank(dx, dy, players[0].pos_x, players[0].pos_y, 0);
+}
+
 void render_map()
 {
     draw_map(g_map, dx, dy, COLS, LINES);

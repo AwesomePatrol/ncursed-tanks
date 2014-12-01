@@ -30,4 +30,8 @@ void fetch_map(int sock);
 void fetch_changes(int sock);
 int join_game(int sock, char *nickname);
 
+/* render.c */
+void render_map();
+void render_tanks();
+
 #endif /* CLIENT_H */
