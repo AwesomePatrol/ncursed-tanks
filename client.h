@@ -12,7 +12,6 @@
 #include "debug.h"
 #include "colors.h"
 #include "map_gen.h"
-#include "draw.h"
 
 /* GLOBAL variables >>use extern? */
 typedef enum State {RENDER_SHOOT, MENU_SHOOT, WAIT, EXIT} State;
@@ -31,6 +30,9 @@ void fetch_changes(int sock);
 int join_game(int sock, char *nickname);
 
 /* render.c */
+void put_col_str(Color color, int y, int x, const char *str);
+void draw_tank(Color color, int pos_x, int pos_y, int x, int y, int angle);
+void draw_map(map_t map, int pos_x, int pos_y, int width, int height);
 void render_map();
 void render_tanks();
 

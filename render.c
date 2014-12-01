@@ -1,17 +1,17 @@
 #include "client.h"
 
-void draw_tank(int pos_x, int pos_y, int x, int y, int angle)
+void draw_tank(Color color, int pos_x, int pos_y, int x, int y, int angle)
 {
     int xx = x-pos_x;
     int yy = y-pos_y;
     if (yy > 0 && yy < (LINES-1))
         if (xx > 0 && xx < (COLS-1))
-            put_col_str(COL_W, yy, xx-1, "<*>");
+            put_col_str(color, yy, xx-1, "<*>");
         else
             if (xx == 0)
-                put_col_str(COL_W, yy, xx, "*>");
+                put_col_str(color, yy, xx, "*>");
             else if (xx == (COLS-1))
-                put_col_str(COL_W, yy, xx-1, "<*");
+                put_col_str(color, yy, xx-1, "<*");
 }
 
 void draw_map(map_t map, int pos_x, int pos_y, int width, int height)
@@ -30,7 +30,8 @@ void draw_map(map_t map, int pos_x, int pos_y, int width, int height)
 void render_tanks()
 {
     for (int i=0; i<players_size; i++)
-        draw_tank(dx, dy, players[0].pos_x, players[0].pos_y, 0);
+        draw_tank( i == 0 ? COL_R : COL_W,
+                dx, dy, players[0].pos_x, players[0].pos_y, 0);
 }
 
 void render_map()
