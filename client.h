@@ -25,7 +25,8 @@ extern State state;
 int camera_move(char input_character);
 
 /* cl_proto.c */
-int join_game(int sock, char *nickname);
 void fetch_map(int sock);
+void fetch_changes(int sock);
+int join_game(int sock, char *nickname);
 
 #endif /* CLIENT_H */
