@@ -27,9 +27,6 @@ void init_curses()
 
 int main(int argc, char *argv[])
 {
-    /* Open debug_file */
-    debug_open("client.debug"); 
-
     /* Be sure we have proper arguments */
     if ( argc <= 2 || strlen(argv[1]) < 7
             || strlen(argv[2]) < 3)
@@ -37,7 +34,12 @@ int main(int argc, char *argv[])
         if (DEBUG <= 5) puts("Wrong command-line arguments!");
         return EXIT_FAILURE;
     }
-
+    
+    /* Open debug_file */
+    char *debug_filename = malloc(strlen(argv[2])+strlen(".debug")+1);
+    strcpy(debug_filename, argv[2]);
+    strcat(debug_filename, ".debug");
+    debug_open(debug_filename);
     
     /* Get connection to server */
     int cl_sock;

@@ -30,12 +30,12 @@ void fetch_changes(int sock)
                 g_map[UpdateNet->x] = UpdateNet->new_height;
                 break;
             case U_ADD_PLAYER:
-                debug_s(1, "Update", "player add");
+                debug_s(1, "AddPlayer", UpdateNet->player.nickname);
                 players[players_size] = UpdateNet->player;
                 players_size++;
                 break;
             case U_PLAYER:
-                debug_s(1, "Update", "player");
+                debug_s(1, "UpdatePlayer", UpdateNet->player.nickname);
                 players[find_player(UpdateNet->player.id)] = UpdateNet->player;
                 break;
             default:
