@@ -44,6 +44,7 @@ void all_uq_append(struct update p);
 void add_client(struct client *cl);
 void delete_cur_client();
 struct client *find_client(client_id_t id);
+struct client *find_client_by_nickname(char *nickname);
 
 struct client *new_client(char *nickname);
 client_id_t new_client_id(void);
@@ -239,25 +240,25 @@ void process_command(Command cmd)
 
         /* Check if the nickname already used */
         pthread_mutex_lock(&clients_mutex);
-        for (int i = 0; i < clients.count; i++)
+        if (find_client_by_nickname(nickname))
         {
-            struct client *old_cl = dyn_arr_get(&clients, i);
-
-            if (old_cl->player->state &&
-                strcmp(old_cl->player->nickname, nickname) == 0)
-            {
-                debug_s( 3, "nickname taken", nickname);
-                send_int8(socket, JR_NICKNAME_TAKEN);
-                pthread_mutex_unlock(&clients_mutex);
-                return;
-            }
+            pthread_mutex_unlock(&clients_mutex);
+            debug_s( 3, "nickname taken", nickname);
+            send_int8(socket, JR_NICKNAME_TAKEN);
+            return;
         }
         pthread_mutex_unlock(&clients_mutex);
+        /* Possible race condition when another client with this nickname
+         * connects now. There would be 2 clients with the same nickname
+         * in this case
+         */
 
         send_int8(socket, JR_OK);
         debug_s( 3, "new player", nickname);
         cl = new_client(nickname);
         data->client_id = cl->id;
+
+        pthread_mutex_lock(&clients_mutex);
         add_client(cl);
 
         /* Notify all other clients of the new player */
@@ -266,6 +267,7 @@ void process_command(Command cmd)
                 .type = U_ADD_PLAYER,
                 .player = *cl->player,
             });
+        pthread_mutex_unlock(&clients_mutex);
 
         free(cl);
         break;
@@ -349,24 +351,16 @@ void clear_client(struct client *cl)
 
 void all_uq_append(struct update upd)
 {
-    pthread_mutex_lock(&clients_mutex);
-
     for (int i = 0; i < clients.count; i++)
     {
         struct client *cl = dyn_arr_get(&clients, i);
         uq_append(cl->updates, upd);
     }
-
-    pthread_mutex_unlock(&clients_mutex);
 }
 
 void add_client(struct client *cl)
 {
-    pthread_mutex_lock(&clients_mutex);
-
     dyn_arr_append(&clients, cl);
-
-    pthread_mutex_unlock(&clients_mutex);
 }
 
 void delete_cur_client()
@@ -393,23 +387,35 @@ void delete_cur_client()
     pthread_mutex_unlock(&clients_mutex);
 }
 
-struct client *find_client(client_id_t id)
+struct client *find_client_by(int (*test)(struct client *))
 {
-    struct client *result = NULL;
-
-    pthread_mutex_lock(&clients_mutex);
-
     for (int i = 0; i < clients.count; i++)
     {
         struct client *cl = dyn_arr_get(&clients, i);
-        if (cl->id == id)
+        if (test(cl))
         {
-            result = cl;
-            break;
+            return cl;
         }
     }
+    return NULL;
+}
 
-    pthread_mutex_unlock(&clients_mutex);
+struct client *find_client(client_id_t id)
+{
+    int test(struct client *cl)
+    {
+        return cl->id == id;
+    }
 
-    return result;
+    return find_client_by(test);
+}
+
+struct client *find_client_by_nickname(char *nickname)
+{
+    int test(struct client *cl)
+    {
+        return strcmp(cl->player->nickname, nickname) == 0;
+    }
+
+    return find_client_by(test);
 }
