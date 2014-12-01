@@ -131,6 +131,18 @@ void process_command(Command cmd)
                 .type = U_ADD_PLAYER,
                 .player = *cl->player,
             });
+
+        /* Add all existing players to updates queue */
+        for (int i = 0; i < clients.count; i++)
+        {
+            struct client *cl = dyn_arr_get(&clients, i);
+            all_uq_append(
+                (struct update) {
+                    .type = U_ADD_PLAYER,
+                    .player = *cl->player,
+                });
+        }
+
         pthread_mutex_unlock(&clients_mutex);
 
         free(cl);
