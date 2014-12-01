@@ -67,7 +67,7 @@ typedef enum UpdateType
 
 struct update
 {
-    /* UpdateType */ u_int8_t type;
+    UpdateType type;
     union
     {
         /* for U_[ADD_]PLAYER */
