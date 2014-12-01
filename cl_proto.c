@@ -22,26 +22,27 @@ void fetch_changes(int sock)
 {
     send_int8(sock, GET_CHANGES);
     struct update *UpdateNet;
-    do {
-        UpdateNet = recv_update(sock);
+    while ((UpdateNet = recv_update(sock)) &&
+            UpdateNet->type) {
         switch (UpdateNet->type) {
-            case U_EMPTY:
-                break;
             case U_MAP:
+                debug_s(1, "Update", "map");
                 g_map[UpdateNet->x] = UpdateNet->new_height;
                 break;
             case U_ADD_PLAYER:
+                debug_s(1, "Update", "player add");
                 players[players_size] = UpdateNet->player;
                 players_size++;
                 break;
             case U_PLAYER:
+                debug_s(1, "Update", "player");
                 players[find_player(UpdateNet->player.id)] = UpdateNet->player;
                 break;
             default:
                 debug_d(3, "GetChangesType", UpdateNet->type);
         }
         free(UpdateNet);
-    } while (UpdateNet->type);
+    }
 }
 
 /* join the game and fetch map if successful */
@@ -54,6 +55,7 @@ int join_game(int sock, char *nickname)
     JoinReply jr = j_net;
     switch (jr) {
         case JR_OK:
+            debug_s(1, "ClientName", nickname);
             fetch_map(sock);
             fetch_changes(sock);
             break;
