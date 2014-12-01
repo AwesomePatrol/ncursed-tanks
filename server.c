@@ -261,6 +261,12 @@ void process_command(Command cmd)
 
         free(cl);
         break;
+    case GET_CHANGES:
+        debug_s( 0, "send changes", "Sending changes to client...");
+
+        for (uq_elt_t *i = cl->updates->first; i != NULL; i = i->next)
+            send_update(socket, &i->value);
+        
     case GET_MAP:
         debug_s( 0, "send map", "Received GET_MAP. Sending map...");
         /* TODO check if sent */

@@ -175,3 +175,26 @@ struct player *recv_player(int socket)
         return result;
     }
 }
+
+int send_update(int socket, struct update *u)
+{
+    if (send_int8(socket, u->type) == -1)
+        return -1;
+    switch(u->type)
+    {
+    case U_EMPTY:
+        break;
+    case U_ADD_PLAYER: case U_PLAYER:
+        if (send_player(socket, &u->player) == -1)
+            return -1;
+
+        break;
+    case U_MAP:
+        if (send_int16(socket, u->x) == -1          ||
+            send_int16(socket, u->new_height) == -1)
+            return -1;
+
+        break;
+    }
+    return 0;
+}

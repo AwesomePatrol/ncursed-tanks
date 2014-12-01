@@ -21,7 +21,9 @@
  * GET_MAP        none                struct map_info
  * SHOOT          (direction, force)  target_point
  *   \- game started, state == PS_SHOOT
- * GET_CHANGES    none                list(update)
+ * GET_CHANGES    none                list(struct update)
+ * 
+ * list(X) means sending receiving a series of X with an empty X in the end.
  */
 typedef enum Command
 {
@@ -57,19 +59,26 @@ struct map_info
 
 /**** Game updates sent by server ****/
 
+/* U_EMPTY -- end of updates -- no pending updates left */
 typedef enum UpdateType
 {
-    U_MAP, U_ADD_PLAYER, U_PLAYER,
+    U_EMPTY = 0, U_MAP, U_ADD_PLAYER, U_PLAYER,
 } UpdateType;
 
 struct update
 {
     /* UpdateType */ u_int8_t type;
-    /* for U_[ADD_]PLAYER */
-    struct player player;
-    /* for U_MAP */
-    int16_t x;
-    int16_t new_height;
+    union
+    {
+        /* for U_[ADD_]PLAYER */
+        struct player player;
+        /* for U_MAP */
+        struct
+        {
+            int16_t x;
+            int16_t new_height;
+        };
+    };
 };
 
 
@@ -96,5 +105,8 @@ struct map_info *recv_map_info(int socket);
 
 int send_player(int socket, struct player *p);
 struct player *recv_player(int socket);
+
+int send_update(int socket, struct update *u);
+struct update *recv_update(int socket);
 
 #endif /* COMMON_H */
