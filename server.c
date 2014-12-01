@@ -1,16 +1,19 @@
 #include "server.h"
 
+/* type of (struct player).id */
+typedef __typeof__((struct player) {0}.id) client_id_t;
+
 struct thread_data
 {
     pthread_t thread;
     int socket;
 
-    int client_id;
+    client_id_t client_id;
 };
 
 struct client
 {
-    int id;
+    client_id_t id;
     struct player *player;
     struct updates_queue *updates;
 };
@@ -19,7 +22,7 @@ pthread_key_t thread_data;
 pthread_mutex_t clients_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 struct dyn_arr clients = { sizeof(struct client) };
-int player_id_counter = 0;
+client_id_t player_id_counter = 0;
 
 int server_socket; /* socket used to listen for incoming connections */
 /* socket info about the machine connecting to us */
@@ -39,12 +42,12 @@ void *connection_thread(void *thr_data);
 void process_command(Command cmd);
 void all_uq_append(struct update p);
 void add_client(struct client *cl);
-struct client *find_client(int id);
+struct client *find_client(client_id_t id);
 
 struct client *new_client(char *nickname);
-int new_client_id(void);
+client_id_t new_client_id(void);
 void free_client(struct client *cl);
-struct player *new_player(char *nickname);
+struct player *new_player(char *nickname, client_id_t id);
 int new_player_x(void);
 
 void exit_cleanup(void);
@@ -178,11 +181,10 @@ void *connection_thread(void *thr_data)
     int socket = data->socket;
 
     char command;
-    int len;
 
     /* receive command - 1 char */
     /* process commands until disconnect */
-    while ((len = recv_int8(socket, &command)) != 0)
+    while (recv_int8(socket, &command) != 0)
     {
         debug_c( 3, "received command", command);
         process_command(command);
@@ -288,19 +290,20 @@ void process_command(Command cmd)
 struct client *new_client(char *nickname)
 {
     struct client *result = malloc(sizeof(*result));
+    client_id_t id = new_client_id();
 
     *result = (struct client) {
-        .id = new_client_id(),
-        .player = new_player(nickname),
+        .id = id,
+        .player = new_player(nickname, id),
         .updates = new_uq(),
     };
 
     return result;
 }
 
-int new_client_id(void)
+client_id_t new_client_id(void)
 {
-    int result = player_id_counter++;
+    client_id_t result = player_id_counter++;
     if (player_id_counter == 0)
         debug_s( 5, "player id",
 "Player ID counter overflowed to 0! Hope there won't be collisions \
@@ -309,14 +312,15 @@ when the next ID is needed.");
     return result;
 }
 
-struct player *new_player(char *nickname)
+struct player *new_player(char *nickname, client_id_t id)
 {
     int player_x = new_player_x();
     struct player *result = malloc(sizeof(*result));
 
     *result = (struct player) {
-        .nickname = nickname,
         .state = PS_WAIT,
+        .id = id,
+        .nickname = nickname,
         .hitpoints = INITIAL_HP,
         .pos_x = player_x,
         .pos_y = map[player_x] - 1,
@@ -364,7 +368,7 @@ void add_client(struct client *cl)
     pthread_mutex_unlock(&clients_mutex);
 }
 
-struct client *find_client(int id)
+struct client *find_client(client_id_t id)
 {
     struct client *result = NULL;
 

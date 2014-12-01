@@ -87,7 +87,7 @@ int sendall(int socket, void *data, int len);
 int recvall(int socket, void *data, int len);
 
 /* the following send_* functions with return type int
- * return 0 on success or -1 on error */
+ * return -1 on failure */
 
 int send_int8(int socket, int8_t i);
 int send_int16(int socket, int16_t i);
