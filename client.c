@@ -1,6 +1,7 @@
 #include "client.h"
 
 int dx = 0, dy = 0;
+int angle = 90, power = 50;
 u_int16_t players_size = 0; 
 
 void init_curses()

@@ -17,7 +17,8 @@
 typedef enum State {RENDER_SHOOT, MENU_SHOOT, WAIT, EXIT} State;
 struct map_info *map_data;
 map_t g_map;
-extern int dx,dy;
+extern int dx, dy;
+extern int angle, power;
 struct player players[MAX_PLAYERS];
 extern u_int16_t players_size;
 

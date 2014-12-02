@@ -5,7 +5,7 @@ pthread_mutex_t clients_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 struct dyn_arr clients = { sizeof(struct client) };
 
-struct map_info map_info = {.length = 80, .height = 24};
+struct map_info map_info = {.length = 160, .height = 36};
 map_t map = NULL;
 
 client_id_t player_id_counter = 0;

@@ -27,6 +27,28 @@ void draw_map(map_t map, int pos_x, int pos_y, int width, int height)
     }
 }
 
+void draw_shoot_menu()
+{
+    attron(COLOR_PAIR((int) COL_W));
+    /* print values to the screen, add spaces to overwrite previous values */
+    mvprintw(2, 2, "ANGLE: %d   ", angle);
+    mvprintw(4, 2, "POWER: %d   ", power);
+    attroff(COLOR_PAIR((int) COL_W));
+}
+
+void draw_stats()
+{
+    attron(COLOR_PAIR((int) COL_R));
+    mvprintw(2, COLS-strlen(players[0].nickname)-6,
+            "%s:%d    ", players[0].nickname, players[0].hitpoints);
+    attroff(COLOR_PAIR((int) COL_R));
+    attron(COLOR_PAIR((int) COL_W));
+    for (int i=1; i<players_size; i++)
+        mvprintw(2 + 2*i, COLS-strlen(players[i].nickname)-6,
+                "%s:%d    ", players[i].nickname, players[i].hitpoints);
+    attroff(COLOR_PAIR((int) COL_W));
+}
+
 void render_tanks()
 {
     for (int i=0; i<players_size; i++)

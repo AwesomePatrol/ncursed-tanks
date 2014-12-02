@@ -41,7 +41,11 @@ void fetch_changes(int sock)
                     break;
                 case U_PLAYER:
                     debug_s(1, "UpdatePlayer", UpdateNet->player.nickname);
-                    players[find_player(UpdateNet->player.id)] = UpdateNet->player;
+                    int play_u_i = find_player(UpdateNet->player.id);
+                    if (play_u_i >= 0)
+                        players[play_u_i] = UpdateNet->player;
+                    else
+                        debug_s(1, "UpdatePlayer", "wrong id");
                     break;
                 default:
                     debug_d(3, "GetChangesType", UpdateNet->type);
