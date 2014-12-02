@@ -81,6 +81,7 @@ int main(int argc, char *argv[])
     debug_d( 1, "columns", COLS);
 
     /* following code exists only for testing purposes */
+    int input_ch;
     while (players[0].state)
     {
         fetch_changes(cl_sock);
@@ -89,7 +90,7 @@ int main(int argc, char *argv[])
         render_tanks();
         draw_stats();
         refresh();
-        char input_ch = getch();
+        input_ch = getch();
         if (camera_move(input_ch))
             continue;
         switch(input_ch)

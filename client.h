@@ -23,7 +23,8 @@ struct player players[MAX_PLAYERS];
 extern u_int16_t players_size;
 
 /* game.c */
-int camera_move(char input_character);
+int camera_move(int input_character);
+int shoot_menu(int input_character);
 
 /* cl_proto.c */
 void fetch_map(int sock);

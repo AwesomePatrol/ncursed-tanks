@@ -1,7 +1,9 @@
 #include "client.h"
 
+#define MAX_POWER 100
+
 /* move camera using i,k,j,l keys */
-int camera_move(char input_character)
+int camera_move(int input_character)
 {
     switch (input_character)
     {
@@ -26,5 +28,27 @@ int camera_move(char input_character)
     }
     debug_d(1, "dx", dx);
     debug_d(1, "dy", dx);
+    return 1;
+}
+
+int shoot_menu(int input_character)
+{
+    switch (input_character)
+    {
+        case KEY_UP:
+            if (power < MAX_POWER) power++;
+            break;
+        case KEY_DOWN:
+            if (power > 0) power--;
+            break;
+        case KEY_RIGHT:
+            if (angle > 0) angle--;
+            break;
+        case KEY_LEFT:
+            if (angle < 180) angle++;
+            break;
+        default:
+            return 0;
+    }
     return 1;
 }

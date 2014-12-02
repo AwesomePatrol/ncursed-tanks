@@ -52,7 +52,7 @@ void draw_stats()
 void render_tanks()
 {
     for (int i=0; i<players_size; i++)
-        draw_tank( i == 0 ? COL_R : COL_W,
+        draw_tank( i == 0 ? COL_W : COL_Y,
                 dx, dy, players[i].pos_x, players[i].pos_y, 0);
 }
 
