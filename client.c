@@ -81,6 +81,7 @@ int main(int argc, char *argv[])
     /* following code exists only for testing purposes */
     while (players[0].state)
     {
+        fetch_changes(cl_sock);
         clear();
         render_map();
         render_tanks();
@@ -97,7 +98,6 @@ int main(int argc, char *argv[])
                 /* in this case we shouldn't redraw the screen */
                 debug_c(1, "unsupported key", input_ch);
         }
-        fetch_changes(cl_sock);
     }
     /* the end of tests */
 

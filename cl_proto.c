@@ -14,7 +14,7 @@ int find_player(u_int16_t player_id)
     for (int i=0; i<players_size; i++)
         if (player_id == players[i].id)
             return i;
-    return 0; /* returns local player in case not found */
+    return -1; /* returns -1 case not found */
 }
 
 /* fetch changes and apply them */
@@ -22,26 +22,36 @@ void fetch_changes(int sock)
 {
     send_int8(sock, GET_CHANGES);
     struct update *UpdateNet;
-    while ((UpdateNet = recv_update(sock)) &&
-            UpdateNet->type) {
-        switch (UpdateNet->type) {
-            case U_MAP:
-                debug_s(1, "Update", "map");
-                g_map[UpdateNet->x] = UpdateNet->new_height;
-                break;
-            case U_ADD_PLAYER:
-                debug_s(1, "AddPlayer", UpdateNet->player.nickname);
-                players[players_size] = UpdateNet->player;
-                players_size++;
-                break;
-            case U_PLAYER:
-                debug_s(1, "UpdatePlayer", UpdateNet->player.nickname);
-                players[find_player(UpdateNet->player.id)] = UpdateNet->player;
-                break;
-            default:
-                debug_d(3, "GetChangesType", UpdateNet->type);
+    while (UpdateNet = recv_update(sock)) {
+        if (UpdateNet->type) {
+            switch (UpdateNet->type) {
+                case U_MAP:
+                    debug_s(1, "Update", "map");
+                    g_map[UpdateNet->x] = UpdateNet->new_height;
+                    break;
+                case U_ADD_PLAYER:
+                    debug_s(1, "AddPlayer", UpdateNet->player.nickname);
+                    int play_i = find_player(UpdateNet->player.id);
+                    if (players_size > 0 && play_i >= 0)
+                            players[play_i] = UpdateNet->player;
+                    else {
+                        players[players_size] = UpdateNet->player;
+                        players_size++;
+                    }
+                    break;
+                case U_PLAYER:
+                    debug_s(1, "UpdatePlayer", UpdateNet->player.nickname);
+                    players[find_player(UpdateNet->player.id)] = UpdateNet->player;
+                    break;
+                default:
+                    debug_d(3, "GetChangesType", UpdateNet->type);
+            }
+            free(UpdateNet);
         }
-        free(UpdateNet);
+        else {
+            free(UpdateNet);
+            break;
+        }
     }
 }
 
