@@ -24,7 +24,11 @@ extern u_int16_t players_size;
 
 /* game.c */
 int camera_move(int input_character);
-int shoot_menu(int input_character);
+int quit_key(int input_character);
+void shoot();
+int shoot_menu(int input_character, int sock);
+void shoot_menu_scene(int sock);
+void wait_scene(int sock);
 
 /* cl_proto.c */
 void fetch_map(int sock);

@@ -80,30 +80,11 @@ int main(int argc, char *argv[])
     debug_d( 1, "lines", LINES);
     debug_d( 1, "columns", COLS);
 
-    /* following code exists only for testing purposes */
-    int input_ch;
     while (players[0].state)
     {
-        fetch_changes(cl_sock);
-        clear();
-        render_map();
-        render_tanks();
-        draw_stats();
-        refresh();
-        input_ch = getch();
-        if (camera_move(input_ch))
-            continue;
-        switch(input_ch)
-        {
-            case 'q':
-                players[0].state = PS_NO_PLAYER;
-                break;
-            default:
-                /* in this case we shouldn't redraw the screen */
-                debug_c(1, "unsupported key", input_ch);
-        }
+        wait_scene(cl_sock);
+        shoot_menu_scene(cl_sock);
     }
-    /* the end of tests */
 
     free(map_data);
     /* Close connection */
