@@ -1,7 +1,7 @@
 #include "client.h"
 
 /* fetch map from server and generate it */
-void fetch_map(int sock)
+void fetch_map()
 {
     send_int8(sock, GET_MAP);
     map_data = recv_map_info(sock);
@@ -18,7 +18,7 @@ int find_player(u_int16_t player_id)
 }
 
 /* fetch changes and apply them */
-void fetch_changes(int sock)
+void fetch_changes()
 {
     send_int8(sock, GET_CHANGES);
     struct update *UpdateNet;
@@ -60,7 +60,7 @@ void fetch_changes(int sock)
 }
 
 /* join the game and fetch map if successful */
-int join_game(int sock, char *nickname)
+int join_game(char *nickname)
 {
     send_int8(sock, JOIN);
     send_string(sock, nickname);

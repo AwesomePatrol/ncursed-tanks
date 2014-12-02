@@ -70,8 +70,11 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
     
+    /* for now on we use sock (a global variable) instead of cl_sock */
+    sock = cl_sock;
+    
     /* join_game */
-    if (join_game(cl_sock, argv[2]) < 0)
+    if (join_game(argv[2]) < 0)
         return EXIT_FAILURE;/* some errors occured */
 
     /* Init ncurses */
@@ -82,8 +85,8 @@ int main(int argc, char *argv[])
 
     while (players[0].state)
     {
-        wait_scene(cl_sock);
-        shoot_menu_scene(cl_sock);
+        wait_scene();
+        shoot_menu_scene();
     }
 
     free(map_data);

@@ -31,7 +31,7 @@ int camera_move(int input_character)
     return 1;
 }
 
-void shoot(int sock)
+void shoot()
 {
     /*
     send_shoot(int sock);
@@ -55,7 +55,7 @@ int quit_key(int input_character)
     return 0;
 }
 /* manage up,down,lef,right keys in shoot_menu */
-int shoot_menu(int input_character, int sock)
+int shoot_menu(int input_character)
 {
     switch (input_character)
     {
@@ -72,7 +72,7 @@ int shoot_menu(int input_character, int sock)
             if (angle < 180) angle++;
             break;
         case KEY_ENTER:
-            shoot(sock);
+            shoot();
             break;
         default:
             return 0;
@@ -80,30 +80,30 @@ int shoot_menu(int input_character, int sock)
     return 1;
 }
 
-void shoot_menu_scene(int sock)
+void shoot_menu_scene()
 {
     int input_ch;
     while (players[0].state == PS_SHOOT)
     {
-        fetch_changes(sock);
+        fetch_changes();
         clear();
         render_map();
         render_tanks();
         draw_stats();
         refresh();
         input_ch = getch();
-        if (camera_move(input_ch) || shoot_menu(input_ch, sock))
+        if (camera_move(input_ch) || shoot_menu(input_ch))
             continue;
         quit_key(input_ch);
     }
 }
 
-void wait_scene(int sock)
+void wait_scene()
 {
     int input_ch;
     while (players[0].state == PS_WAIT)
     {
-        fetch_changes(sock);
+        fetch_changes();
         clear();
         render_map();
         render_tanks();

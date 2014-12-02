@@ -21,19 +21,20 @@ extern int dx, dy;
 extern int angle, power;
 struct player players[MAX_PLAYERS];
 extern u_int16_t players_size;
+int sock;
 
 /* game.c */
 int camera_move(int input_character);
 int quit_key(int input_character);
 void shoot();
-int shoot_menu(int input_character, int sock);
-void shoot_menu_scene(int sock);
-void wait_scene(int sock);
+int shoot_menu(int input_character);
+void shoot_menu_scene();
+void wait_scene();
 
 /* cl_proto.c */
-void fetch_map(int sock);
-void fetch_changes(int sock);
-int join_game(int sock, char *nickname);
+void fetch_map();
+void fetch_changes();
+int join_game(char *nickname);
 
 /* draw.c */
 void put_col_str(Color color, int y, int x, const char *str);
