@@ -31,22 +31,22 @@ void draw_shoot_menu()
 {
     attron(COLOR_PAIR((int) COL_W));
     /* print values to the screen, add spaces to overwrite previous values */
-    mvprintw(2, 2, "ANGLE: %d   ", angle);
-    mvprintw(4, 2, "POWER: %d   ", power);
+    mvprintw(1, 2, "ANGLE: %d   ", angle);
+    mvprintw(2, 2, "POWER: %d   ", power);
     attroff(COLOR_PAIR((int) COL_W));
 }
 
 void draw_stats()
 {
-    attron(COLOR_PAIR((int) COL_R));
-    mvprintw(2, COLS-strlen(players[0].nickname)-6,
-            "%s:%d    ", players[0].nickname, players[0].hitpoints);
-    attroff(COLOR_PAIR((int) COL_R));
     attron(COLOR_PAIR((int) COL_W));
-    for (int i=1; i<players_size; i++)
-        mvprintw(2 + 2*i, COLS-strlen(players[i].nickname)-6,
-                "%s:%d    ", players[i].nickname, players[i].hitpoints);
+    mvprintw(1, COLS-strlen(players[0].nickname)-6,
+            "%s:%d    ", players[0].nickname, players[0].hitpoints);
     attroff(COLOR_PAIR((int) COL_W));
+    attron(COLOR_PAIR((int) COL_Y));
+    for (int i=1; i<players_size; i++)
+        mvprintw(1+i, COLS-strlen(players[i].nickname)-6,
+                "%s:%d    ", players[i].nickname, players[i].hitpoints);
+    attroff(COLOR_PAIR((int) COL_Y));
 }
 
 void render_tanks()

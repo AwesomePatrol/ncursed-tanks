@@ -23,6 +23,7 @@ void init_curses()
     init_pair(COL_G, COLOR_GREEN, -1);
     init_pair(COL_C, COLOR_CYAN, -1);
     init_pair(COL_M, COLOR_MAGENTA, -1);
+    init_pair(COL_Y, COLOR_YELLOW, -1);
     init_pair(COL_B, -1, -1);
 }
 
@@ -86,6 +87,7 @@ int main(int argc, char *argv[])
         clear();
         render_map();
         render_tanks();
+        draw_stats();
         refresh();
         char input_ch = getch();
         if (camera_move(input_ch))

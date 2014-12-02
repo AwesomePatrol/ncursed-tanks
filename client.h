@@ -30,10 +30,14 @@ void fetch_map(int sock);
 void fetch_changes(int sock);
 int join_game(int sock, char *nickname);
 
-/* render.c */
+/* draw.c */
 void put_col_str(Color color, int y, int x, const char *str);
+
+/* render.c */
 void draw_tank(Color color, int pos_x, int pos_y, int x, int y, int angle);
 void draw_map(map_t map, int pos_x, int pos_y, int width, int height);
+void draw_shoot_menu();
+void draw_stats();
 void render_map();
 void render_tanks();
 
