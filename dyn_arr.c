@@ -29,7 +29,7 @@ void dyn_arr_delete(struct dyn_arr *arr, void *el)
     size_t i = (el - data) / el_size;
 
     /* shift remaining elements to the left */
-    memmove(el, el + el_size, (arr->count-- - i) * el_size);
+    memmove(el, el + el_size, (--arr->count - i) * el_size);
     /* realloc data with new size */
     arr->data = realloc(data, arr->count * el_size);
 }
