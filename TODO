@@ -9,9 +9,9 @@ Code core game stuff.
         ** menu: interface, config distribution
         ** make server able to listen on the port after previous server crash
     * client
-        ** get map, player list
-        ** map, tanks, bullet rendering
-        ** winner/loser and statistics and screen
+        ** ready state
+        ** bullet rendering
+        ** winner/loser and statistics end-game screen
         ** reconnect
         ** get config
     * common

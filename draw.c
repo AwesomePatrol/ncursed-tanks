@@ -1,6 +1,6 @@
 #include "client.h"
 
-void put_col_str(Color color, int y, int x, const char *str)
+inline void put_col_str(Color color, int y, int x, const char *str)
 {
     attron(COLOR_PAIR((int) color));
     mvprintw(y, x, str);

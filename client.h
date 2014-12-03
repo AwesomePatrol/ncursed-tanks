@@ -42,6 +42,7 @@ void put_col_str(Color color, int y, int x, const char *str);
 /* render.c */
 void draw_tank(Color color, int pos_x, int pos_y, int x, int y, int angle);
 void draw_map(map_t map, int pos_x, int pos_y, int width, int height);
+void draw_bullet(int pos_x, int pos_y, int x, int y);
 void draw_shoot_menu();
 void draw_stats();
 void render_map();

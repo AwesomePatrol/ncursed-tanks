@@ -27,6 +27,18 @@ void draw_map(map_t map, int pos_x, int pos_y, int width, int height)
     }
 }
 
+void draw_bullet(int pos_x, int pos_y, int x, int y)
+{
+    int xx = x-pos_x;
+    int yy = y-pos_y;
+    if (xx >= 0 && xx <= LINES && yy <= COLS) {
+        if (yy >= 0)
+            put_col_str(COL_R, yy, xx, "#");
+        else
+            put_col_str(COL_R, 0, xx, "^");
+    }
+}
+
 void draw_shoot_menu()
 {
     attron(COLOR_PAIR((int) COL_W));
