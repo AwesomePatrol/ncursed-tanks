@@ -11,7 +11,7 @@ map_t map = NULL;
 client_id_t player_id_counter = 0;
 
 
-void all_uq_append(struct update upd)
+void all_uq_append(struct update *upd)
 {
     for (int i = 0; i < clients.count; i++)
     {
@@ -88,7 +88,7 @@ void clear_client(struct client *cl)
 {
     if (uq_is_nonempty(cl->updates))
         free_uq(cl->updates);
-    free(cl->player->nickname);
+    clear_player(cl->player);
     free(cl->player);
 }
 
@@ -113,4 +113,44 @@ int new_player_x(void)
 {
     return MAP_NOTANK_MARGIN
         + rand() % (map_info.length - 2 * MAP_NOTANK_MARGIN);
+}
+
+struct update *new_player_update(UpdateType type, struct player *player)
+{
+    struct update *result = malloc(sizeof(*result));
+    *result = (struct update) {
+        .type = type,
+        .player = *player,
+    };
+    return result;
+}
+
+struct update copy_update(struct update *u)
+{
+    struct update result = *u;
+
+    switch (u->type)
+    {
+    case U_PLAYER: case U_ADD_PLAYER:
+        ;
+        struct player player_copy = u->player;
+        player_copy.nickname = strdup(u->player.nickname);
+
+        result.player = player_copy;
+
+        break;
+    }
+
+    return result;
+}
+
+void clear_update(struct update *u)
+{
+    switch (u->type)
+    {
+    case U_PLAYER: case U_ADD_PLAYER:
+        clear_player(&u->player);
+
+        break;
+    }
 }

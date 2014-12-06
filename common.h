@@ -82,6 +82,8 @@ struct update
     };
 };
 
+void clear_player(struct player *p);
+
 
 int sendall(int socket, void *data, int len);
 int recvall(int socket, void *data, int len);

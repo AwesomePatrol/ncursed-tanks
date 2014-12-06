@@ -9,10 +9,10 @@ struct updates_queue *new_uq()
     return result;
 }
 
-void uq_append(struct updates_queue *q, struct update what)
+void uq_append(struct updates_queue *q, struct update *upd)
 {
     uq_elt_t *elt = malloc(sizeof(*elt));
-    *elt = (uq_elt_t) { .value = what };
+    *elt = (uq_elt_t) { .value = copy_update(upd) };
 
     if (!q->first)
     {
@@ -39,6 +39,7 @@ void uq_clear(struct updates_queue *q)
     for (uq_elt_t *cur = q->first; cur != NULL; cur = next)
     {
         next = cur->next;
+        clear_update(&cur->value);
         free(cur);
     }
 

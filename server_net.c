@@ -126,21 +126,14 @@ void process_command(Command cmd)
         add_client(cl);
 
         /* Notify all other clients of the new player */
-        all_uq_append(
-            (struct update) {
-                .type = U_ADD_PLAYER,
-                .player = *cl->player,
-            });
+        all_uq_append(new_player_update(U_ADD_PLAYER, cl->player));
 
         /* Add all existing players to updates queue */
         for (int i = 0; i < clients.count; i++)
         {
             struct client *cl = dyn_arr_get(&clients, i);
-            all_uq_append(
-                (struct update) {
-                    .type = U_ADD_PLAYER,
-                    .player = *cl->player,
-                });
+            uq_append(cl->updates,
+                      new_player_update(U_ADD_PLAYER, cl->player));
         }
 
         pthread_mutex_unlock(&clients_mutex);
@@ -150,12 +143,14 @@ void process_command(Command cmd)
     case GET_CHANGES:
         debug_s( 0, "send changes", "Sending changes to client...");
 
+        pthread_mutex_lock(&clients_mutex);
         cl = find_client(data->client_id);
 
         /* Send updates queue */
         send_uq(socket, cl->updates);
 
         uq_clear(cl->updates);
+        pthread_mutex_unlock(&clients_mutex);
 
         break;
     case GET_MAP:
@@ -181,11 +176,7 @@ void delete_cur_client()
         cl->player->state = PS_NO_PLAYER;
         /* Notify clients of the player being deleted */
         debug_s( 3, "removing player", cl->player->nickname);
-        all_uq_append(
-            (struct update) {
-                .type = U_PLAYER,
-                .player = *cl->player,
-            });
+        all_uq_append(new_player_update(U_PLAYER, cl->player));
         clear_client(cl);
         dyn_arr_delete(&clients, cl);
     }

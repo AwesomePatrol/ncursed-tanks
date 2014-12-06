@@ -31,7 +31,7 @@ extern struct map_info map_info;
 extern map_t map;
 
 
-void all_uq_append(struct update p);
+void all_uq_append(struct update *upd);
 void add_client(struct client *cl);
 struct client *find_client(client_id_t id);
 struct client *find_client_by_nickname(char *nickname);
@@ -41,5 +41,8 @@ client_id_t new_client_id(void);
 void clear_client(struct client *cl);
 struct player *new_player(char *nickname, client_id_t id);
 int new_player_x(void);
+struct update *new_player_update(UpdateType type, struct player *player);
+struct update copy_update(struct update *u);
+void clear_update(struct update *u);
 
 #endif /* SERVER_DATA_H */

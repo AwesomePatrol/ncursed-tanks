@@ -2,6 +2,12 @@
 /* Assume debug_open() is already called */
 #include "debug.h"
 
+void clear_player(struct player *p)
+{
+    debug_s( 0, "freeing nickname", p->nickname);
+    free(p->nickname);
+}
+
 /* function pointer to send or recv */
 typedef ssize_t (*socket_io_fun)(int, void *, size_t, int);
 

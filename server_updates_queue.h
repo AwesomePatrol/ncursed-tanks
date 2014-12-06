@@ -19,7 +19,7 @@ struct updates_queue
 typedef struct updates_queue_elt uq_elt_t;
 
 struct updates_queue *new_uq();
-void uq_append(struct updates_queue *q, struct update what);
+void uq_append(struct updates_queue *q, struct update *what);
 int uq_is_nonempty(struct updates_queue *q);
 void uq_clear(struct updates_queue *q);
 void free_uq(struct updates_queue *q);
