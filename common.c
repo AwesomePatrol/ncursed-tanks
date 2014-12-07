@@ -4,7 +4,6 @@
 
 void clear_player(struct player *p)
 {
-    debug_s( 0, "freeing nickname", p->nickname);
     free(p->nickname);
 }
 
@@ -190,7 +189,7 @@ int send_update(int socket, struct update *u)
         debug_s( 0, "send update: type", "U_EMPTY");
         break;
     case U_PLAYER: case U_ADD_PLAYER: case U_DEL_PLAYER:
-        debug_s( 0, "send update: type", "U_*PLAYER");
+        debug_s( 0, "send update: U_*PLAYER", u->player.nickname);
         if (send_player(socket, &u->player) == -1)
             return -1;
 

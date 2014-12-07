@@ -153,10 +153,10 @@ void process_join_command(struct thread_data *data, int socket)
 
 void process_get_changes_command(struct thread_data *data, int socket)
 {
-    debug_s( 0, "send changes", "Sending changes to client...");
-
     pthread_mutex_lock(&clients_mutex);                          /* {{{ */
     struct client *cl = find_client(data->client_id);
+
+    debug_d( 0, "sending changes to client #", cl->id);
 
     /* Send updates queue */
     send_uq(socket, cl->updates);
