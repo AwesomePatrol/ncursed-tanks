@@ -120,7 +120,7 @@ void process_join_command(struct thread_data *data, int socket)
     if (find_client_by_nickname(nickname))
     {
         pthread_mutex_unlock(&clients_mutex);                    /* }}} 1 */
-        debug_s( 3, "nickname taken", nickname);
+        debug_s( 3, "nickname already taken", nickname);
         send_int8(socket, JR_NICKNAME_TAKEN);
         return;
     }
@@ -130,10 +130,13 @@ void process_join_command(struct thread_data *data, int socket)
     struct client *cl = new_client(nickname);
     data->client_id = cl->id;
 
-    add_client(cl);
-
-    /* Notify all other clients of the new player */
+    /* Notify all other clients of the new player
+     * and then add the new client to the array */
+    /* In that way only clients that have already joined
+     * are going to receive the notification */
     all_uq_append(new_player_update(U_ADD_PLAYER, cl->player));
+
+    add_client(cl);
 
     /* Add all existing players to updates queue */
     for (int i = 0; i < clients.count; i++)
