@@ -156,7 +156,7 @@ void process_get_changes_command(struct thread_data *data, int socket)
     pthread_mutex_lock(&clients_mutex);                          /* {{{ */
     struct client *cl = find_client(data->client_id);
 
-    debug_d( 0, "sending changes to client #", cl->id);
+    debug_d( 3, "sending changes to client #", cl->id);
 
     /* Send updates queue */
     send_uq(socket, cl->updates);
@@ -167,7 +167,7 @@ void process_get_changes_command(struct thread_data *data, int socket)
 
 void process_get_map_command(struct thread_data *data, int socket)
 {
-    debug_s( 0, "send map", "Received GET_MAP. Sending map...");
+    debug_s( 3, "send map", "Received GET_MAP. Sending map...");
     /* TODO check if sent */
     send_map_info(socket, &map_info);
 }
