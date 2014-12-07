@@ -99,58 +99,19 @@ void process_command(Command cmd)
     switch (cmd)
     {
     case JOIN:
-        ; /* empty statement so that variable can be defined after label */
-        char *nickname = recv_string(socket);
-
-        /* Check if the nickname already used */
-        pthread_mutex_lock(&clients_mutex);
-        if (find_client_by_nickname(nickname))
-        {
-            pthread_mutex_unlock(&clients_mutex);
-            debug_s( 3, "nickname taken", nickname);
-            send_int8(socket, JR_NICKNAME_TAKEN);
-            return;
-        }
-        pthread_mutex_unlock(&clients_mutex);
-        /* Possible race condition when another client with this nickname
-         * connects now. There would be 2 clients with the same nickname
-         * in this case
-         */
-
-        send_int8(socket, JR_OK);
-        debug_s( 3, "new player", nickname);
-        cl = new_client(nickname);
-        data->client_id = cl->id;
-
-        pthread_mutex_lock(&clients_mutex);
-        add_client(cl);
-
-        /* Notify all other clients of the new player */
-        all_uq_append(new_player_update(U_ADD_PLAYER, cl->player));
-
-        /* Add all existing players to updates queue */
-        for (int i = 0; i < clients.count; i++)
-        {
-            struct client *cl = dyn_arr_get(&clients, i);
-            one_uq_append(cl->updates,
-                          new_player_update(U_ADD_PLAYER, cl->player));
-        }
-
-        pthread_mutex_unlock(&clients_mutex);
-
-        free(cl);
+        process_join_command(data, socket);
         break;
     case GET_CHANGES:
         debug_s( 0, "send changes", "Sending changes to client...");
 
-        pthread_mutex_lock(&clients_mutex);
+        pthread_mutex_lock(&clients_mutex);                          /* {{{ */
         cl = find_client(data->client_id);
 
         /* Send updates queue */
         send_uq(socket, cl->updates);
 
         uq_clear(cl->updates);
-        pthread_mutex_unlock(&clients_mutex);
+        pthread_mutex_unlock(&clients_mutex);                        /* }}} */
 
         break;
     case GET_MAP:
@@ -164,11 +125,49 @@ void process_command(Command cmd)
     }
 }
 
+void process_join_command(struct thread_data *data, int socket)
+{
+    char *nickname = recv_string(socket);
+
+    /* Check if the nickname already used */
+    pthread_mutex_lock(&clients_mutex);                          /* {{{ */
+    if (find_client_by_nickname(nickname))
+    {
+        pthread_mutex_unlock(&clients_mutex);                    /* }}} 1 */
+        debug_s( 3, "nickname taken", nickname);
+        send_int8(socket, JR_NICKNAME_TAKEN);
+        return;
+    }
+
+    send_int8(socket, JR_OK);
+    debug_s( 3, "new player", nickname);
+    struct client *cl = new_client(nickname);
+    data->client_id = cl->id;
+
+    add_client(cl);
+
+    /* Notify all other clients of the new player */
+    all_uq_append(new_player_update(U_ADD_PLAYER, cl->player));
+
+    /* Add all existing players to updates queue */
+    for (int i = 0; i < clients.count; i++)
+    {
+        struct client *cl = dyn_arr_get(&clients, i);
+        one_uq_append(cl->updates,
+                      new_player_update(U_ADD_PLAYER, cl->player));
+    }
+
+    pthread_mutex_unlock(&clients_mutex);                        /* }}} 2 */
+
+    free(cl);
+}
+
 void delete_cur_client()
 {
     struct thread_data *data = pthread_getspecific(thread_data);
 
-    pthread_mutex_lock(&clients_mutex);
+    pthread_mutex_lock(&clients_mutex);                          /* {{{ */
+
 
     struct client *cl = find_client(data->client_id);
     if (cl)
@@ -180,5 +179,5 @@ void delete_cur_client()
         dyn_arr_delete(&clients, cl);
     }
 
-    pthread_mutex_unlock(&clients_mutex);
+    pthread_mutex_unlock(&clients_mutex);                        /* }}} */
 }

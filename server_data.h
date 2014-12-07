@@ -1,7 +1,7 @@
 #ifndef SERVER_DATA_H
 #define SERVER_DATA_H
 
-#include "server.h"
+#include "server_lib_includes.h"
 
 /* type of (struct player).id */
 typedef __typeof__((struct player) {0}.id) client_id_t;

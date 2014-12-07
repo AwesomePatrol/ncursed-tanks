@@ -1,7 +1,8 @@
 #ifndef SERVER_UPDATES_QUEUE_H
 #define SERVER_UPDATES_QUEUE_H
 
-#include "server.h"
+#include "server_lib_includes.h"
+#include "server_data.h"
 
 struct updates_queue_elt
 {
