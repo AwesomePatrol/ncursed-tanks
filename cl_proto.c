@@ -47,6 +47,16 @@ void fetch_changes()
                     else
                         debug_s(1, "UpdatePlayer", "wrong id");
                     break;
+                case U_DEL_PLAYER:
+                    debug_s(1, "DeletePlayer", UpdateNet->player.nickname);
+                    int play_d_i = find_player(UpdateNet->player.id);
+                    if (play_d_i >= 0) {
+                        players_size--;
+                        players[play_d_i] = players[players_size];
+                    }
+                    else
+                        debug_s(1, "DeletePlayer", "wrong id");
+                    break;
                 default:
                     debug_d(3, "GetChangesType", UpdateNet->type);
             }

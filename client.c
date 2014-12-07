@@ -89,6 +89,7 @@ int main(int argc, char *argv[])
         shoot_menu_scene();
     }
 
+    free(debug_filename);
     free(map_data);
     /* Close connection */
     close(cl_sock);
