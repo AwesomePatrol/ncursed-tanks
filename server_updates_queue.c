@@ -12,7 +12,7 @@ struct updates_queue *new_uq()
 void uq_append(struct updates_queue *q, struct update *upd)
 {
     uq_elt_t *elt = malloc(sizeof(*elt));
-    *elt = (uq_elt_t) { .value = copy_update(upd) };
+    *elt = (uq_elt_t) { .value = *upd };
 
     if (!q->first)
     {

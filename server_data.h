@@ -31,6 +31,7 @@ extern struct map_info map_info;
 extern map_t map;
 
 
+void one_uq_append(struct updates_queue *q, struct update *upd);
 void all_uq_append(struct update *upd);
 void add_client(struct client *cl);
 struct client *find_client(client_id_t id);

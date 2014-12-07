@@ -11,13 +11,28 @@ map_t map = NULL;
 client_id_t player_id_counter = 0;
 
 
+/* frees upd */
+void one_uq_append(struct updates_queue *q, struct update *upd)
+{
+    struct update upd_copy = copy_update(upd);
+    uq_append(q, &upd_copy);
+
+    free(upd);
+}
+
+/* frees upd */
 void all_uq_append(struct update *upd)
 {
+    struct update upd_copy;
     for (int i = 0; i < clients.count; i++)
     {
         struct client *cl = dyn_arr_get(&clients, i);
-        uq_append(cl->updates, upd);
+
+        upd_copy = copy_update(upd);
+        uq_append(cl->updates, &upd_copy);
     }
+
+    free(upd);
 }
 
 void add_client(struct client *cl)

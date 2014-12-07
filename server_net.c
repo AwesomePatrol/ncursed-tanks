@@ -132,8 +132,8 @@ void process_command(Command cmd)
         for (int i = 0; i < clients.count; i++)
         {
             struct client *cl = dyn_arr_get(&clients, i);
-            uq_append(cl->updates,
-                      new_player_update(U_ADD_PLAYER, cl->player));
+            one_uq_append(cl->updates,
+                          new_player_update(U_ADD_PLAYER, cl->player));
         }
 
         pthread_mutex_unlock(&clients_mutex);
