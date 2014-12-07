@@ -94,7 +94,6 @@ void process_command(Command cmd)
 {
     struct thread_data *data = pthread_getspecific(thread_data);
     int socket = data->socket;
-    struct client *cl;
 
     switch (cmd)
     {
@@ -102,23 +101,10 @@ void process_command(Command cmd)
         process_join_command(data, socket);
         break;
     case GET_CHANGES:
-        debug_s( 0, "send changes", "Sending changes to client...");
-
-        pthread_mutex_lock(&clients_mutex);                          /* {{{ */
-        cl = find_client(data->client_id);
-
-        /* Send updates queue */
-        send_uq(socket, cl->updates);
-
-        uq_clear(cl->updates);
-        pthread_mutex_unlock(&clients_mutex);                        /* }}} */
-
+        process_get_changes_command(data, socket);
         break;
     case GET_MAP:
-        debug_s( 0, "send map", "Received GET_MAP. Sending map...");
-        /* TODO check if sent */
-        send_map_info(socket, &map_info);
-
+        process_get_map_command(data, socket);
         break;
     default:
         debug_c( 5, "unrecognized command", cmd);
@@ -160,6 +146,27 @@ void process_join_command(struct thread_data *data, int socket)
     pthread_mutex_unlock(&clients_mutex);                        /* }}} 2 */
 
     free(cl);
+}
+
+void process_get_changes_command(struct thread_data *data, int socket)
+{
+    debug_s( 0, "send changes", "Sending changes to client...");
+
+    pthread_mutex_lock(&clients_mutex);                          /* {{{ */
+    struct client *cl = find_client(data->client_id);
+
+    /* Send updates queue */
+    send_uq(socket, cl->updates);
+
+    uq_clear(cl->updates);
+    pthread_mutex_unlock(&clients_mutex);                        /* }}} */
+}
+
+void process_get_map_command(struct thread_data *data, int socket)
+{
+    debug_s( 0, "send map", "Received GET_MAP. Sending map...");
+    /* TODO check if sent */
+    send_map_info(socket, &map_info);
 }
 
 void delete_cur_client()

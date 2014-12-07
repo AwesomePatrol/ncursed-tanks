@@ -13,6 +13,8 @@ void *connection_thread(void *thr_data);
 
 void process_command(Command cmd);
 void process_join_command(struct thread_data *data, int socket);
+void process_get_changes_command(struct thread_data *data, int socket);
+void process_get_map_command(struct thread_data *data, int socket);
 
 void delete_cur_client();
 
