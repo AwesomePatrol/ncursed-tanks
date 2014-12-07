@@ -173,10 +173,9 @@ void delete_cur_client()
     struct client *cl = find_client(data->client_id);
     if (cl)
     {
-        cl->player->state = PS_NO_PLAYER;
         /* Notify clients of the player being deleted */
         debug_s( 3, "removing player", cl->player->nickname);
-        all_uq_append(new_player_update(U_PLAYER, cl->player));
+        all_uq_append(new_player_update(U_DEL_PLAYER, cl->player));
         clear_client(cl);
         dyn_arr_delete(&clients, cl);
     }

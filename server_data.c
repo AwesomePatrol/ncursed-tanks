@@ -146,7 +146,7 @@ struct update copy_update(struct update *u)
 
     switch (u->type)
     {
-    case U_PLAYER: case U_ADD_PLAYER:
+    case U_PLAYER: case U_ADD_PLAYER: case U_DEL_PLAYER:
         ;
         struct player player_copy = u->player;
         player_copy.nickname = strdup(u->player.nickname);
@@ -163,7 +163,7 @@ void clear_update(struct update *u)
 {
     switch (u->type)
     {
-    case U_PLAYER: case U_ADD_PLAYER:
+    case U_PLAYER: case U_ADD_PLAYER: case U_DEL_PLAYER:
         clear_player(&u->player);
 
         break;

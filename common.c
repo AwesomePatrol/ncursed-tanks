@@ -189,8 +189,8 @@ int send_update(int socket, struct update *u)
     case U_EMPTY:
         debug_s( 0, "send update: type", "U_EMPTY");
         break;
-    case U_ADD_PLAYER: case U_PLAYER:
-        debug_s( 0, "send update: type", "U_[ADD_]PLAYER");
+    case U_PLAYER: case U_ADD_PLAYER: case U_DEL_PLAYER:
+        debug_s( 0, "send update: type", "U_*PLAYER");
         if (send_player(socket, &u->player) == -1)
             return -1;
 
@@ -220,7 +220,7 @@ struct update *recv_update(int socket)
     {
     case U_EMPTY:
         break;
-    case U_ADD_PLAYER: case U_PLAYER:
+    case U_PLAYER: case U_ADD_PLAYER: case U_DEL_PLAYER:
         if ((player = recv_player(socket)) == NULL)
             goto fail;
 

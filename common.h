@@ -63,7 +63,7 @@ struct map_info
 /* U_EMPTY -- end of updates -- no pending updates left */
 typedef enum UpdateType
 {
-    U_EMPTY = 0, U_MAP, U_ADD_PLAYER, U_PLAYER,
+    U_EMPTY = 0, U_MAP, U_PLAYER, U_ADD_PLAYER, U_DEL_PLAYER,
 } UpdateType;
 
 struct update
@@ -71,7 +71,7 @@ struct update
     UpdateType type;
     union
     {
-        /* for U_[ADD_]PLAYER */
+        /* for U_*PLAYER */
         struct player player;
         /* for U_MAP */
         struct
