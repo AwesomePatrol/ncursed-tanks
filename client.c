@@ -11,6 +11,7 @@ void init_curses()
     curs_set(FALSE); /* do not show cursor */
     keypad(stdscr, TRUE); /* get special keys (arrows) */
     cbreak(); /* get one char at the time */
+    timeout(2000); /* timeout getch(), don't wait forever */
 
     /* Initialize colors */
     start_color();
@@ -82,6 +83,12 @@ int main(int argc, char *argv[])
     
     debug_d( 1, "lines", LINES);
     debug_d( 1, "columns", COLS);
+
+    lobby_scene();
+    
+    /*testing*/
+    if (players[0].state) players[0].state = PS_WAITING;
+    /*end of testing*/
 
     while (players[0].state)
     {

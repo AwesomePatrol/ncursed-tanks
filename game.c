@@ -34,10 +34,14 @@ int camera_move(int input_character)
 void center_camera(struct player *tank)
 {
     dx = tank->pos_x - COLS/2;
-    if (dx > (map_data->length - COLS))
+    if (dx < 0)
+        dx = 0;
+    else if (dx > (map_data->length - COLS))
         dx = map_data->length - COLS;
-    dy = tank->pos_y -LINES/2;
-    if (dy > (map_data->height - LINES/2))
+    dy = tank->pos_y - LINES/2;
+    if (dy < 0)
+        dy = 0;
+    else if (dy > (map_data->height - LINES/2))
         dy = map_data->height - LINES/2;
 }
 
@@ -90,6 +94,43 @@ int shoot_menu(int input_character)
     return 1;
 }
 
+/* manage space in lobby */
+int lobby_menu(int input_character)
+{
+    switch (input_character)
+    {
+        case ' ':
+            if (players[0].state == PS_JOINED)
+                players[0].state = PS_READY;
+                /* C_READY should be here */
+            else
+                players[0].state = PS_JOINED;
+                /* don't know if we want to support it */
+            break;
+        default:
+            return 0;
+    }
+    return 1;
+}
+
+void lobby_scene()
+{
+    int input_ch;
+    while (players[0].state == PS_JOINED
+            || players[0].state == PS_READY)
+    {
+        fetch_changes();
+        clear();
+        draw_lobby();
+        refresh();
+        input_ch = getch();
+        if (lobby_menu(input_ch))
+            continue;
+        quit_key(input_ch);
+    }
+}
+
+
 void shoot_menu_scene()
 {
     int input_ch;
@@ -111,7 +152,7 @@ void shoot_menu_scene()
 void wait_scene()
 {
     int input_ch;
-    while (players[0].state == PS_JOINED)
+    while (players[0].state == PS_WAITING)
     {
         fetch_changes();
         clear();

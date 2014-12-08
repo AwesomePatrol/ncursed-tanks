@@ -30,6 +30,7 @@ int quit_key(int input_character);
 void shoot();
 int shoot_menu(int input_character);
 void shoot_menu_scene();
+void lobby_scene();
 void wait_scene();
 
 /* cl_proto.c */
@@ -46,6 +47,7 @@ void draw_map(map_t map, int pos_x, int pos_y, int width, int height);
 void draw_bullet(int pos_x, int pos_y, int x, int y);
 void draw_shoot_menu();
 void draw_stats();
+void draw_lobby();
 void render_map();
 void render_tanks();
 

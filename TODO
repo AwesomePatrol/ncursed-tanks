@@ -14,6 +14,7 @@ Code core game stuff.
         ** winner/loser and statistics end-game screen
         ** reconnect
         ** get config
+        ** prevent blinking
     * common
         ** minor changes
             *** switch to using getaddrinfo for parsing IP, ...
