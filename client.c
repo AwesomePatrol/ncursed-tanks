@@ -85,6 +85,7 @@ int main(int argc, char *argv[])
 
     while (players[0].state)
     {
+        center_camera(&players[0]);
         wait_scene();
         shoot_menu_scene();
     }

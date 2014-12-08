@@ -25,6 +25,7 @@ int sock;
 
 /* game.c */
 int camera_move(int input_character);
+void center_camera(struct player *tank);
 int quit_key(int input_character);
 void shoot();
 int shoot_menu(int input_character);

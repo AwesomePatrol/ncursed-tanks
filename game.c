@@ -12,7 +12,7 @@ int camera_move(int input_character)
                 dy--;
             break;
         case 'k':
-            if (dy < (map_data->height-LINES))
+            if (dy < (map_data->height - LINES/2))
                 dy++;
             break;
         case 'j':
@@ -20,7 +20,7 @@ int camera_move(int input_character)
                 dx--;
             break;
         case 'l':
-            if (dx < (map_data->length-COLS))
+            if (dx < (map_data->length - COLS))
                 dx++;
             break;
         default:
@@ -29,6 +29,16 @@ int camera_move(int input_character)
     debug_d(1, "dx", dx);
     debug_d(1, "dy", dx);
     return 1;
+}
+
+void center_camera(struct player *tank)
+{
+    dx = tank->pos_x - COLS/2;
+    if (dx > (map_data->length - COLS))
+        dx = map_data->length - COLS;
+    dy = tank->pos_y -LINES/2;
+    if (dy > (map_data->height - LINES/2))
+        dy = map_data->height - LINES/2;
 }
 
 void shoot()
