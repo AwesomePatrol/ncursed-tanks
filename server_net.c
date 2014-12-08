@@ -100,6 +100,9 @@ void process_command(Command cmd)
     case C_JOIN:
         process_join_command(data, socket);
         break;
+    case C_READY:
+        process_ready_command(data);
+        break;
     case C_GET_CHANGES:
         process_get_changes_command(data, socket);
         break;
@@ -125,10 +128,12 @@ void process_join_command(struct thread_data *data, int socket)
         return;
     }
 
-    send_int8(socket, JR_OK);
     debug_s( 3, "new player", nickname);
     struct client *cl = new_client(nickname);
     data->client_id = cl->id;
+
+    send_int8(socket, JR_OK);
+    send_int16(socket, cl->id);
 
     /* Notify all other clients of the new player
      * and then add the new client to the array */
@@ -148,6 +153,30 @@ void process_join_command(struct thread_data *data, int socket)
     pthread_mutex_unlock(&clients_mutex);                        /* }}} 2 */
 
     free(cl);
+}
+
+void process_ready_command(struct thread_data *data)
+{
+    pthread_mutex_lock(&clients_mutex);                          /* {{{ */
+    struct client *cl = find_client(data->client_id);
+
+    cl->player->state = PS_READY;
+
+    /* Notify all players that the player has become ready */
+    all_add_update(new_player_update(U_PLAYER, cl->player));
+
+    /* Check if all the players are ready */
+    for (int i = 0; i < clients.count; i++)
+    {
+        struct client *cl = dyn_arr_get(&clients, i);
+
+        if (cl->player->state != PS_READY)
+            goto end;
+    }
+    start_game();
+
+end:
+    pthread_mutex_unlock(&clients_mutex);                        /* }}} */
 }
 
 void process_get_changes_command(struct thread_data *data, int socket)
@@ -171,7 +200,7 @@ void process_get_map_command(struct thread_data *data, int socket)
     send_map_info(socket, &map_info);
 }
 
-void delete_cur_client()
+void delete_cur_client(void)
 {
     struct thread_data *data = pthread_getspecific(thread_data);
 
@@ -187,6 +216,22 @@ void delete_cur_client()
         clear_client(cl);
         dyn_arr_delete(&clients, cl);
     }
+
+    pthread_mutex_unlock(&clients_mutex);                        /* }}} */
+}
+
+void start_game(void)
+{
+    pthread_mutex_lock(&clients_mutex);                          /* {{{ */
+    for (int i = 0; i < clients.count; i++)
+    {
+        struct client *cl = dyn_arr_get(&clients, i);
+
+        cl->player->state = PS_WAITING;
+        all_add_update(new_player_update(U_PLAYER, cl->player));
+    }
+
+    /* TODO Give turn to first player */
 
     pthread_mutex_unlock(&clients_mutex);                        /* }}} */
 }

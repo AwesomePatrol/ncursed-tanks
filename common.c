@@ -113,10 +113,12 @@ char *recv_string(int socket)
 
     if (recv_int16(socket, &size) <= 0)
         return NULL;
-    /* TODO free */
     str = malloc(size);
     if (recvall(socket, str, size) <= 0)
+    {
+        free(str);
         return NULL;
+    }
 
     return str;
 }

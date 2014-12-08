@@ -17,19 +17,21 @@
 /*
  * command         args                reply
  *   \- requirements
- * C_JOIN          string nickname     JoinReply
- * C_GET_MAP       none                struct map_info
+ * C_JOIN          string nickname     JoinReply[, int16_t id]
+ *   sends id only if JoinReply is JR_OK
+ * C_GET_MAP                           struct map_info
  * C_SHOOT         (direction, force)  target_point
  *   \- game started, state == PS_ACTIVE
- * C_GET_CHANGES   none                list(struct update)
+ * C_GET_CHANGES                       list(struct update)
  *   \- client joined
  * 
  * list(X) means sending / receiving a series of X with an empty X in the end.
  */
 typedef enum Command
 {
-    C_JOIN = 'J', C_GET_CHANGES = 'C', C_GET_MAP = 'M', C_SHOOT = 'F',
-    C_ERROR = 'E'
+    C_JOIN = 'J', C_READY = 'R',
+    C_GET_CHANGES = 'C', C_GET_MAP = 'M',
+    C_SHOOT = 'F',
 } Command;
 
 /* JR_GAME_IN_PROGRESS - not allowed to join because game already started */
