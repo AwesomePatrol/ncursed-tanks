@@ -32,7 +32,7 @@ void fetch_changes()
                 case U_ADD_PLAYER:
                     debug_s(1, "AddPlayer", UpdateNet->player.nickname);
                     int play_i = find_player(UpdateNet->player.id);
-                    if (players_size > 0 && play_i >= 0)
+                    if (play_i >= 0)
                             players[play_i] = UpdateNet->player;
                     else {
                         players[players_size] = UpdateNet->player;
@@ -80,6 +80,8 @@ int join_game(char *nickname)
     switch (jr) {
         case JR_OK:
             debug_s(1, "ClientName", nickname);
+            recv_int16(sock, &players[0].id);
+            players_size++;/*hopefully will receive itself in next update */
             fetch_map(sock);
             fetch_changes(sock);
             break;

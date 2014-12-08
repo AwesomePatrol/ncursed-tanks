@@ -100,12 +100,12 @@ int lobby_menu(int input_character)
     switch (input_character)
     {
         case ' ':
-            if (players[0].state == PS_JOINED)
-                players[0].state = PS_READY;
-                /* C_READY should be here */
-            else
-                players[0].state = PS_JOINED;
-                /* don't know if we want to support it */
+            if (players[0].state == PS_JOINED) {
+                send_int8(sock, C_READY);
+                debug_s(1, "FetchingChanges", "Ready");
+                fetch_changes();
+                debug_s(1, "FetchingChanges", "Finish");
+            }
             break;
         default:
             return 0;
@@ -124,7 +124,7 @@ void lobby_scene()
         draw_lobby();
         refresh();
         input_ch = getch();
-        if (lobby_menu(input_ch))
+        if (players[0].state == PS_JOINED && lobby_menu(input_ch))
             continue;
         quit_key(input_ch);
     }

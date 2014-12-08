@@ -86,10 +86,6 @@ int main(int argc, char *argv[])
 
     lobby_scene();
     
-    /*testing*/
-    if (players[0].state) players[0].state = PS_WAITING;
-    /*end of testing*/
-
     while (players[0].state)
     {
         center_camera(&players[0]);
