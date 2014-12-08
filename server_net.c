@@ -221,9 +221,9 @@ void delete_cur_client(void)
     unlock_clients();                                            /* }}} */
 }
 
+/* Called by other functions, doesn't do locking */
 void start_game(void)
 {
-    lock_clients();                                              /* {{{ */
     for (int i = 0; i < clients.count; i++)
     {
         struct client *cl = dyn_arr_get(&clients, i);
@@ -239,6 +239,4 @@ void start_game(void)
     struct client *cl = dyn_arr_get(&clients, 0);
     cl->player->state = PS_ACTIVE;
     all_add_update(new_player_update(U_PLAYER, cl->player));
-
-    unlock_clients();                                            /* }}} */
 }
