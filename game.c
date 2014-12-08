@@ -83,7 +83,7 @@ int shoot_menu(int input_character)
 void shoot_menu_scene()
 {
     int input_ch;
-    while (players[0].state == PS_SHOOT)
+    while (players[0].state == PS_ACTIVE)
     {
         fetch_changes();
         clear();
@@ -101,7 +101,7 @@ void shoot_menu_scene()
 void wait_scene()
 {
     int input_ch;
-    while (players[0].state == PS_WAIT)
+    while (players[0].state == PS_JOINED)
     {
         fetch_changes();
         clear();

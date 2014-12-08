@@ -112,7 +112,7 @@ struct player *new_player(char *nickname, client_id_t id)
     struct player *result = malloc(sizeof(*result));
 
     *result = (struct player) {
-        .state = PS_WAIT,
+        .state = PS_JOINED,
         .id = id,
         .nickname = nickname,
         .hitpoints = INITIAL_HP,

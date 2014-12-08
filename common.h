@@ -20,8 +20,9 @@
  * C_JOIN          string nickname     JoinReply
  * C_GET_MAP       none                struct map_info
  * C_SHOOT         (direction, force)  target_point
- *   \- game started, state == PS_SHOOT
+ *   \- game started, state == PS_ACTIVE
  * C_GET_CHANGES   none                list(struct update)
+ *   \- client joined
  * 
  * list(X) means sending / receiving a series of X with an empty X in the end.
  */
@@ -37,9 +38,16 @@ typedef enum JoinReply
     JR_OK, JR_GAME_IN_PROGRESS, JR_NICKNAME_TAKEN, JR_FORBIDDEN
 } JoinReply;
 
+/*
+ * PS_NO_PLAYER - empty struct
+ * PS_JOINED    - joined the game, now in the lobby
+ * PS_READY     - ready to start the game
+ * PS_WAIT      - waiting for its turn
+ * PS_ACTIVE    - player's turn
+ */
 typedef enum PlayerState
 {
-    PS_NO_PLAYER = 0, PS_WAIT, PS_SHOOT, PS_DEAD
+    PS_NO_PLAYER = 0, PS_JOINED, PS_READY, PS_WAIT, PS_ACTIVE, PS_DEAD
 } PlayerState;
 
 struct player
