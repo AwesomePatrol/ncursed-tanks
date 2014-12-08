@@ -173,6 +173,7 @@ void process_ready_command(struct thread_data *data)
         if (cl->player->state != PS_READY)
             goto end;
     }
+    debug_s( 3, "starting game", "All players ready");
     start_game();
 
 end:
@@ -231,7 +232,13 @@ void start_game(void)
         all_add_update(new_player_update(U_PLAYER, cl->player));
     }
 
-    /* TODO Give turn to first player */
+    /* Give turn to the first player */
+    /* Assume the first player is the first client.
+     * May become not true in the future?
+     */
+    struct client *cl = dyn_arr_get(&clients, 0);
+    cl->player->state = PS_ACTIVE;
+    all_add_update(new_player_update(U_PLAYER, cl->player));
 
     pthread_mutex_unlock(&clients_mutex);                        /* }}} */
 }
