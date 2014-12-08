@@ -186,7 +186,7 @@ int send_update(int socket, struct update *u)
     switch(u->type)
     {
     case U_EMPTY:
-        debug_s( 0, "send update: type", "U_EMPTY");
+        debug_s( 0, "send update: U_EMPTY", "");
         break;
     case U_PLAYER: case U_ADD_PLAYER: case U_DEL_PLAYER:
         debug_s( 0, "send update: U_*PLAYER", u->player.nickname);
@@ -195,7 +195,7 @@ int send_update(int socket, struct update *u)
 
         break;
     case U_MAP:
-        debug_s( 0, "send update: type", "U_MAP");
+        debug_s( 0, "send update: U_MAP", "");
         if (send_int16(socket, u->x) == -1          ||
             send_int16(socket, u->new_height) == -1)
             return -1;

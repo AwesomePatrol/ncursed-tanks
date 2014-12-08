@@ -12,23 +12,22 @@ client_id_t player_id_counter = 0;
 
 
 /* frees upd */
-void one_uq_append(struct updates_queue *q, struct update *upd)
+void add_update(struct client *cl, struct update *upd)
 {
     struct update upd_copy = copy_update(upd);
-    uq_append(q, &upd_copy);
+    uq_append(cl->updates, &upd_copy);
 
     free(upd);
 }
 
 /* frees upd */
-void all_uq_append(struct update *upd)
+void all_add_update(struct update *upd)
 {
-    struct update upd_copy;
     for (int i = 0; i < clients.count; i++)
     {
         struct client *cl = dyn_arr_get(&clients, i);
 
-        upd_copy = copy_update(upd);
+        struct update upd_copy = copy_update(upd);
         uq_append(cl->updates, &upd_copy);
     }
 

@@ -134,16 +134,15 @@ void process_join_command(struct thread_data *data, int socket)
      * and then add the new client to the array */
     /* In that way only clients that have already joined
      * are going to receive the notification */
-    all_uq_append(new_player_update(U_ADD_PLAYER, cl->player));
+    all_add_update(new_player_update(U_ADD_PLAYER, cl->player));
 
     add_client(cl);
 
     /* Add all existing players to updates queue */
     for (int i = 0; i < clients.count; i++)
     {
-        struct client *cl = dyn_arr_get(&clients, i);
-        one_uq_append(cl->updates,
-                      new_player_update(U_ADD_PLAYER, cl->player));
+        struct client *other_cl = dyn_arr_get(&clients, i);
+        add_update(cl, new_player_update(U_ADD_PLAYER, other_cl->player));
     }
 
     pthread_mutex_unlock(&clients_mutex);                        /* }}} 2 */
@@ -184,7 +183,7 @@ void delete_cur_client()
     {
         /* Notify clients of the player being deleted */
         debug_s( 3, "removing player", cl->player->nickname);
-        all_uq_append(new_player_update(U_DEL_PLAYER, cl->player));
+        all_add_update(new_player_update(U_DEL_PLAYER, cl->player));
         clear_client(cl);
         dyn_arr_delete(&clients, cl);
     }
