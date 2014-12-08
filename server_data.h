@@ -30,6 +30,8 @@ extern struct dyn_arr clients;
 extern struct map_info map_info;
 extern map_t map;
 
+void lock_clients(void);
+void unlock_clients(void);
 
 void add_update(struct client *cl, struct update *upd);
 void all_add_update(struct update *upd);

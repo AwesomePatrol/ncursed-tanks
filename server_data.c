@@ -11,6 +11,16 @@ map_t map = NULL;
 client_id_t player_id_counter = 0;
 
 
+void lock_clients(void)
+{
+    pthread_mutex_lock(&clients_mutex);
+}
+
+void unlock_clients(void)
+{
+    pthread_mutex_unlock(&clients_mutex);
+}
+
 /* frees upd */
 void add_update(struct client *cl, struct update *upd)
 {

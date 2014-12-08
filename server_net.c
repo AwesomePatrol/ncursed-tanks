@@ -119,10 +119,10 @@ void process_join_command(struct thread_data *data, int socket)
     char *nickname = recv_string(socket);
 
     /* Check if the nickname already used */
-    pthread_mutex_lock(&clients_mutex);                          /* {{{ */
+    lock_clients();                                              /* {{{ */
     if (find_client_by_nickname(nickname))
     {
-        pthread_mutex_unlock(&clients_mutex);                    /* }}} 1 */
+        unlock_clients();                                        /* }}} 1 */
         debug_s( 3, "nickname already taken", nickname);
         send_int8(socket, JR_NICKNAME_TAKEN);
         return;
@@ -150,14 +150,14 @@ void process_join_command(struct thread_data *data, int socket)
         add_update(cl, new_player_update(U_ADD_PLAYER, other_cl->player));
     }
 
-    pthread_mutex_unlock(&clients_mutex);                        /* }}} 2 */
+    unlock_clients();                                            /* }}} 2 */
 
     free(cl);
 }
 
 void process_ready_command(struct thread_data *data)
 {
-    pthread_mutex_lock(&clients_mutex);                          /* {{{ */
+    lock_clients();                                              /* {{{ */
     struct client *cl = find_client(data->client_id);
 
     cl->player->state = PS_READY;
@@ -177,12 +177,12 @@ void process_ready_command(struct thread_data *data)
     start_game();
 
 end:
-    pthread_mutex_unlock(&clients_mutex);                        /* }}} */
+    unlock_clients();                                            /* }}} */
 }
 
 void process_get_changes_command(struct thread_data *data, int socket)
 {
-    pthread_mutex_lock(&clients_mutex);                          /* {{{ */
+    lock_clients();                                              /* {{{ */
     struct client *cl = find_client(data->client_id);
 
     debug_d( 3, "sending changes to client #", cl->id);
@@ -191,7 +191,7 @@ void process_get_changes_command(struct thread_data *data, int socket)
     send_uq(socket, cl->updates);
 
     uq_clear(cl->updates);
-    pthread_mutex_unlock(&clients_mutex);                        /* }}} */
+    unlock_clients();                                            /* }}} */
 }
 
 void process_get_map_command(struct thread_data *data, int socket)
@@ -205,7 +205,7 @@ void delete_cur_client(void)
 {
     struct thread_data *data = pthread_getspecific(thread_data);
 
-    pthread_mutex_lock(&clients_mutex);                          /* {{{ */
+    lock_clients();                                              /* {{{ */
 
 
     struct client *cl = find_client(data->client_id);
@@ -218,12 +218,12 @@ void delete_cur_client(void)
         dyn_arr_delete(&clients, cl);
     }
 
-    pthread_mutex_unlock(&clients_mutex);                        /* }}} */
+    unlock_clients();                                            /* }}} */
 }
 
 void start_game(void)
 {
-    pthread_mutex_lock(&clients_mutex);                          /* {{{ */
+    lock_clients();                                              /* {{{ */
     for (int i = 0; i < clients.count; i++)
     {
         struct client *cl = dyn_arr_get(&clients, i);
@@ -240,5 +240,5 @@ void start_game(void)
     cl->player->state = PS_ACTIVE;
     all_add_update(new_player_update(U_PLAYER, cl->player));
 
-    pthread_mutex_unlock(&clients_mutex);                        /* }}} */
+    unlock_clients();                                            /* }}} */
 }
