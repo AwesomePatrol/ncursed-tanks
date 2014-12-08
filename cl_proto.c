@@ -3,7 +3,7 @@
 /* fetch map from server and generate it */
 void fetch_map()
 {
-    send_int8(sock, GET_MAP);
+    send_int8(sock, C_GET_MAP);
     map_data = recv_map_info(sock);
     g_map = generate_map(map_data);
 }
@@ -20,7 +20,7 @@ int find_player(u_int16_t player_id)
 /* fetch changes and apply them */
 void fetch_changes()
 {
-    send_int8(sock, GET_CHANGES);
+    send_int8(sock, C_GET_CHANGES);
     struct update *UpdateNet;
     while (UpdateNet = recv_update(sock)) {
         if (UpdateNet->type) {
@@ -72,7 +72,7 @@ void fetch_changes()
 /* join the game and fetch map if successful */
 int join_game(char *nickname)
 {
-    send_int8(sock, JOIN);
+    send_int8(sock, C_JOIN);
     send_string(sock, nickname);
     u_int8_t j_net;
     recv_int8(sock, &j_net);

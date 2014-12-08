@@ -15,19 +15,20 @@
 #define MAP_NOTANK_MARGIN 5
 
 /*
- * command        args                reply
+ * command         args                reply
  *   \- requirements
- * JOIN           string nickname     JoinReply
- * GET_MAP        none                struct map_info
- * SHOOT          (direction, force)  target_point
+ * C_JOIN          string nickname     JoinReply
+ * C_GET_MAP       none                struct map_info
+ * C_SHOOT         (direction, force)  target_point
  *   \- game started, state == PS_SHOOT
- * GET_CHANGES    none                list(struct update)
+ * C_GET_CHANGES   none                list(struct update)
  * 
- * list(X) means sending receiving a series of X with an empty X in the end.
+ * list(X) means sending / receiving a series of X with an empty X in the end.
  */
 typedef enum Command
 {
-    JOIN = 'J', GET_CHANGES = 'C', GET_MAP = 'M', SHOOT = 'F', ERROR = 'E'
+    C_JOIN = 'J', C_GET_CHANGES = 'C', C_GET_MAP = 'M', C_SHOOT = 'F',
+    C_ERROR = 'E'
 } Command;
 
 /* JR_GAME_IN_PROGRESS - not allowed to join because game already started */

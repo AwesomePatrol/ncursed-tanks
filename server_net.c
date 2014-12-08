@@ -97,13 +97,13 @@ void process_command(Command cmd)
 
     switch (cmd)
     {
-    case JOIN:
+    case C_JOIN:
         process_join_command(data, socket);
         break;
-    case GET_CHANGES:
+    case C_GET_CHANGES:
         process_get_changes_command(data, socket);
         break;
-    case GET_MAP:
+    case C_GET_MAP:
         process_get_map_command(data, socket);
         break;
     default:
@@ -166,7 +166,7 @@ void process_get_changes_command(struct thread_data *data, int socket)
 
 void process_get_map_command(struct thread_data *data, int socket)
 {
-    debug_s( 3, "send map", "Received GET_MAP. Sending map...");
+    debug_s( 3, "send map", "Received C_GET_MAP. Sending map...");
     /* TODO check if sent */
     send_map_info(socket, &map_info);
 }
