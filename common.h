@@ -42,12 +42,12 @@ typedef enum JoinReply
  * PS_NO_PLAYER - empty struct
  * PS_JOINED    - joined the game, now in the lobby
  * PS_READY     - ready to start the game
- * PS_WAIT      - waiting for its turn
+ * PS_WAITING   - waiting for its turn
  * PS_ACTIVE    - player's turn
  */
 typedef enum PlayerState
 {
-    PS_NO_PLAYER = 0, PS_JOINED, PS_READY, PS_WAIT, PS_ACTIVE, PS_DEAD
+    PS_NO_PLAYER = 0, PS_JOINED, PS_READY, PS_WAITING, PS_ACTIVE, PS_DEAD
 } PlayerState;
 
 struct player
