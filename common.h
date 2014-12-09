@@ -55,6 +55,7 @@ typedef enum PlayerState
 struct player
 {
     PlayerState state;
+    /* A value of 0 is invalid */
     int16_t id;
     char *nickname;
     int16_t hitpoints;

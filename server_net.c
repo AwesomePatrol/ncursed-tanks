@@ -45,9 +45,11 @@ void server_listen(void)
     while (1)
     {
         struct thread_data *thr_data = malloc(sizeof(*thr_data));
-        thr_data->socket = accept(server_socket,
-                                  (struct sockaddr *)&client_sa,
-                                  &socksize);
+        *thr_data = (struct thread_data) {
+            .socket = accept(server_socket,
+                             (struct sockaddr *)&client_sa,
+                             &socksize),
+        };
 
         if (!thr_data->socket)
         {
@@ -201,12 +203,17 @@ void process_get_map_command(struct thread_data *data, int socket)
     send_map_info(socket, &map_info);
 }
 
+/* Checks if the current thread has a client and removes it */
 void delete_cur_client(void)
 {
     struct thread_data *data = pthread_getspecific(thread_data);
 
-    lock_clients();                                              /* {{{ */
+    /* No client ID, nothing to do */
+    /* TODO possibly move to find_client, to prevent breakage in other places */
+    if (!data->client_id)
+        return;
 
+    lock_clients();                                              /* {{{ */
 
     struct client *cl = find_client(data->client_id);
     if (cl)

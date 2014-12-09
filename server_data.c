@@ -99,11 +99,10 @@ struct client *new_client(char *nickname)
 
 client_id_t new_client_id(void)
 {
-    client_id_t result = player_id_counter++;
+    client_id_t result = ++player_id_counter;
     if (player_id_counter == 0)
         debug_s( 5, "player id",
-"Player ID counter overflowed to 0! Hope there won't be collisions \
-when the next ID is needed.");
+"Player ID counter overflowed to 0 (\"empty\" value)! Expect breakage!");
 
     return result;
 }
