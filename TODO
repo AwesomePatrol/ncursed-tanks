@@ -2,12 +2,10 @@
 Write documentation (gameplay, usage, syntax, etc.).
 Code core game stuff.
     * server
-        ** player list: create and distribute
         ** collision detection -> place,dmg
         ** end-game statistics
         ** start a new match? set number of games in config
         ** menu: interface, config distribution
-        ** make server able to listen on the port after previous server crash
     * client
         ** ready state
         ** bullet rendering
