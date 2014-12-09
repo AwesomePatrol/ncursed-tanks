@@ -38,13 +38,27 @@ void fetch_changes()
                         players[players_size] = UpdateNet->player;
                         players_size++;
                     }
+                    ScreenUpdate add_player = SCR_LOBBY;
+                    dyn_arr_append(&ScrUpdates, &add_player);
                     break;
                 case U_PLAYER:
                     debug_s(1, "UpdatePlayer", UpdateNet->player.nickname);
                     int play_u_i = find_player(UpdateNet->player.id);
-                    if (play_u_i >= 0)
+                    if (play_u_i >= 0) {
                         players[play_u_i] = UpdateNet->player;
-                    else
+                        ScreenUpdate u_player;
+                        switch (players[play_u_i].state)
+                        {
+                            case PS_DEAD:
+                                u_player = SCR_TANKS;
+                                dyn_arr_append(&ScrUpdates, &u_player);
+                                break;
+                            case PS_READY:
+                                u_player = SCR_LOBBY;
+                                dyn_arr_append(&ScrUpdates, &u_player);
+                                break;
+                        }
+                    } else
                         debug_s(1, "UpdatePlayer", "wrong id");
                     break;
                 case U_DEL_PLAYER:
@@ -56,6 +70,8 @@ void fetch_changes()
                     }
                     else
                         debug_s(1, "DeletePlayer", "wrong id");
+                    ScreenUpdate del_player = SCR_TANKS;
+                    dyn_arr_append(&ScrUpdates, &del_player);
                     break;
                 default:
                     debug_d(3, "GetChangesType", UpdateNet->type);

@@ -10,11 +10,14 @@
 #include <ncurses.h>
 
 #include "debug.h"
+#include "dyn_arr.h"
 #include "colors.h"
 #include "map_gen.h"
 
 /* GLOBAL */
-typedef enum State {RENDER_SHOOT, MENU_SHOOT, WAIT, EXIT} State;
+typedef enum ScreenUpdate {SCR_SHOOT, SCR_LOBBY, SCR_STATS, SCR_TANKS,
+    SCR_SHOOT_MENU, SCR_MAP, SCR_ALL} ScreenUpdate;
+extern struct dyn_arr ScrUpdates;
 struct map_info *map_data;
 map_t g_map;
 extern int dx, dy;
@@ -30,6 +33,10 @@ int change_camera_focus(int input_character);
 void center_camera(struct player *tank);
 int quit_key(int input_character);
 int shoot_menu(int input_character);
+int lobby_menu(int input_character);
+
+/* scene.c */
+void render_scene();
 void shoot_menu_scene();
 void lobby_scene();
 void wait_scene();

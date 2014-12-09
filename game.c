@@ -2,6 +2,7 @@
 
 #define MAX_POWER 100
 int camera_focus=0;
+struct dyn_arr ScrUpdates = { sizeof(ScreenUpdate) };
 
 /* move camera using i,k,j,l keys */
 int camera_move(int input_character)
@@ -27,6 +28,9 @@ int camera_move(int input_character)
         default:
             return 0;
     }
+    /* add SCR_ALL to screen update queue */
+    ScreenUpdate camera_move = SCR_ALL;
+    dyn_arr_append(&ScrUpdates, &camera_move);
     debug_d(1, "dx", dx);
     debug_d(1, "dy", dx);
     return 1;
@@ -48,21 +52,25 @@ int change_camera_focus(int input_character)
     }
     if (camera_focus > players_size-1) camera_focus=0;
     if (camera_focus < 0) camera_focus=players_size-1;
+    center_camera(&players[camera_focus]);
     return 1;
 }
 
 void center_camera(struct player *tank)
 {
     dx = tank->pos_x - COLS/2;
-    if (dx < 0)
-        dx = 0;
-    else if (dx > (map_data->length - COLS))
+    if (dx > (map_data->length - COLS))
         dx = map_data->length - COLS;
+    else if (dx < 0)
+        dx = 0;
     dy = tank->pos_y - LINES/2;
-    if (dy < 0)
-        dy = 0;
-    else if (dy > (map_data->height - LINES/2))
+    if (dy > (map_data->height - LINES/2))
         dy = map_data->height - LINES/2;
+    else if (dy < 0)
+        dy = 0;
+    /* add SCR_ALL to screen update queue */
+    ScreenUpdate camera_move = SCR_ALL;
+    dyn_arr_append(&ScrUpdates, &camera_move);
 }
 
 /* start quit or write debug, always run on the end of all key functions*/
@@ -103,6 +111,9 @@ int shoot_menu(int input_character)
         default:
             return 0;
     }
+    /* add SCR_SHOOT_MENU to screen update queue */
+    ScreenUpdate u_shoot_menu = SCR_SHOOT_MENU;
+    dyn_arr_append(&ScrUpdates, &u_shoot_menu);
     return 1;
 }
 
@@ -123,62 +134,4 @@ int lobby_menu(int input_character)
             return 0;
     }
     return 1;
-}
-
-void lobby_scene()
-{
-    int input_ch;
-    while (players[0].state == PS_JOINED
-            || players[0].state == PS_READY)
-    {
-        fetch_changes();
-        clear();
-        draw_lobby();
-        refresh();
-        input_ch = getch();
-        if (players[0].state == PS_JOINED && lobby_menu(input_ch))
-            continue;
-        quit_key(input_ch);
-    }
-}
-
-
-void shoot_menu_scene()
-{
-    int input_ch;
-    while (players[0].state == PS_ACTIVE)
-    {
-        fetch_changes();
-        center_camera(&players[camera_focus]);
-        clear();
-        render_map();
-        render_tanks();
-        draw_stats();
-        draw_shoot_menu();
-        refresh();
-        input_ch = getch();
-        if (camera_move(input_ch) || shoot_menu(input_ch)
-                || change_camera_focus(input_ch))
-            continue;
-        quit_key(input_ch);
-    }
-}
-
-void wait_scene()
-{
-    int input_ch;
-    while (players[0].state == PS_WAITING)
-    {
-        fetch_changes();
-        center_camera(&players[camera_focus]);
-        clear();
-        render_map();
-        render_tanks();
-        draw_stats();
-        refresh();
-        input_ch = getch();
-        if (camera_move(input_ch) || change_camera_focus(input_ch))
-            continue;
-        quit_key(input_ch);
-    }
 }
