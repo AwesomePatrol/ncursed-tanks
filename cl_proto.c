@@ -103,3 +103,10 @@ int join_game(char *nickname)
     }
     return 0;
 }
+
+void send_shoot()
+{
+    send_int8(sock, C_SHOOT);
+    send_int16(sock, angle);
+    send_int16(sock, power);
+}

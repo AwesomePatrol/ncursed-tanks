@@ -65,14 +65,6 @@ void center_camera(struct player *tank)
         dy = map_data->height - LINES/2;
 }
 
-void shoot()
-{
-    /*
-    send_shoot(int sock);
-    render_shoot();
-    */ 
-}
-
 /* start quit or write debug, always run on the end of all key functions*/
 int quit_key(int input_character)
 {
@@ -106,7 +98,7 @@ int shoot_menu(int input_character)
             if (angle < 180) angle++;
             break;
         case KEY_ENTER:
-            shoot();
+            //TODO send_shoot();
             break;
         default:
             return 0;

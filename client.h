@@ -13,7 +13,7 @@
 #include "colors.h"
 #include "map_gen.h"
 
-/* GLOBAL variables >>use extern? */
+/* GLOBAL */
 typedef enum State {RENDER_SHOOT, MENU_SHOOT, WAIT, EXIT} State;
 struct map_info *map_data;
 map_t g_map;
@@ -29,7 +29,6 @@ int camera_move(int input_character);
 int change_camera_focus(int input_character);
 void center_camera(struct player *tank);
 int quit_key(int input_character);
-void shoot();
 int shoot_menu(int input_character);
 void shoot_menu_scene();
 void lobby_scene();
@@ -39,6 +38,7 @@ void wait_scene();
 void fetch_map();
 void fetch_changes();
 int join_game(char *nickname);
+void send_shoot();
 
 /* draw.c */
 void put_col_str(Color color, int y, int x, const char *str);
