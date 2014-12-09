@@ -21,10 +21,12 @@ extern int dx, dy;
 extern int angle, power;
 struct player players[MAX_PLAYERS];
 extern u_int16_t players_size;
+extern int camera_focus;
 int sock;
 
 /* game.c */
 int camera_move(int input_character);
+int change_camera_focus(int input_character);
 void center_camera(struct player *tank);
 int quit_key(int input_character);
 void shoot();

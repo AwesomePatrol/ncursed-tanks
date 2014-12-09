@@ -66,11 +66,11 @@ void draw_lobby()
     put_col_str(players[0].state == PS_READY ? COL_G : COL_W,
             1, 1, players[0].nickname);
     for (int i=1; i<players_size; i++)
-        put_col_str(players[i].state == PS_READY ? COL_G : COL_W,
+        put_col_str(players[i].state == PS_READY ? COL_G : COL_Y,
                 1+i, 1, players[i].nickname);
     for (int i=0; i<players_size; i++)
         put_col_str(COL_W, 1+i, 30,
-                players[i].state == PS_READY ? "READY" : "WAITING");
+                players[i].state == PS_READY ? "READY" : "NOT READY");
     put_col_str(COL_W, LINES-3, 1,
             "Press space to mark yourself as ready");
 }

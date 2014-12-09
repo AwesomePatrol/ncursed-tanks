@@ -1,6 +1,7 @@
 #include "client.h"
 
 #define MAX_POWER 100
+int camera_focus=0;
 
 /* move camera using i,k,j,l keys */
 int camera_move(int input_character)
@@ -28,6 +29,25 @@ int camera_move(int input_character)
     }
     debug_d(1, "dx", dx);
     debug_d(1, "dy", dx);
+    return 1;
+}
+
+/* use m,n keys to change camera focus */
+int change_camera_focus(int input_character)
+{
+    switch (input_character)
+    {
+        case 'm':
+            camera_focus++;
+            break;
+        case 'n':
+            camera_focus--;
+            break;
+        default:
+            return 0;
+    }
+    if (camera_focus > players_size-1) camera_focus=0;
+    if (camera_focus < 0) camera_focus=players_size-1;
     return 1;
 }
 
@@ -137,13 +157,16 @@ void shoot_menu_scene()
     while (players[0].state == PS_ACTIVE)
     {
         fetch_changes();
+        center_camera(&players[camera_focus]);
         clear();
         render_map();
         render_tanks();
         draw_stats();
+        draw_shoot_menu();
         refresh();
         input_ch = getch();
-        if (camera_move(input_ch) || shoot_menu(input_ch))
+        if (camera_move(input_ch) || shoot_menu(input_ch)
+                || change_camera_focus(input_ch))
             continue;
         quit_key(input_ch);
     }
@@ -155,13 +178,14 @@ void wait_scene()
     while (players[0].state == PS_WAITING)
     {
         fetch_changes();
+        center_camera(&players[camera_focus]);
         clear();
         render_map();
         render_tanks();
         draw_stats();
         refresh();
         input_ch = getch();
-        if (camera_move(input_ch))
+        if (camera_move(input_ch) || change_camera_focus(input_ch))
             continue;
         quit_key(input_ch);
     }
