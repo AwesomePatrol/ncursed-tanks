@@ -122,7 +122,7 @@ int join_game(char *nickname)
 
 void send_shoot()
 {
+    struct shot shot = { angle, power };
     send_int8(sock, C_SHOOT);
-    send_int16(sock, angle);
-    send_int16(sock, power);
+    send_shot(sock, &shot);
 }

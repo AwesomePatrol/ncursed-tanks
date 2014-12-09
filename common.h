@@ -70,6 +70,12 @@ struct map_info
     u_int16_t height;
 };
 
+struct shot
+{
+    int16_t angle;
+    int16_t power;
+};
+
 /**** Game updates sent by server ****/
 
 /* U_EMPTY -- end of updates -- no pending updates left */
@@ -120,6 +126,9 @@ struct map_info *recv_map_info(int socket);
 
 int send_player(int socket, struct player *p);
 struct player *recv_player(int socket);
+
+int send_shot(int socket, struct shot *s);
+struct shot *recv_shot(int socket);
 
 int send_update(int socket, struct update *u);
 struct update *recv_update(int socket);

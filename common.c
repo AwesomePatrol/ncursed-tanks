@@ -181,6 +181,27 @@ struct player *recv_player(int socket)
     }
 }
 
+int send_shot(int socket, struct shot *s)
+{
+    if (send_int16(socket, s->angle) == -1 ||
+        send_int16(socket, s->power) == -1)
+        return -1;
+    return 0;
+}
+
+struct shot *recv_shot(int socket)
+{
+    struct shot *result = malloc(sizeof(*result));
+
+    if (recv_int16(socket, &result->angle) <= 0 ||
+        recv_int16(socket, &result->power) <= 0)
+    {
+        free(result);
+        return NULL;
+    }
+    return result;
+}
+
 int send_update(int socket, struct update *u)
 {
     if (send_int8(socket, u->type) == -1)
