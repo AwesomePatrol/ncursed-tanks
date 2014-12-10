@@ -9,10 +9,10 @@ Code core game stuff.
     * client
         ** ready state
         ** bullet rendering
+        ** move to struct map_position format
         ** winner/loser and statistics end-game screen
         ** reconnect
         ** get config
-        ** prevent blinking
     * common
         ** minor changes
             *** switch to using getaddrinfo for parsing IP, ...

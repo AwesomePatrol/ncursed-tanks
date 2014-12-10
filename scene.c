@@ -27,7 +27,6 @@ void render_scene()
                 map=1;
                 break;
             case SCR_ALL:
-                shoot=1;
                 lobby=1;
                 stats=1;
                 tanks=1;
@@ -40,36 +39,41 @@ void render_scene()
     }
     dyn_arr_clear(&ScrUpdates);
     if (shoot || lobby || stats || tanks || shoot_menu || map) {
-        switch (players[0].state) {
-            case PS_JOINED:
-            case PS_READY:
-                if (lobby) {
-                    clear();
-                    draw_lobby();
-                }
-                break;
-            case PS_DEAD:
-            case PS_WAITING:
-                if (map) {
-                    clear();
-                    render_map();
-                }
-                if (tanks) render_tanks();
-                if (stats) draw_stats();
-                break;
-            case PS_ACTIVE:
-                if (map) {
-                    clear();
-                    render_map();
-                }
-                if (tanks) render_tanks();
-                if (stats) draw_stats();
-                if (shoot_menu) draw_shoot_menu();
-                break;
-            default:
-                debug_d(1, "UnknownState", players[0].state);
+        if (shoot) { /* it's a VERY special case */
+//            render_shot(s_update.shot.angle, s_update.shot.power,
+//                    find_player(s_update.player_id));
+        } else {
+            switch (players[0].state) {
+                case PS_JOINED:
+                case PS_READY:
+                    if (lobby) {
+                        clear();
+                        draw_lobby();
+                    }
+                    break;
+                case PS_DEAD:
+                case PS_WAITING:
+                    if (map) {
+                        clear();
+                        render_map();
+                    }
+                    if (tanks) render_tanks();
+                    if (stats) draw_stats();
+                    break;
+                case PS_ACTIVE:
+                    if (map) {
+                        clear();
+                        render_map();
+                    }
+                    if (tanks) render_tanks();
+                    if (stats) draw_stats();
+                    if (shoot_menu) draw_shoot_menu();
+                    break;
+                default:
+                    debug_d(1, "UnknownState", players[0].state);
+            }
+            refresh();
         }
-        refresh();
     }
 }
 

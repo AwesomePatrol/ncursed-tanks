@@ -26,6 +26,7 @@ struct player players[MAX_PLAYERS];
 extern u_int16_t players_size;
 extern int camera_focus;
 int sock;
+struct update s_update;
 
 /* game.c */
 int camera_move(int input_character);
@@ -44,6 +45,7 @@ void wait_scene();
 /* cl_proto.c */
 void fetch_map();
 void fetch_changes();
+int find_player(u_int16_t player_id);
 int join_game(char *nickname);
 void send_shoot();
 
@@ -54,8 +56,9 @@ void put_col_str(Color color, int y, int x, const char *str);
 void draw_tank(Color color, int pos_x, int pos_y, int x, int y, int angle);
 void draw_map(map_t map, int pos_x, int pos_y, int width, int height);
 void draw_bullet(int pos_x, int pos_y, int x, int y);
+void draw_blank_bullet(int pos_x, int pos_y, int x, int y);
 void draw_shoot_menu();
-void render_shot(int s_angle, int s_power, int16_t s_id);
+void render_shot(int s_angle, int s_power, int s_id);
 void draw_stats();
 void draw_lobby();
 void render_map();

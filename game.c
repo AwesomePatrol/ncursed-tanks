@@ -106,6 +106,7 @@ int shoot_menu(int input_character)
             if (angle < 180) angle++;
             break;
         case '\n': /* KEY_ENTER does not work */
+            debug_s(1, "send", "shoot");
             send_shoot();
             break;
         default:

@@ -1,4 +1,8 @@
 #include "client.h"
+#include "math.h" //required by render_shot
+
+#define GRAV 0.05 //TODO move to common.h
+#define M_PI 3.1415
 
 void draw_tank(Color color, int pos_x, int pos_y, int x, int y, int angle)
 {
@@ -39,6 +43,18 @@ void draw_bullet(int pos_x, int pos_y, int x, int y)
     }
 }
 
+void draw_blank_bullet(int pos_x, int pos_y, int x, int y)
+{
+    int xx = x-pos_x;
+    int yy = y-pos_y;
+    if (xx >= 0 && xx <= LINES && yy <= COLS) {
+        if (yy >= 0)
+            put_col_str(COL_B, yy, xx, " ");
+        else
+            put_col_str(COL_B, 0, xx, " ");
+    }
+}
+
 void draw_shoot_menu()
 {
     attron(COLOR_PAIR((int) COL_W));
@@ -48,12 +64,42 @@ void draw_shoot_menu()
     attroff(COLOR_PAIR((int) COL_W));
 }
 
-void render_shot(int s_angle, int s_power, int16_t s_id)
+void render_shot(int s_angle, int s_power, int s_id)
 {
     debug_d(1, "RenderShotX", players[s_id].pos.x);
     debug_d(1, "RenderShotY", players[s_id].pos.y);
     debug_d(1, "RenderShot Angle", s_angle);
     debug_d(1, "RenderShot Power", s_power);
+    int input_ch;
+    //TODO for specific values be more 
+    double radians = s_angle * M_PI / 180;
+    float v_x = s_power * cos(radians) / 100;
+    float v_y = s_power * sin(radians) / 100;
+    int x = players[s_id].pos.x;
+    int y = players[s_id].pos.y;
+    timeout(200); //5 fps
+    int fly=1;
+    while (fly)
+    {
+        draw_blank_bullet(dx, dy, x, y);
+        x += v_x;
+        y -= v_y;
+        v_y -= GRAV;
+        debug_d(1, "BulletX", x);
+        debug_d(1, "BulletY", y);
+        draw_bullet(dx, dy, x, y);
+        refresh();
+        if (x > map_data->length  || x < 0 || y > map_data->height ||
+                y > g_map[x])
+            fly = 0;
+        input_ch = getch();
+        if (input_ch != ERR)
+            quit_key(input_ch);
+    }
+    /* add SCR_ALL to screen update queue */
+    ScreenUpdate shot_done = SCR_ALL;
+    dyn_arr_append(&ScrUpdates, &shot_done);
+    timeout(2000); //back to original
 }
 void draw_stats()
 {

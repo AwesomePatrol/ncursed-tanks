@@ -74,8 +74,12 @@ void fetch_changes()
                     dyn_arr_append(&ScrUpdates, &del_player);
                     break;
                 case U_SHOT:
-                    render_shot(UpdateNet->shot.angle,UpdateNet->shot.power,
-                            find_player(UpdateNet->player_id));
+                    debug_d(1, "ShootingPlayerID", UpdateNet->player_id);
+                    s_update = *UpdateNet;
+                    /* add SCR_SHOOT to screen update queue so that
+                     * the client won't hang at this stage */
+                    ScreenUpdate u_shot = SCR_SHOOT;
+                    dyn_arr_append(&ScrUpdates, &u_shot);
                     break;
                 default:
                     debug_d(3, "GetChangesType", UpdateNet->type);
