@@ -73,6 +73,10 @@ void fetch_changes()
                     ScreenUpdate del_player = SCR_TANKS;
                     dyn_arr_append(&ScrUpdates, &del_player);
                     break;
+                case U_SHOT:
+                    render_shot(UpdateNet->shot.angle,UpdateNet->shot.power,
+                            find_player(UpdateNet->player_id));
+                    break;
                 default:
                     debug_d(3, "GetChangesType", UpdateNet->type);
             }

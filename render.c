@@ -48,6 +48,13 @@ void draw_shoot_menu()
     attroff(COLOR_PAIR((int) COL_W));
 }
 
+void render_shot(int s_angle, int s_power, int16_t s_id)
+{
+    debug_d(1, "RenderShotX", players[s_id].pos.x);
+    debug_d(1, "RenderShotY", players[s_id].pos.y);
+    debug_d(1, "RenderShot Angle", s_angle);
+    debug_d(1, "RenderShot Power", s_power);
+}
 void draw_stats()
 {
     attron(COLOR_PAIR((int) COL_W));

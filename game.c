@@ -107,11 +107,6 @@ int shoot_menu(int input_character)
             break;
         case '\n': /* KEY_ENTER does not work */
             send_shoot();
-            struct map_position *hit_pos;
-            hit_pos = recv_map_position(sock);
-            debug_d(1, "HitPosX", hit_pos->x);
-            debug_d(1, "HitPosY", hit_pos->y);
-            free(hit_pos);
             break;
         default:
             return 0;
@@ -130,9 +125,7 @@ int lobby_menu(int input_character)
         case ' ':
             if (players[0].state == PS_JOINED) {
                 send_int8(sock, C_READY);
-                debug_s(1, "FetchingChanges", "Ready");
                 fetch_changes();
-                debug_s(1, "FetchingChanges", "Finish");
             }
             break;
         default:

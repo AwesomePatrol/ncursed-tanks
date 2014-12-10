@@ -55,6 +55,7 @@ void draw_tank(Color color, int pos_x, int pos_y, int x, int y, int angle);
 void draw_map(map_t map, int pos_x, int pos_y, int width, int height);
 void draw_bullet(int pos_x, int pos_y, int x, int y);
 void draw_shoot_menu();
+void render_shot(int s_angle, int s_power, int16_t s_id);
 void draw_stats();
 void draw_lobby();
 void render_map();
