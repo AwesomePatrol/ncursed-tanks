@@ -247,6 +247,13 @@ int send_update(int socket, struct update *u)
             return -1;
 
         break;
+    case U_SHOT:
+        debug_s( 0, "send update: U_SHOT", "");
+        if (send_shot(socket, &u->shot) == -1      ||
+            send_int16(socket, u->player_id) == -1)
+            return -1;
+
+        break;
     }
     return 0;
 }
@@ -256,6 +263,7 @@ struct update *recv_update(int socket)
     struct update *result = malloc(sizeof(*result));
     int8_t type_net;
     struct player *player;
+    struct shot *shot;
 
     if (recv_int8(socket, &type_net) <= 0)
         goto fail;
@@ -277,6 +285,15 @@ struct update *recv_update(int socket)
         if (recv_int16(socket, &result->x) <= 0          ||
             recv_int16(socket, &result->new_height) <= 0)
             goto fail;
+
+        break;
+    case U_SHOT:
+        if ((shot = recv_shot(socket)) == NULL          ||
+            recv_int16(socket, &result->player_id) <= 0)
+            goto fail;
+
+        result->shot = *shot;
+        free(shot);
 
         break;
     }

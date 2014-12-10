@@ -106,8 +106,7 @@ struct update
         struct
         {
             struct shot shot;
-            struct map_position shot_pos;
-            struct map_position hit_pos;
+            int16_t player_id;
         };
     };
 };
