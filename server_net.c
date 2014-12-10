@@ -206,7 +206,11 @@ void process_shoot_command(struct thread_data *data, int socket)
     debug_d( 3, "shot: client #", cl->id);
     debug_d( 0, "shot: angle", shot->angle);
     debug_d( 0, "shot: power", shot->power);
+
+    all_add_update(new_shot_update(shot, cl->id));
     unlock_clients();                                            /* }}} */
+
+    free(shot);
 }
 
 void process_get_changes_command(struct thread_data *data, int socket)

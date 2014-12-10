@@ -169,6 +169,17 @@ struct update *new_player_update(UpdateType type, struct player *player)
     return result;
 }
 
+struct update *new_shot_update(struct shot *shot, client_id_t id)
+{
+    struct update *result = malloc(sizeof(*result));
+    *result = (struct update) {
+        .type = U_SHOT,
+        .shot = *shot,
+        .player_id = id,
+    };
+    return result;
+}
+
 struct update copy_update(struct update *u)
 {
     struct update result = *u;
