@@ -111,6 +111,7 @@ int shoot_menu(int input_character)
             hit_pos = recv_map_position(sock);
             debug_d(1, "HitPosX", hit_pos->x);
             debug_d(1, "HitPosY", hit_pos->y);
+            free(hit_pos);
             break;
         default:
             return 0;
