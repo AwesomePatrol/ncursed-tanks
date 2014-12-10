@@ -125,8 +125,8 @@ struct player *new_player(char *nickname, client_id_t id)
         .id = id,
         .nickname = nickname,
         .hitpoints = INITIAL_HP,
-        .pos_x = player_x,
-        .pos_y = map[player_x] - 1,
+        .pos = { player_x,
+                 map[player_x] - 1 }
     };
 
     return result;

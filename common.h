@@ -20,7 +20,7 @@
  * C_JOIN          string nickname     JoinReply[, int16_t id]
  *   sends id only if JoinReply is JR_OK
  * C_GET_MAP                           struct map_info
- * C_SHOOT         (direction, force)  target_point
+ * C_SHOOT         struct shot         struct map_position impact_pos
  *   \- game started, state == PS_ACTIVE
  * C_GET_CHANGES                       list(struct update)
  *   \- client joined
@@ -52,6 +52,12 @@ typedef enum PlayerState
     PS_NO_PLAYER = 0, PS_JOINED, PS_READY, PS_WAITING, PS_ACTIVE, PS_DEAD
 } PlayerState;
 
+struct map_position
+{
+    int16_t x;
+    int16_t y;
+};
+
 struct player
 {
     PlayerState state;
@@ -59,8 +65,7 @@ struct player
     int16_t id;
     char *nickname;
     int16_t hitpoints;
-    int16_t pos_x;
-    int16_t pos_y;
+    struct map_position pos;
 };
 
 struct map_info
@@ -129,6 +134,9 @@ struct player *recv_player(int socket);
 
 int send_shot(int socket, struct shot *s);
 struct shot *recv_shot(int socket);
+
+int send_map_position(int socket, struct map_position *p);
+struct map_position *recv_map_position(int socket);
 
 int send_update(int socket, struct update *u);
 struct update *recv_update(int socket);

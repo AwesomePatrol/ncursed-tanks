@@ -105,6 +105,9 @@ void process_command(Command cmd)
     case C_READY:
         process_ready_command(data);
         break;
+    case C_SHOOT:
+        process_shoot_command(data, socket);
+        break;
     case C_GET_CHANGES:
         process_get_changes_command(data, socket);
         break;
@@ -180,6 +183,24 @@ void process_ready_command(struct thread_data *data)
 
 end:
     unlock_clients();                                            /* }}} */
+}
+
+void process_shoot_command(struct thread_data *data, int socket)
+{
+    struct shot *shot = recv_shot(socket);
+
+    lock_clients();                                              /* {{{ */
+    /* TODO What if no client? */
+    struct client *cl = find_client(data->client_id);
+
+    debug_d( 3, "shot: client #", cl->id);
+    debug_d( 0, "shot: angle", shot->angle);
+    debug_d( 0, "shot: power", shot->power);
+    unlock_clients();                                            /* }}} */
+
+    /* Temporary placeholder to conform to the protocol */
+    struct map_position impact_pos = { 0, 0 };
+    send_map_position(socket, &impact_pos);
 }
 
 void process_get_changes_command(struct thread_data *data, int socket)

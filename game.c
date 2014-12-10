@@ -58,12 +58,12 @@ int change_camera_focus(int input_character)
 
 void center_camera(struct player *tank)
 {
-    dx = tank->pos_x - COLS/2;
+    dx = tank->pos.x - COLS/2;
     if (dx > (map_data->length - COLS))
         dx = map_data->length - COLS;
     else if (dx < 0)
         dx = 0;
-    dy = tank->pos_y - LINES/2;
+    dy = tank->pos.y - LINES/2;
     if (dy > (map_data->height - LINES/2))
         dy = map_data->height - LINES/2;
     else if (dy < 0)

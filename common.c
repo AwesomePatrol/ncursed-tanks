@@ -149,12 +149,11 @@ struct map_info *recv_map_info(int socket)
 
 int send_player(int socket, struct player *p)
 {
-    if (send_int8(socket, p->state) == -1      ||
-        send_int16(socket, p->id) == -1        ||
-        send_string(socket, p->nickname) == -1 ||
-        send_int16(socket, p->hitpoints) == -1 ||
-        send_int16(socket, p->pos_x) == -1     ||
-        send_int16(socket, p->pos_y) == -1)
+    if (send_int8(socket, p->state) == -1        ||
+        send_int16(socket, p->id) == -1          ||
+        send_string(socket, p->nickname) == -1   ||
+        send_int16(socket, p->hitpoints) == -1   ||
+        send_map_position(socket, &p->pos) == -1)
         return -1;
     return 0;
 }
@@ -163,13 +162,13 @@ struct player *recv_player(int socket)
 {
     struct player *result = malloc(sizeof(*result));
     u_int8_t state_net;
+    struct map_position *pos;
 
     if (recv_int8(socket, &state_net) <= 0               ||
         recv_int16(socket, &result->id) <= 0             ||
         (result->nickname = recv_string(socket)) == NULL ||
         recv_int16(socket, &result->hitpoints) <= 0      ||
-        recv_int16(socket, &result->pos_x) <= 0          ||
-        recv_int16(socket, &result->pos_y) <= 0)
+        (pos = recv_map_position(socket)) == NULL)
     {
         free(result);
         return NULL;
@@ -177,6 +176,8 @@ struct player *recv_player(int socket)
     else
     {
         result->state = state_net;
+        result->pos = *pos;
+        free(pos);
         return result;
     }
 }
@@ -195,6 +196,28 @@ struct shot *recv_shot(int socket)
 
     if (recv_int16(socket, &result->angle) <= 0 ||
         recv_int16(socket, &result->power) <= 0)
+    {
+        free(result);
+        return NULL;
+    }
+    return result;
+}
+
+/* *_map_position almost the same as *_shot */
+int send_map_position(int socket, struct map_position *p)
+{
+    if (send_int16(socket, p->x) == -1 ||
+        send_int16(socket, p->y) == -1)
+        return -1;
+    return 0;
+}
+
+struct map_position *recv_map_position(int socket)
+{
+    struct map_position *result = malloc(sizeof(*result));
+
+    if (recv_int16(socket, &result->x) <= 0 ||
+        recv_int16(socket, &result->y) <= 0)
     {
         free(result);
         return NULL;

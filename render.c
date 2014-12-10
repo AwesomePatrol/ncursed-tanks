@@ -79,7 +79,7 @@ void render_tanks()
 {
     for (int i=0; i<players_size; i++)
         draw_tank( i == 0 ? COL_W : COL_Y,
-                dx, dy, players[i].pos_x, players[i].pos_y, 0);
+                dx, dy, players[i].pos.x, players[i].pos.y, 0);
 }
 
 void render_map()
