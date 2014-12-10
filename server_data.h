@@ -29,6 +29,7 @@ extern struct dyn_arr clients;
 
 extern struct map_info map_info;
 extern map_t map;
+extern int game_started; /* bool */
 
 void lock_clients(void);
 void unlock_clients(void);

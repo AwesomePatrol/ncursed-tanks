@@ -7,6 +7,7 @@ struct dyn_arr clients = { sizeof(struct client) };
 
 struct map_info map_info = {.length = 160, .height = 36};
 map_t map = NULL;
+int game_started = 0;
 
 client_id_t player_id_counter = 0;
 

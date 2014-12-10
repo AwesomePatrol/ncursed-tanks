@@ -123,17 +123,24 @@ void process_join_command(struct thread_data *data, int socket)
 {
     char *nickname = recv_string(socket);
 
+    if (game_started)
+    {
+        debug_s( 3, "join: game already in progress, player tried to join",
+                 nickname);
+        send_int8(socket, JR_GAME_IN_PROGRESS);
+        goto fail;
+    }
     /* Check if the nickname already used */
     lock_clients();                                              /* {{{ */
     if (find_client_by_nickname(nickname))
     {
         unlock_clients();                                        /* }}} 1 */
-        debug_s( 3, "nickname already taken", nickname);
+        debug_s( 3, "join: nickname already taken", nickname);
         send_int8(socket, JR_NICKNAME_TAKEN);
-        return;
+        goto fail;
     }
 
-    debug_s( 3, "new player", nickname);
+    debug_s( 3, "join: new player", nickname);
     struct client *cl = new_client(nickname);
     data->client_id = cl->id;
 
@@ -158,6 +165,9 @@ void process_join_command(struct thread_data *data, int socket)
     unlock_clients();                                            /* }}} 2 */
 
     free(cl);
+    return;
+fail:
+    free(nickname);
 }
 
 void process_ready_command(struct thread_data *data)
@@ -267,4 +277,6 @@ void start_game(void)
     struct client *cl = dyn_arr_get(&clients, 0);
     cl->player->state = PS_ACTIVE;
     all_add_update(new_player_update(U_PLAYER, cl->player));
+
+    game_started = 1;
 }
