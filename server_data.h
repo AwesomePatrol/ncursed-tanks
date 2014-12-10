@@ -31,6 +31,8 @@ extern struct map_info map_info;
 extern map_t map;
 extern int game_started; /* bool */
 
+struct map_position get_impact_pos(struct shot *shot);
+
 void lock_clients(void);
 void unlock_clients(void);
 

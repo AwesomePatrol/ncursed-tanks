@@ -12,6 +12,24 @@ int game_started = 0;
 client_id_t player_id_counter = 0;
 
 
+/* Move to server_game.c or something? */
+struct map_position get_impact_pos(struct shot *shot)
+{
+    /*
+     * x = x0 + x_step
+     * y = y0 - (x-x0)*tg(angle) + (1/2)*g*((x-x0) / (v0*cos(angle)))^2
+     * y = y0 + c1*(x-x0) + c2*(x-x0)^2
+     *   x0 =? cl->player->pos.x
+     *   y0 =? cl->player->pos.y
+     *   v0 ~  power
+     *   c1 =  -tg(angle)
+     *   c2 =  (1/2)*g / (v0*cos(alpha))^2
+     * (y axis is oriented downwards)
+     */
+    /* Placeholder */
+    return (struct map_position) { 0, 0 };
+}
+
 void lock_clients(void)
 {
     pthread_mutex_lock(&clients_mutex);

@@ -206,10 +206,10 @@ void process_shoot_command(struct thread_data *data, int socket)
     debug_d( 3, "shot: client #", cl->id);
     debug_d( 0, "shot: angle", shot->angle);
     debug_d( 0, "shot: power", shot->power);
+
+    struct map_position impact_pos = get_impact_pos(shot);
     unlock_clients();                                            /* }}} */
 
-    /* Temporary placeholder to conform to the protocol */
-    struct map_position impact_pos = { 0, 0 };
     send_map_position(socket, &impact_pos);
 }
 
