@@ -105,8 +105,12 @@ int shoot_menu(int input_character)
         case KEY_LEFT:
             if (angle < 180) angle++;
             break;
-        case KEY_ENTER:
+        case '\n': /* KEY_ENTER does not work */
             send_shoot();
+            struct map_position *hit_pos;
+            hit_pos = recv_map_position(sock);
+            debug_d(1, "HitPosX", hit_pos->x);
+            debug_d(1, "HitPosY", hit_pos->y);
             break;
         default:
             return 0;
