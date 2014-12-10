@@ -14,6 +14,13 @@
 #define INITIAL_HP 1000
 #define MAP_NOTANK_MARGIN 5
 
+/*gravity coefficient, later value from config*/
+#define GRAVITY 0.05
+/*support for M_PI was dropped in C99, we don't need better value than here*/
+#define M_PI 3.1415
+/*power coefficient, later value from config*/
+#define C_POWER 40
+
 /*
  * command         args                reply
  *   \- requirements
@@ -110,6 +117,8 @@ struct update
         };
     };
 };
+
+double deg_to_rads(int deg);
 
 void clear_player(struct player *p);
 

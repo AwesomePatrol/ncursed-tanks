@@ -40,8 +40,8 @@ void render_scene()
     dyn_arr_clear(&ScrUpdates);
     if (shoot || lobby || stats || tanks || shoot_menu || map) {
         if (shoot) { /* it's a VERY special case */
-//            render_shot(s_update.shot.angle, s_update.shot.power,
-//                    find_player(s_update.player_id));
+            render_shot(s_update.shot.angle, s_update.shot.power,
+                    find_player(s_update.player_id));
         } else {
             switch (players[0].state) {
                 case PS_JOINED:

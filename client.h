@@ -14,6 +14,8 @@
 #include "colors.h"
 #include "map_gen.h"
 
+#define C_XY 0.6
+
 /* GLOBAL */
 typedef enum ScreenUpdate {SCR_SHOOT, SCR_LOBBY, SCR_STATS, SCR_TANKS,
     SCR_SHOOT_MENU, SCR_MAP, SCR_ALL} ScreenUpdate;
