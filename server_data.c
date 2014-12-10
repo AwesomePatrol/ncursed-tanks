@@ -16,7 +16,9 @@ client_id_t player_id_counter = 0;
 struct map_position get_impact_pos(struct shot *shot)
 {
     /*
-     * x = x0 + x_step
+     * x[0] = x0
+     * x[i] = x[i-1] + x_step
+     *   x_step = +-1 — depends on shot direction (left || right)
      * y = y0 - (x-x0)*tg(angle) + (1/2)*g*((x-x0) / (v0*cos(angle)))^2
      * y = y0 + c1*(x-x0) + c2*(x-x0)^2
      *   x0 =? cl->player->pos.x
