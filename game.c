@@ -106,7 +106,7 @@ int shoot_menu(int input_character)
             if (angle < 180) angle++;
             break;
         case KEY_ENTER:
-            //TODO send_shoot();
+            send_shoot();
             break;
         default:
             return 0;
