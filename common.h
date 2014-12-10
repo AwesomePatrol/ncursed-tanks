@@ -20,7 +20,7 @@
  * C_JOIN          string nickname     JoinReply[, int16_t id]
  *   sends id only if JoinReply is JR_OK
  * C_GET_MAP                           struct map_info
- * C_SHOOT         struct shot         struct map_position impact_pos
+ * C_SHOOT         struct shot         
  *   \- game started, state == PS_ACTIVE
  * C_GET_CHANGES                       list(struct update)
  *   \- client joined
@@ -77,7 +77,7 @@ struct map_info
 
 struct shot
 {
-    int16_t angle;
+    int16_t angle; /* in degrees, can be 0..359 */
     int16_t power;
 };
 
@@ -86,7 +86,7 @@ struct shot
 /* U_EMPTY -- end of updates -- no pending updates left */
 typedef enum UpdateType
 {
-    U_EMPTY = 0, U_MAP, U_PLAYER, U_ADD_PLAYER, U_DEL_PLAYER,
+    U_EMPTY = 0, U_MAP, U_SHOT, U_PLAYER, U_ADD_PLAYER, U_DEL_PLAYER,
 } UpdateType;
 
 struct update
@@ -101,6 +101,13 @@ struct update
         {
             int16_t x;
             int16_t new_height;
+        };
+        /* for U_SHOT */
+        struct
+        {
+            struct shot shot;
+            struct map_position shot_pos;
+            struct map_position hit_pos;
         };
     };
 };
