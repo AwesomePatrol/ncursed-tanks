@@ -1,8 +1,10 @@
 Controls
 ========
 
-Use i, k, j, l to move around the map up, down, left, right
-Use z, c to change weapon, arrow_up and arrow_down to change shoot power
-and arrow_left and arrow_right to change the angle.
-Press return or space to shoot or set readiness.
-Press q to quit the game.
+space = set readiness in lobby
+i,j,k,l = move camera up, down, left, right
+n,m = change tank camera is focusing
+arrow_up, arrow_down = change shoot power
+arrow_left, arrow_right = change shoot angle
+enter = shoot
+q = quit the game
