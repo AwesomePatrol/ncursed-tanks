@@ -2,6 +2,7 @@
 #define TANK_MENU_H
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <ncurses.h>
 #include <menu.h>
 
@@ -22,6 +23,10 @@ const char *choices[] = {
                         "tank HP",
                         "dmg radius",
                         "dmg cap",
+                        "gravity",
+                        "power/coefficient",
+                        "map margin with no tanks",
+                        "distance between tanks",
                   };
 
 char *explanation[] = {
@@ -31,6 +36,10 @@ char *explanation[] = {
                         "INT {1..1000}",
                         "INT {2..16}",
                         "INT {1..1000}",
+                        "INT {1..10}",
+                        "INT {20..100}",
+                        "INT {2..128}",
+                        "INT {1..128}",
                   };
 
 #endif /* TANK_MENU_H */

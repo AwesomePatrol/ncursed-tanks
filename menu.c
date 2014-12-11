@@ -36,6 +36,12 @@ int main(int argv, char *argc[])
     debug_open("menu.debug");
 
     init_curses();
+
+    if (LINES < 24 || COLS < 36) {
+        endwin();
+        puts("Your screen is too small!");
+        return EXIT_FAILURE;
+    }
     
     read_config();
     

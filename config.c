@@ -16,6 +16,10 @@ struct config_item config[] = {
     {"tank_hp", 100, 1, 1000},
     {"dmg_radius", 4, 2, 16},
     {"dmg_cap", 50, 1, 1000},
+    {"gravity", 5, 1, 10},
+    {"power_c", 40, 20, 100},
+    {"map_margin", 4, 2, 128},
+    {"tank_distance", 10, 1, 128},
 };
 
 char *read_line(FILE *stream);
