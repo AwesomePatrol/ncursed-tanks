@@ -39,6 +39,7 @@ void unlock_clients(void);
 void add_update(struct client *cl, struct update *upd);
 void all_add_update(struct update *upd);
 void add_client(struct client *cl);
+void player_change_state(struct player *player, PlayerState state);
 struct client *find_client(client_id_t id);
 struct client *find_client_by_nickname(char *nickname);
 

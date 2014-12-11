@@ -175,10 +175,8 @@ void process_ready_command(struct thread_data *data)
     lock_clients();                                              /* {{{ */
     struct client *cl = find_client(data->client_id);
 
-    cl->player->state = PS_READY;
-
     /* Notify all players that the player has become ready */
-    all_add_update(new_player_update(U_PLAYER, cl->player));
+    player_change_state(cl->player, PS_READY);
 
     /* Check if all the players are ready */
     for (int i = 0; i < clients.count; i++)
@@ -208,6 +206,8 @@ void process_shoot_command(struct thread_data *data, int socket)
     debug_d( 0, "shot: power", shot->power);
 
     all_add_update(new_shot_update(shot, cl->id));
+
+    next_turn();
     unlock_clients();                                            /* }}} */
 
     free(shot);
@@ -266,8 +266,7 @@ void start_game(void)
     {
         struct client *cl = dyn_arr_get(&clients, i);
 
-        cl->player->state = PS_WAITING;
-        all_add_update(new_player_update(U_PLAYER, cl->player));
+        player_change_state(cl->player, PS_WAITING);
     }
 
     /* Give turn to the first player */
@@ -275,8 +274,50 @@ void start_game(void)
      * May become not true in the future?
      */
     struct client *cl = dyn_arr_get(&clients, 0);
-    cl->player->state = PS_ACTIVE;
-    all_add_update(new_player_update(U_PLAYER, cl->player));
+    player_change_state(cl->player, PS_ACTIVE);
 
     game_started = 1;
+}
+
+/* Advances turn to the next player */
+void next_turn(void)
+{
+    /* TODO Change / make the algorithm easier to read */
+    /* Returns 1 if made active */
+    int make_active_if_not(struct player *player)
+    {
+        if (player->state != PS_WAITING)
+            return 0;
+        player_change_state(player, PS_ACTIVE);
+        return 1;
+    }
+
+    int made_inactive = 0; /* bool */
+
+    for (int i = 0; i < clients.count; i++)
+    {
+        struct client *cl = dyn_arr_get(&clients, i);
+        struct player *player = cl->player;
+
+        if (!made_inactive)
+        {
+            if (player->state == PS_ACTIVE)
+            {
+                player_change_state(player, PS_WAITING);
+                made_inactive = 1;
+            }
+        }
+        else
+        {
+            if (make_active_if_not(player)) return;
+        }
+    }
+    /* Player made inactive but the next player still not made active */
+    /* Continue to look for the next inactive client from the beginning */
+    for (int i = 0; i < clients.count; i++)
+    {
+        struct client *cl = dyn_arr_get(&clients, i);
+
+        if (make_active_if_not(cl->player)) return;
+    }
 }

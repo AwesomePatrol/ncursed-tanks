@@ -70,6 +70,13 @@ void add_client(struct client *cl)
     dyn_arr_append(&clients, cl);
 }
 
+/* Changes player state and adds a player update to all the clients */
+void player_change_state(struct player *player, PlayerState state)
+{
+    player->state = state;
+    all_add_update(new_player_update(U_PLAYER, player));
+}
+
 struct client *find_client_by(int (*test)(struct client *))
 {
     for (int i = 0; i < clients.count; i++)
