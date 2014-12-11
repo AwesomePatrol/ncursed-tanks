@@ -3,16 +3,14 @@ Write documentation (gameplay, usage, syntax, etc.).
 Code core game stuff.
     * server
         ** collision detection -> place,dmg
+        ** read config and send to clients {C_CONFIG or U_CONFIG}
         ** end-game statistics
         ** start a new match? set number of games in config
-        ** menu: interface, config distribution
     * client
-        ** ready state
-        ** bullet rendering
-        ** move to struct map_position format
+        ** get config
         ** winner/loser and statistics end-game screen
         ** reconnect
-        ** get config
+        ** move to struct map_position format
     * common
         ** minor changes
             *** switch to using getaddrinfo for parsing IP, ...
