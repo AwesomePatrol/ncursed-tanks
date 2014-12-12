@@ -14,7 +14,8 @@
 #include "colors.h"
 #include "map_gen.h"
 
-#define C_XY 0.6
+#define DEFAULT_TIMEOUT 2000
+#define SHOOT_TIMEOUT 200 //200 = 5fps, 100 = 10fps
 
 /* GLOBAL */
 typedef enum ScreenUpdate {SCR_SHOOT, SCR_LOBBY, SCR_STATS, SCR_TANKS,
@@ -33,7 +34,7 @@ struct update s_update;
 /* game.c */
 int camera_move(int input_character);
 int change_camera_focus(int input_character);
-void center_camera(struct player *tank);
+void center_camera(struct map_position d_pos);
 int quit_key(int input_character);
 int shoot_menu(int input_character);
 int lobby_menu(int input_character);
@@ -60,6 +61,7 @@ void draw_map(map_t map, int pos_x, int pos_y, int width, int height);
 void draw_bullet(int pos_x, int pos_y, int x, int y);
 void draw_blank_bullet(int pos_x, int pos_y, int x, int y);
 void draw_shoot_menu();
+void draw_bullet_explosion(int pos_x, int pos_y, int x, int y);
 void render_shot(int s_angle, int s_power, int s_id);
 void draw_stats();
 void draw_lobby();

@@ -61,8 +61,29 @@ void draw_shoot_menu()
     attroff(COLOR_PAIR((int) COL_W));
 }
 
+void draw_bullet_explosion(int pos_x, int pos_y, int x, int y)
+{
+    int xx = x-pos_x;
+    int yy = y-pos_y;
+    if (xx > 0 && xx < COLS && yy > 0 && yy < LINES) {
+        put_col_str(COL_WW, yy, xx, "X");
+        put_col_str(COL_YY, yy-1, xx, "X");
+        put_col_str(COL_YY, yy+1, xx, "X");
+        put_col_str(COL_YY, yy, xx+1, "X");
+        put_col_str(COL_YY, yy, xx-1, "X");
+        put_col_str(COL_RR, yy-1, xx-1, "X");
+        put_col_str(COL_RR, yy+1, xx+1, "X");
+        put_col_str(COL_RR, yy-1, xx+1, "X");
+        put_col_str(COL_RR, yy+1, xx-1, "X");
+    }
+}
+
 void render_shot(int s_angle, int s_power, int s_id)
 {
+    center_camera(players[s_id].pos);
+    clear();
+    render_map();
+    render_tanks();
     debug_d(1, "RenderShotX", players[s_id].pos.x);
     debug_d(1, "RenderShotY", players[s_id].pos.y);
     debug_d(1, "RenderShot Angle", s_angle);
@@ -71,31 +92,35 @@ void render_shot(int s_angle, int s_power, int s_id)
     double radians = deg_to_rads(s_angle);
     float v_x = s_power * cos(radians) / C_POWER;
     float v_y = s_power * sin(radians) / C_POWER;
+    /* position (x,y) must be either double or float */
     float x = players[s_id].pos.x;
     float y = players[s_id].pos.y;
-    timeout(200); //5 fps
+    timeout(SHOOT_TIMEOUT);
     int fly=1;
     while (fly)
     {
-        draw_blank_bullet(dx, dy, x, y*C_XY);
+        draw_blank_bullet(dx, dy, x, y);
         x += v_x;
         y -= v_y;
         v_y -= GRAVITY;
         debug_d(1, "BulletX", x);
         debug_d(1, "BulletY", y);
-        draw_bullet(dx, dy, x, y*C_XY);
+        draw_bullet(dx, dy, x, y);
         refresh();
-        if (x > map_data->length  || x < 0 || y > map_data->height ||
-                y >= g_map[(int) x])
+        if (x > map_data->length  || x < 0)
+            fly=0;
+        if (y > map_data->height || y >= g_map[(int) x]) {
             fly = 0;
+            draw_bullet_explosion(dx, dy, x, y);
+            refresh();
+        }
         input_ch = getch();
         if (input_ch != ERR)
             quit_key(input_ch);
     }
-    /* add SCR_ALL to screen update queue */
-    ScreenUpdate shot_done = SCR_ALL;
-    dyn_arr_append(&ScrUpdates, &shot_done);
-    timeout(2000); //back to original
+    center_camera(players[camera_focus].pos);
+    /* SCR_ALL is already in screen update queue by center_camera*/
+    timeout(DEFAULT_TIMEOUT); //back to original
 }
 void draw_stats()
 {

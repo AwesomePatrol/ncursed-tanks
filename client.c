@@ -11,7 +11,7 @@ void init_curses()
     curs_set(FALSE); /* do not show cursor */
     keypad(stdscr, TRUE); /* get special keys (arrows) */
     cbreak(); /* get one char at the time */
-    timeout(2000); /* timeout getch(), don't wait forever */
+    timeout(DEFAULT_TIMEOUT); /* timeout getch(), don't wait forever */
 
     /* Initialize colors */
     start_color();
@@ -88,7 +88,6 @@ int main(int argc, char *argv[])
     
     while (players[0].state)
     {
-        center_camera(&players[0]);
         wait_scene();
         shoot_menu_scene();
     }

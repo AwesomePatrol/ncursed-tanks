@@ -52,18 +52,18 @@ int change_camera_focus(int input_character)
     }
     if (camera_focus > players_size-1) camera_focus=0;
     if (camera_focus < 0) camera_focus=players_size-1;
-    center_camera(&players[camera_focus]);
+    center_camera(players[camera_focus].pos);
     return 1;
 }
 
-void center_camera(struct player *tank)
+void center_camera(struct map_position d_pos)
 {
-    dx = tank->pos.x - COLS/2;
+    dx = d_pos.x - COLS/2;
     if (dx > (map_data->length - COLS))
         dx = map_data->length - COLS;
     else if (dx < 0)
         dx = 0;
-    dy = tank->pos.y - LINES/2;
+    dy = d_pos.y - LINES/2;
     if (dy > (map_data->height - LINES/2))
         dy = map_data->height - LINES/2;
     else if (dy < 0)

@@ -103,7 +103,7 @@ void shoot_menu_scene()
 {
     int input_ch;
     /* initial render */
-    center_camera(&players[camera_focus]);
+    center_camera(players[0].pos);
     clear();
     render_map();
     render_tanks();
@@ -128,7 +128,7 @@ void wait_scene()
 {
     int input_ch;
     /* initial render */
-    center_camera(&players[camera_focus]);
+    center_camera(players[camera_focus].pos);
     clear();
     render_map();
     render_tanks();
