@@ -6,17 +6,16 @@ This solution gives a user capability to run it on all *nix platforms.
 
 Usage
 -----
-Run compiled 'menu' or 'game'.
-'Menu' is used to set up a game in user-friendly interface
-which then runs 'game' with neccessary command line options.
 
-#to run a server
-./menu --server NAME
-#to run a client and connect to the sever
-./menu SERVER_IP NAME
+./menu
+#run config creator/modifier in user-friendly mode
+#config is saved in "server.conf", which is automatically read by server
 
-If you want to go straight to the game run 'game' specifing
-options or config file in command line.
+./client SERVER_IP NAME
+#run game's client and connect it to server specified by SERVER_IP, sets NAME
+
+./server
+#run server which hosts the game, parameters are specified in "server.conf"
 
 Gameplay
 --------
@@ -41,3 +40,8 @@ Optional dependencies
 ##doxygen
 > Standard tool for generating documentation
 http://www.stack.nl/~dimitri/doxygen/
+
+Build
+-----
+run "make" to build whole project
+run "make clean" to remove build files
