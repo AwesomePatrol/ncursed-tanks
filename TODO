@@ -5,14 +5,14 @@ Code core game stuff.
         ** collision detection -> place,dmg
         ** read config and send to clients {C_CONFIG or U_CONFIG}
         ** end-game statistics
-        ** start a new match? set number of games in config
+	** make tanks not just 1 point on the map + detect collisions with them
+        ** support multiple games
     * client
         ** get config
         ** winner/loser and statistics end-game screen
         ** reconnect
         ** move to struct map_position format
     * common
-        ** minor changes
-            *** switch to using getaddrinfo for parsing IP, ...
+        ** switch to using getaddrinfo for parsing IP, ...
 Gather ideas for weaponry and abilities.
 Document every weapon and ability.
