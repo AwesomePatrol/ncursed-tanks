@@ -22,6 +22,9 @@ struct config_item config[] = {
     {"tank_distance", 10, 1, 128},
 };
 
+const int config_count = sizeof(config) / sizeof(config[0]);
+
+
 char *read_line(FILE *stream);
 char *read_delimited(FILE *stream, int delim);
 
@@ -40,8 +43,7 @@ void read_config()
     config_file = fopen(SERVER_CONFIG_FILENAME, "r");
     if (config_file != NULL)
     {
-        int n = sizeof(config)/sizeof(config[0]);
-        for (int i = 0; i < n; i++)
+        for (int i = 0; i < config_count; i++)
         {
             char *name;
             char *value_s;
@@ -56,6 +58,9 @@ void read_config()
             value_s = read_line(config_file);
             if (!value_s)
                 break;
+            /* TODO what if the number is huge?
+             * Change value type to int16_t
+             */
             if (sscanf(value_s, "%d", &value) != 1)
                 break;
             free(value_s);
@@ -64,7 +69,7 @@ void read_config()
             debug_d(1, "config: read value", value);
             /* find a config item whose name matches current
              * and place the value there */
-            for (int j=0; j<n; j++)
+            for (int j=0; j<config_count; j++)
             {
                 int cmp = strcmp(name, config[j].name);
                 if (cmp == 0)
@@ -83,12 +88,20 @@ void read_config()
 void write_config()
 {
     config_file = fopen(SERVER_CONFIG_FILENAME, "w");
-    int n = sizeof(config)/sizeof(config[0]);
-    for (int i=0; i<n; i++)
+    for (int i=0; i<config_count; i++)
         fprintf(config_file, "%s %d\n",
                 config[i].name, config[i].value);
     fclose(config_file);
 }
+
+int config_get(char *name)
+{
+    for (int i = 0; i < config_count; i++)
+        if (strcmp(config[i].name, name) == 0)
+            return config[i].value;
+    return 0; /* If nothing found. Not the best way to show it */
+}
+
 
 /* Reads a whole line from stream, with trailing newline if it's present.
  * Returns NULL on {error or EOF} */

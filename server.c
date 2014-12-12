@@ -10,6 +10,8 @@ int main(int argc, char *argv[])
 {
     debug_open("server.debug");
 
+    read_config();
+
     init_signals();
 
     init_game();
@@ -64,6 +66,9 @@ void init_game(void)
 
     map_info.seed = rand();
     debug_d( 0, "map seed", map_info.seed);
+
+    map_info.length = config_get("map_width");
+    map_info.height = config_get("map_height");
 
     map = generate_map(&map_info);
 }

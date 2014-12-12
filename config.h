@@ -12,7 +12,10 @@ struct config_item
 #define SERVER_CONFIG_FILENAME "server.conf"
 
 extern struct config_item config[];
+
 void read_config();
 void write_config();
+
+int config_get(char *name);
 
 #endif /* CONFIG_H */
