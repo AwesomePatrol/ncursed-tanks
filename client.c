@@ -92,8 +92,12 @@ int main(int argc, char *argv[])
         shoot_menu_scene();
     }
 
+    /*free!*/
+    for (int i=0; i<players_size; i++)
+        clear_player(&players[i]);
     free(debug_filename);
     free(map_data);
+
     /* Close connection */
     close(cl_sock);
     endwin();

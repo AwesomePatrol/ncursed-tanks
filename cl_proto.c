@@ -45,6 +45,8 @@ void fetch_changes()
                     debug_s(1, "UpdatePlayer", UpdateNet->player.nickname);
                     int play_u_i = find_player(UpdateNet->player.id);
                     if (play_u_i >= 0) {
+                        /* free player-to-delete's nickname */
+                        clear_player(&players[play_u_i]);
                         players[play_u_i] = UpdateNet->player;
                         ScreenUpdate u_player;
                         switch (players[play_u_i].state)
@@ -66,10 +68,14 @@ void fetch_changes()
                     int play_d_i = find_player(UpdateNet->player.id);
                     if (play_d_i > 0) {
                         players_size--;
+                        /* free player's nickname */
+                        clear_player(&players[play_d_i]);
                         players[play_d_i] = players[players_size];
                     }
                     else
                         debug_s(1, "DeletePlayer", "wrong id");
+                    /* free player's nickname from update */
+                    clear_player(&UpdateNet->player);
                     ScreenUpdate del_player = SCR_TANKS;
                     dyn_arr_append(&ScrUpdates, &del_player);
                     break;
