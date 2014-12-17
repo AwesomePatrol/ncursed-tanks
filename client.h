@@ -15,7 +15,7 @@
 #include "map_gen.h"
 
 #define DEFAULT_TIMEOUT 2000
-#define SHOOT_TIMEOUT 200 //200 = 5fps, 100 = 10fps
+#define SHOOT_TIMEOUT 100 //200 = 5fps, 100 = 10fps
 
 /* GLOBAL */
 typedef enum ScreenUpdate {SCR_SHOOT, SCR_LOBBY, SCR_STATS, SCR_TANKS,
@@ -67,5 +67,8 @@ void draw_stats();
 void draw_lobby();
 void render_map();
 void render_tanks();
+
+/* shot.c */
+struct f_pair shot_pos(struct f_pair init_pos, struct f_pair init_v, float t);
 
 #endif /* CLIENT_H */

@@ -90,34 +90,42 @@ void render_shot(int s_angle, int s_power, int s_id)
     debug_d(1, "RenderShot Power", s_power);
     int input_ch;
     double radians = deg_to_rads(s_angle);
-    float v_x = s_power * cos(radians) / C_POWER;
-    float v_y = s_power * sin(radians) / C_POWER;
+    struct f_pair init_v = {s_power * cos(radians) / C_POWER,
+          -s_power * sin(radians) / C_POWER};
     /* position (x,y) must be either double or float */
-    float x = players[s_id].pos.x;
-    float y = players[s_id].pos.y;
+    struct f_pair init_pos = {players[s_id].pos.x, players[s_id].pos.y};
     timeout(SHOOT_TIMEOUT);
-    int fly=1;
-    while (fly)
+    float t=1;
+    struct f_pair b_pos = shot_pos(init_pos, init_v, t);
+    int x=(int) b_pos.x, y=(int) b_pos.y;
+    draw_bullet(dx, dy, x, y);
+    refresh();
+    input_ch = getch();
+    if (input_ch != ERR)
+        quit_key(input_ch);
+    while (players[0].state)
     {
         draw_blank_bullet(dx, dy, x, y);
-        x += v_x;
-        y -= v_y;
-        v_y -= GRAVITY;
         debug_d(1, "BulletX", x);
         debug_d(1, "BulletY", y);
+        t+=SHOOT_TIMEOUT/100;
+        b_pos = shot_pos(init_pos, init_v, t);
+        x=(int) b_pos.x; y=(int) b_pos.y;
         draw_bullet(dx, dy, x, y);
         refresh();
         if (x > map_data->length  || x < 0)
-            fly=0;
-        if (y > map_data->height || y >= g_map[(int) x]) {
-            fly = 0;
+            break;
+        if (y > map_data->height || y >= g_map[x]) {
             draw_bullet_explosion(dx, dy, x, y);
             refresh();
+            break;
         }
         input_ch = getch();
         if (input_ch != ERR)
             quit_key(input_ch);
     }
+    input_ch = getch(); // let players
+    input_ch = getch(); // see the explosion
     center_camera(players[camera_focus].pos);
     /* SCR_ALL is already in screen update queue by center_camera*/
     timeout(DEFAULT_TIMEOUT); //back to original

@@ -16,6 +16,8 @@
 
 /*gravity coefficient, later value from config*/
 #define GRAVITY 0.05
+/*wind value, later value from config*/
+#define WIND 0
 /*support for M_PI was dropped in C99, we don't need better value than here*/
 #define M_PI 3.1415
 /*power coefficient, later value from config*/
@@ -63,6 +65,12 @@ struct map_position
 {
     int16_t x;
     int16_t y;
+};
+
+struct f_pair
+{
+    float x;
+    float y;
 };
 
 struct player
