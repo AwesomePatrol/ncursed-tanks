@@ -164,7 +164,6 @@ void process_join_command(struct thread_data *data, int socket)
 
     unlock_clients();                                            /* }}} 2 */
 
-    free(cl);
     return;
 fail:
     free(nickname);
@@ -254,7 +253,7 @@ void delete_cur_client(void)
         debug_s( 3, "removing player", cl->player->nickname);
         all_add_update(new_player_update(U_DEL_PLAYER, cl->player));
         clear_client(cl);
-        p_dyn_arr_delete(&clients, client_loc);
+        p_dyn_arr_delete(&clients, (void **)client_loc);
     }
 
     unlock_clients();                                            /* }}} */
