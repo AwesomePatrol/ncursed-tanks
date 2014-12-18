@@ -25,7 +25,7 @@ struct client
 extern pthread_key_t thread_data;
 extern pthread_mutex_t clients_mutex;
 
-extern struct dyn_arr clients;
+extern struct p_dyn_arr clients;
 
 extern struct map_info map_info;
 extern map_t map;

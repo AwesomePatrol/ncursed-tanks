@@ -3,7 +3,7 @@
 pthread_key_t thread_data;
 pthread_mutex_t clients_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-struct dyn_arr clients = { sizeof(struct client) };
+struct p_dyn_arr clients = {0};
 
 struct map_info map_info;
 map_t map = NULL;
@@ -56,7 +56,7 @@ void all_add_update(struct update *upd)
 {
     for (int i = 0; i < clients.count; i++)
     {
-        struct client *cl = dyn_arr_get(&clients, i);
+        struct client *cl = p_dyn_arr_get(&clients, i);
 
         struct update upd_copy = copy_update(upd);
         uq_append(cl->updates, &upd_copy);
@@ -67,7 +67,7 @@ void all_add_update(struct update *upd)
 
 void add_client(struct client *cl)
 {
-    dyn_arr_append(&clients, cl);
+    p_dyn_arr_append(&clients, cl);
 }
 
 /* Changes player state and adds a player update to all the clients */
@@ -77,12 +77,15 @@ void player_change_state(struct player *player, PlayerState state)
     all_add_update(new_player_update(U_PLAYER, player));
 }
 
-struct client *find_client_by(int (*test)(struct client *))
+/* Returns the pointer to the array element of the client that satisfies test.
+ * Returns NULL if no such element found */
+struct client **find_client_loc_by(int (*test)(struct client *))
 {
     for (int i = 0; i < clients.count; i++)
     {
-        struct client *cl = dyn_arr_get(&clients, i);
-        if (test(cl))
+        struct client **cl =
+            (struct client **)p_dyn_arr_get_location(&clients, i);
+        if (test(*cl))
         {
             return cl;
         }
@@ -90,14 +93,19 @@ struct client *find_client_by(int (*test)(struct client *))
     return NULL;
 }
 
-struct client *find_client(client_id_t id)
+struct client **find_client_loc(client_id_t id)
 {
     int test(struct client *cl)
     {
         return cl->id == id;
     }
 
-    return find_client_by(test);
+    return find_client_loc_by(test);
+}
+
+struct client *find_client(client_id_t id)
+{
+    return *find_client_loc(id);
 }
 
 struct client *find_client_by_nickname(char *nickname)
@@ -107,7 +115,8 @@ struct client *find_client_by_nickname(char *nickname)
         return strcmp(cl->player->nickname, nickname) == 0;
     }
 
-    return find_client_by(test);
+    struct client **result = find_client_loc_by(test);
+    return result ? *result : NULL;
 }
 
 

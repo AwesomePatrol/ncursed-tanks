@@ -81,11 +81,12 @@ void exit_cleanup(void)
     /* for every player */
     for (int i = 0; i < clients.count; i++)
     {
-        struct client *cl = dyn_arr_get(&clients, i);
+        struct client *cl = p_dyn_arr_get(&clients, i);
 
         clear_client(cl);
+        free(cl);
     }
-    dyn_arr_clear(&clients);
+    p_dyn_arr_clear(&clients);
 
     close(server_socket);
 }

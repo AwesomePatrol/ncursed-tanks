@@ -158,7 +158,7 @@ void process_join_command(struct thread_data *data, int socket)
     /* Add all existing players to updates queue */
     for (int i = 0; i < clients.count; i++)
     {
-        struct client *other_cl = dyn_arr_get(&clients, i);
+        struct client *other_cl = p_dyn_arr_get(&clients, i);
         add_update(cl, new_player_update(U_ADD_PLAYER, other_cl->player));
     }
 
@@ -181,7 +181,7 @@ void process_ready_command(struct thread_data *data)
     /* Check if all the players are ready */
     for (int i = 0; i < clients.count; i++)
     {
-        struct client *cl = dyn_arr_get(&clients, i);
+        struct client *cl = p_dyn_arr_get(&clients, i);
 
         if (cl->player->state != PS_READY)
             goto end;
@@ -246,14 +246,15 @@ void delete_cur_client(void)
 
     lock_clients();                                              /* {{{ */
 
-    struct client *cl = find_client(data->client_id);
+    struct client **client_loc = find_client_loc(data->client_id);
+    struct client *cl = *client_loc;
     if (cl)
     {
         /* Notify clients of the player being deleted */
         debug_s( 3, "removing player", cl->player->nickname);
         all_add_update(new_player_update(U_DEL_PLAYER, cl->player));
         clear_client(cl);
-        dyn_arr_delete(&clients, cl);
+        p_dyn_arr_delete(&clients, client_loc);
     }
 
     unlock_clients();                                            /* }}} */
@@ -264,7 +265,7 @@ void start_game(void)
 {
     for (int i = 0; i < clients.count; i++)
     {
-        struct client *cl = dyn_arr_get(&clients, i);
+        struct client *cl = p_dyn_arr_get(&clients, i);
 
         player_change_state(cl->player, PS_WAITING);
     }
@@ -273,7 +274,7 @@ void start_game(void)
     /* Assume the first player is the first client.
      * May become not true in the future?
      */
-    struct client *cl = dyn_arr_get(&clients, 0);
+    struct client *cl = p_dyn_arr_get(&clients, 0);
     player_change_state(cl->player, PS_ACTIVE);
 
     game_started = 1;
@@ -296,7 +297,7 @@ void next_turn(void)
 
     for (int i = 0; i < clients.count; i++)
     {
-        struct client *cl = dyn_arr_get(&clients, i);
+        struct client *cl = p_dyn_arr_get(&clients, i);
         struct player *player = cl->player;
 
         if (!made_inactive)
@@ -316,7 +317,7 @@ void next_turn(void)
     /* Continue to look for the next inactive client from the beginning */
     for (int i = 0; i < clients.count; i++)
     {
-        struct client *cl = dyn_arr_get(&clients, i);
+        struct client *cl = p_dyn_arr_get(&clients, i);
 
         if (make_active_if_not(cl->player)) return;
     }
