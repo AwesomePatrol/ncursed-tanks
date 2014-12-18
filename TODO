@@ -14,5 +14,6 @@ Code core game stuff.
         ** move to struct map_position format
     * common
         ** switch to using getaddrinfo for parsing IP, ...
+        ** replace nested functions (GCC extension) with another method
 Gather ideas for weaponry and abilities.
 Document every weapon and ability.
