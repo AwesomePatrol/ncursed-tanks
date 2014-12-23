@@ -137,6 +137,7 @@ struct client *new_client(char *nickname)
 client_id_t new_client_id(void)
 {
     client_id_t result = ++player_id_counter;
+    /* TODO fix it somehow */
     if (player_id_counter == 0)
         debug_s( 5, "player id",
 "Player ID counter overflowed to 0 (\"empty\" value)! Expect breakage!");

@@ -246,9 +246,9 @@ void delete_cur_client(void)
     lock_clients();                                              /* {{{ */
 
     struct client **client_loc = find_client_loc(data->client_id);
-    struct client *cl = *client_loc;
-    if (cl)
+    if (client_loc)
     {
+        struct client *cl = *client_loc;
         /* Notify clients of the player being deleted */
         debug_s( 3, "removing player", cl->player->nickname);
         all_add_update(new_player_update(U_DEL_PLAYER, cl->player));
