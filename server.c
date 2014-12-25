@@ -61,11 +61,9 @@ void init_game(void)
 
     /* Initialize random number renerator with current time */
     random_seed = time(NULL);
-    debug_d( 0, "initial random seed", (signed long long)random_seed);
     srand(random_seed);
 
     map_info.seed = rand();
-    debug_d( 0, "map seed", map_info.seed);
 
     map_info.length = config_get("map_width");
     map_info.height = config_get("map_height");

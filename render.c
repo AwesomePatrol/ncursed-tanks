@@ -89,7 +89,7 @@ void render_shot(int s_angle, int s_power, int s_id)
     debug_d(1, "RenderShot Angle", s_angle);
     debug_d(1, "RenderShot Power", s_power);
     int input_ch;
-    double radians = deg_to_rads(s_angle);
+    double radians = deg_to_rad(s_angle);
     struct f_pair init_v = {s_power * cos(radians) / C_POWER,
           -s_power * sin(radians) / C_POWER};
     /* position (x,y) must be either double or float */

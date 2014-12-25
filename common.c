@@ -3,7 +3,7 @@
 #include "debug.h"
 
 /* converts degrees to radians */
-double deg_to_rads(int deg)
+double deg_to_rad(int deg)
 {
     switch (deg)
     {
@@ -248,23 +248,23 @@ int send_update(int socket, struct update *u)
     switch(u->type)
     {
     case U_EMPTY:
-        debug_s( 0, "send update: U_EMPTY", "");
+        //debug_s( 0, "send update: U_EMPTY", "");
         break;
     case U_PLAYER: case U_ADD_PLAYER: case U_DEL_PLAYER:
-        debug_s( 0, "send update: U_*PLAYER", u->player.nickname);
+        //debug_s( 0, "send update: U_*PLAYER", u->player.nickname);
         if (send_player(socket, &u->player) == -1)
             return -1;
 
         break;
     case U_MAP:
-        debug_s( 0, "send update: U_MAP", "");
+        //debug_s( 0, "send update: U_MAP", "");
         if (send_int16(socket, u->x) == -1          ||
             send_int16(socket, u->new_height) == -1)
             return -1;
 
         break;
     case U_SHOT:
-        debug_s( 0, "send update: U_SHOT", "");
+        //debug_s( 0, "send update: U_SHOT", "");
         if (send_shot(socket, &u->shot) == -1      ||
             send_int16(socket, u->player_id) == -1)
             return -1;

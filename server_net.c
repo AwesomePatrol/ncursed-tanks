@@ -40,6 +40,7 @@ void server_listen(void)
 {
     /* start listening, allowing a queue of up to 16 pending connection */
     listen(server_socket, 16);
+    debug_s(3, "listen", "Server started listening");
 
     /* listen until terminated */
     while (1)

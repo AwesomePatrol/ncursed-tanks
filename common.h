@@ -126,7 +126,7 @@ struct update
     };
 };
 
-double deg_to_rads(int deg);
+double deg_to_rad(int deg);
 
 void clear_player(struct player *p);
 
