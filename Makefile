@@ -1,12 +1,12 @@
-all: server client menu
+all: server client config_menu
 
 DOXYGENCONF=doxygen.conf
 
 CFLAGS += -std=c99
 
 OBJS_server := server.o common.o server_data.o server_net.o dyn_arr.o server_updates_queue.o config.o debug.o map_gen.o shot.o
-OBJS_client := client.o common.o debug.o dyn_arr.o cl_proto.o game.o scene.o map_gen.o shot.o render.o draw.o
-OBJS_menu := menu.o debug.o config.o
+OBJS_client := client.o common.o debug.o dyn_arr.o cl_proto.o game.o scene.o map_gen.o shot.o render.o draw.o config.o
+OBJS_config_menu := config_menu.o debug.o config.o
 
 server: $(OBJS_server) $(COBJS_server)
 	gcc -o $@ -pthread -lm -L/usr/lib $(OBJS_server) $(COBJS_server) 
@@ -14,8 +14,8 @@ server: $(OBJS_server) $(COBJS_server)
 client: $(OBJS_client) $(COBJS_client)
 	gcc -o $@ -lm -lncurses -L/usr/lib $(OBJS_client) $(COBJS_client)
 
-menu: $(OBJS_menu) $(COBJS_menu)
-	gcc -o $@ -lm -lmenu -lncurses -L/usr/lib $(OBJS_menu) $(COBJS_menu)
+config_menu: $(OBJS_config_menu) $(COBJS_config_menu)
+	gcc -o $@ -lm -lmenu -lncurses -L/usr/lib $(OBJS_config_menu) $(COBJS_config_menu)
 
 -include *.d
 
@@ -24,9 +24,9 @@ menu: $(OBJS_menu) $(COBJS_menu)
 	gcc -MM $< > $*.d
 
 clean:
-	rm -rf $(OBJS_server) $(OBJS_client) $(OBJS_menu)
+	rm -rf $(OBJS_server) $(OBJS_client) $(OBJS_config_menu)
 	rm -rf *.d
-	rm -rf server client menu
+	rm -rf server client config_menu
 
 test: all
 

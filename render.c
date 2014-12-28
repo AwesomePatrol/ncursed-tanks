@@ -90,12 +90,13 @@ void render_shot(struct shot *shot, int s_id)
     debug_d(1, "RenderShot Power", shot->power);
     int input_ch;
     struct f_pair init_v = initial_v(shot);
+    struct f_pair acc = acceleration();
     /* position (x,y) must be either double or float */
     struct f_pair init_pos = initial_pos(&players[s_id]);
     timeout(SHOOT_TIMEOUT);
     float t=1;
     /* this part is duplicated, use do...while? */
-    struct f_pair b_pos = shot_pos(init_pos, init_v, t);
+    struct f_pair b_pos = shot_pos(init_pos, init_v, acc, t);
     struct map_position map_pos = round_to_map_pos(b_pos);
     draw_bullet(dx, dy, map_pos.x, map_pos.y);
     refresh();
@@ -109,7 +110,7 @@ void render_shot(struct shot *shot, int s_id)
         debug_d(1, "BulletX", map_pos.x);
         debug_d(1, "BulletY", map_pos.y);
         t+=SHOOT_TIMEOUT/100;
-        b_pos = shot_pos(init_pos, init_v, t);
+        b_pos = shot_pos(init_pos, init_v, acc, t);
         map_pos = round_to_map_pos(b_pos);
         draw_bullet(dx, dy, map_pos.x, map_pos.y);
         refresh();

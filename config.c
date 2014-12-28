@@ -7,22 +7,27 @@
 #include "debug.h"
 #include "config.h"
 
+/* Duplicated in another file.
+ * TODO Do something about it */
+#define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
+
 FILE *config_file = NULL;
 
 struct config_item config[] = {
-    {"players_number", 2, 1, 16},
+    {"num_players", 2, 1, 16},
     {"map_width", 128, 48, 1024},
     {"map_height", 64, 48, 512},
     {"tank_hp", 100, 1, 1000},
     {"dmg_radius", 4, 2, 16},
     {"dmg_cap", 50, 1, 1000},
-    {"gravity", 5, 1, 10},
+    {"inv_gravity", 20, 1, 40},
+    {"wind", 0, -10, 10},
     {"power_c", 40, 20, 100},
     {"map_margin", 4, 2, 128},
     {"tank_distance", 10, 1, 128},
 };
 
-const int config_count = sizeof(config) / sizeof(config[0]);
+const int config_count = ARRAY_SIZE(config);
 
 
 char *read_line(FILE *stream);
@@ -127,7 +132,7 @@ char *read_delimited(FILE *stream, int delim)
     char *str = NULL;
     size_t buffer_len = 0;
 
-    ssize_t len = getline(&str, &buffer_len, stream);
+    ssize_t len = getdelim(&str, &buffer_len, delim, stream);
 
     if (len == -1) {
         free(str);

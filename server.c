@@ -77,12 +77,13 @@ void exit_cleanup(void)
     pthread_mutex_destroy(&clients_mutex);
     /* TODO close sockets from threads */
     /* for every player */
+    debug_d(0, "cleanup: number of clients", clients.count);
     for (int i = 0; i < clients.count; i++)
     {
         struct client *cl = p_dyn_arr_get(&clients, i);
 
-        clear_client(cl);
-        free(cl);
+        debug_d(0, "cleanup: freeing client #", cl->id);
+        free_client(cl);
     }
     p_dyn_arr_clear(&clients);
 

@@ -1,21 +1,31 @@
 #include "shot.h"
 
 /* calculate position of the bullet for specified t */
-struct f_pair shot_pos(struct f_pair init_pos, struct f_pair init_v, float t)
+struct f_pair shot_pos(struct f_pair init_pos,
+                       struct f_pair init_v, struct f_pair acc, float t)
 {
      return (struct f_pair) {
-         init_pos.x + (WIND ? init_v.x*t + t*t*WIND/2 : init_v.x*t),
-         init_pos.y + init_v.y*t + t*t*GRAVITY/2
+         init_pos.x + (acc.x ? init_v.x*t + t*t*acc.x/2 : init_v.x*t),
+         init_pos.y + init_v.y*t + t*t*acc.y/2
      };
 }
 
 struct f_pair initial_v(struct shot *shot)
 {
+    int power_c = config_get("power_c");
     double angle_rad = deg_to_rad(shot->angle);
 
     return (struct f_pair) {
-        shot->power * cos(angle_rad) / C_POWER,
-        -shot->power * sin(angle_rad) / C_POWER
+        shot->power * cos(angle_rad) / power_c,
+        -shot->power * sin(angle_rad) / power_c
+    };
+}
+
+struct f_pair acceleration(void)
+{
+    return (struct f_pair) {
+        config_get("wind"),
+        1.0 / config_get("inv_gravity")
     };
 }
 

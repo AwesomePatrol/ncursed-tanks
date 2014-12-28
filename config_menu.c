@@ -1,4 +1,22 @@
-#include "tank_menu.h"
+#include "config_menu.h"
+
+/* Dependent on the order of config variables. Very bad, needs to be fixed. */
+/* TODO Get the min/max values from config[] directly */
+const struct choice_info choices[] = {
+    {"number of players",        "INT {1..16}"},
+    {"map width",                "INT {48..1024}"},
+    {"map height",               "INT {48..1024}"},
+    {"tank HP",                  "INT {1..1000}"},
+    {"dmg radius",               "INT {2..16}"},
+    {"dmg cap",                  "INT {1..1000}"},
+    /* TODO change that or something */
+    {"inverse of gravity",       "INT {1..40}"},
+    {"wind",                     "INT {-10..10}"},
+    {"power/coefficient",        "INT {20..100}"},
+    {"map margin with no tanks", "INT {2..128}"},
+    {"distance between tanks",   "INT {1..128}"},
+};
+
 
 void init_curses()
 {
@@ -51,7 +69,8 @@ int main(int argv, char *argc[])
     my_items = (ITEM **)calloc(n_choices + 1, sizeof(ITEM *));
 
     for(i = 0; i < n_choices; ++i)
-            my_items[i] = new_item(choices[i], explanation[i]);
+            my_items[i] = new_item(choices[i].description,
+                                   choices[i].type_description);
     my_items[n_choices] = (ITEM *)NULL;
 
     my_menu = new_menu((ITEM **)my_items);
@@ -79,7 +98,8 @@ int main(int argv, char *argc[])
             case 10:
                 write_config();
                 mvprintw(LINES - 8, 1,
-                        "Configuration saved in \"server.conf\"");
+                         "Configuration saved in \""
+                         SERVER_CONFIG_FILENAME "\"");
                 break;
             default:
                 debug_c(1, "unsupported key", c);

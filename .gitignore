@@ -25,7 +25,7 @@ localdefs.mk
 # Compiled binary
 server
 client
-menu
+config_menu
 
 # Server configuration
 server.conf

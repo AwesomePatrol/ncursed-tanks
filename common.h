@@ -7,12 +7,8 @@
 #include <arpa/inet.h>
 
 #define PORTNUM 7979 /* Port Number */
-#define MAXRCVLEN 128 /* Maximal Length of Received Value */
 
 #define MAX_PLAYERS 16
-
-#define INITIAL_HP 1000
-#define MAP_NOTANK_MARGIN 5
 
 /*
  * command         args                reply

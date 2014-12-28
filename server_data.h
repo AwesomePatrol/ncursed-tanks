@@ -47,6 +47,7 @@ struct client *find_client_by_nickname(char *nickname);
 struct client *new_client(char *nickname);
 client_id_t new_client_id(void);
 void clear_client(struct client *cl);
+void free_client(struct client *cl);
 struct player *new_player(char *nickname, client_id_t id);
 int new_player_x(void);
 struct update *new_player_update(UpdateType type, struct player *player);

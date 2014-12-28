@@ -79,7 +79,7 @@ double get_t_step(double prev_delta_x, double prev_t,
 struct map_position get_impact_pos(struct player *player, struct shot *shot)
 {
     struct f_pair init_v = initial_v(shot);
-    struct f_pair acc = { WIND, GRAVITY };
+    struct f_pair acc = acceleration();
     short direction = fabs(init_v.x) / init_v.x;
 
     bool_t one_side_clear = FALSE;
@@ -97,7 +97,7 @@ struct map_position get_impact_pos(struct player *player, struct shot *shot)
         if (t_step != 0)
         {
             cur_t += t_step;
-            struct f_pair cur_f_pos = shot_pos(init_pos, init_v, cur_t);
+            struct f_pair cur_f_pos = shot_pos(init_pos, init_v, acc, cur_t);
             debug_f(0, "current x", cur_f_pos.x);
             debug_f(0, "current y", cur_f_pos.y);
             struct map_position cur_map_pos = round_to_map_pos(cur_f_pos);
@@ -235,6 +235,12 @@ void clear_client(struct client *cl)
     free(cl->player);
 }
 
+void free_client(struct client *cl)
+{
+    clear_client(cl);
+    free(cl);
+}
+
 struct player *new_player(char *nickname, client_id_t id)
 {
     int player_x = new_player_x();
@@ -244,7 +250,7 @@ struct player *new_player(char *nickname, client_id_t id)
         .state = PS_JOINED,
         .id = id,
         .nickname = nickname,
-        .hitpoints = INITIAL_HP,
+        .hitpoints = config_get("tank_hp"),
         .pos = { player_x,
                  map[player_x] - 1 }
     };
@@ -254,8 +260,9 @@ struct player *new_player(char *nickname, client_id_t id)
 
 int new_player_x(void)
 {
-    return MAP_NOTANK_MARGIN
-        + rand() % (map_info.length - 2 * MAP_NOTANK_MARGIN);
+    int notank_margin = config_get("map_margin");
+    return notank_margin
+        + rand() % (map_info.length - 2 * notank_margin);
 }
 
 struct update *new_player_update(UpdateType type, struct player *player)

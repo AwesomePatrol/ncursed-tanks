@@ -257,7 +257,7 @@ void delete_cur_client(void)
         /* Notify clients of the player being deleted */
         debug_s( 3, "removing player", cl->player->nickname);
         all_add_update(new_player_update(U_DEL_PLAYER, cl->player));
-        clear_client(cl);
+        free_client(cl);
         p_dyn_arr_delete(&clients, (void **)client_loc);
     }
 
