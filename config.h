@@ -1,12 +1,14 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#include <stdint.h>
+
 struct config_item
 {
     char *name;
-    int value;
-    int min;
-    int max;
+    int32_t value;
+    int32_t min;
+    int32_t max;
 };
 
 #define SERVER_CONFIG_FILENAME "server.conf"

@@ -108,7 +108,7 @@ struct update
         struct
         {
             char *opt_name;
-            int16_t opt_value;
+            int32_t opt_value;
         };
         /* for U_SHOT */
         struct

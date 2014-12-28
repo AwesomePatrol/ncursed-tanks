@@ -24,8 +24,8 @@ struct f_pair initial_v(struct shot *shot)
 struct f_pair acceleration(void)
 {
     return (struct f_pair) {
-        config_get("wind"),
-        1.0 / config_get("inv_gravity")
+        (double)config_get("wind") / 1000,
+        (double)config_get("gravity") / 1000
     };
 }
 

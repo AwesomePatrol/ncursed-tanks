@@ -10,8 +10,8 @@ const struct choice_info choices[] = {
     {"dmg radius",               "INT {2..16}"},
     {"dmg cap",                  "INT {1..1000}"},
     /* TODO change that or something */
-    {"inverse of gravity",       "INT {1..40}"},
-    {"wind",                     "INT {-10..10}"},
+    {"gravity",                  "INT {1..10000}"},
+    {"wind",                     "INT {-10000..10000}"},
     {"power/coefficient",        "INT {20..100}"},
     {"map margin with no tanks", "INT {2..128}"},
     {"distance between tanks",   "INT {1..128}"},

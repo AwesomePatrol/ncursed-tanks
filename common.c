@@ -250,7 +250,7 @@ int send_update(int socket, struct update *u)
     case U_CONFIG:
         //debug_s( 0, "send update: U_CONFIG", u->opt_name);
         if (send_string(socket, u->opt_name) == -1 ||
-            send_int16(socket, u->opt_value) == -1)
+            send_int32(socket, u->opt_value) == -1)
             return -1;
 
         break;
@@ -296,7 +296,7 @@ struct update *recv_update(int socket)
         break;
     case U_CONFIG:
         if ((result->opt_name = recv_string(socket)) == NULL ||
-            recv_int16(socket, &result->opt_value) <= 0)
+            recv_int32(socket, &result->opt_value) <= 0)
             goto fail;
 
         break;
