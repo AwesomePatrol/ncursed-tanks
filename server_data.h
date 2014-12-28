@@ -51,6 +51,7 @@ void free_client(struct client *cl);
 struct player *new_player(char *nickname, client_id_t id);
 int new_player_x(void);
 struct update *new_player_update(UpdateType type, struct player *player);
+struct update *new_config_update(struct config_item *opt);
 struct update *new_shot_update(struct shot *shot, client_id_t id);
 struct update copy_update(struct update *u);
 void clear_update(struct update *u);

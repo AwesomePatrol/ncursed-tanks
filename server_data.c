@@ -275,6 +275,17 @@ struct update *new_player_update(UpdateType type, struct player *player)
     return result;
 }
 
+struct update *new_config_update(struct config_item *opt)
+{
+    struct update *result = malloc(sizeof(*result));
+    *result = (struct update) {
+        .type = U_CONFIG,
+        .opt_name = opt->name,
+        .opt_value = opt->value,
+    };
+    return result;
+}
+
 struct update *new_shot_update(struct shot *shot, client_id_t id)
 {
     struct update *result = malloc(sizeof(*result));

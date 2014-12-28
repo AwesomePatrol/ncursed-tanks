@@ -163,6 +163,10 @@ void process_join_command(struct thread_data *data, int socket)
         add_update(cl, new_player_update(U_ADD_PLAYER, other_cl->player));
     }
 
+    /* Add current config to updates queue */
+    for (int i = 0; i < config_count; i++)
+        add_update(cl, new_config_update(&config[i]));
+
     unlock_clients();                                            /* }}} 2 */
 
     return;
