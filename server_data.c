@@ -297,6 +297,17 @@ struct update *new_shot_update(struct shot *shot, client_id_t id)
     return result;
 }
 
+struct update *new_map_update(int16_t x, int16_t new_height)
+{
+    struct update *result = malloc(sizeof(*result));
+    *result = (struct update) {
+        .type = U_MAP,
+        .x = x,
+        .new_height = new_height,
+    };
+    return result;
+}
+
 struct update copy_update(struct update *u)
 {
     struct update result = *u;

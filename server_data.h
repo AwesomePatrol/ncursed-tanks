@@ -53,6 +53,7 @@ int new_player_x(void);
 struct update *new_player_update(UpdateType type, struct player *player);
 struct update *new_config_update(struct config_item *opt);
 struct update *new_shot_update(struct shot *shot, client_id_t id);
+struct update *new_map_update(int16_t x, int16_t new_height);
 struct update copy_update(struct update *u);
 void clear_update(struct update *u);
 
