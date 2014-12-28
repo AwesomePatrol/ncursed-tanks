@@ -72,17 +72,7 @@ void read_config()
 
             debug_s(1, "config: read name", name);
             debug_d(1, "config: read value", value);
-            /* find a config item whose name matches current
-             * and place the value there */
-            for (int j=0; j<config_count; j++)
-            {
-                int cmp = strcmp(name, config[j].name);
-                if (cmp == 0)
-                {
-                    config[j].value = value;
-                    break;
-                }
-            }
+            config_set(name, value);
 
             free(name);
         }
@@ -105,6 +95,21 @@ int config_get(char *name)
         if (strcmp(config[i].name, name) == 0)
             return config[i].value;
     return 0; /* If nothing found. Not the best way to show it */
+}
+
+void config_set(char *name, config_value_t value)
+{
+    /* find a config item whose name matches this name
+     * and place the value there */
+    for (int i = 0; i < config_count; i++)
+    {
+        if (strcmp(name, config[i].name) == 0)
+        {
+            config[i].value = value;
+            return;
+        }
+    }
+    /* No such name found. Doing nothing about it for now. */
 }
 
 
