@@ -88,7 +88,7 @@ struct shot
 /* U_EMPTY -- end of updates -- no pending updates left */
 typedef enum UpdateType
 {
-    U_EMPTY = 0, U_MAP, U_SHOT, U_PLAYER, U_ADD_PLAYER, U_DEL_PLAYER,
+    U_EMPTY = 0, U_MAP, U_CONFIG, U_SHOT, U_PLAYER, U_ADD_PLAYER, U_DEL_PLAYER,
 } UpdateType;
 
 struct update
@@ -103,6 +103,12 @@ struct update
         {
             int16_t x;
             int16_t new_height;
+        };
+        /* for U_CONFIG */
+        struct
+        {
+            char *opt_name;
+            int16_t opt_value;
         };
         /* for U_SHOT */
         struct

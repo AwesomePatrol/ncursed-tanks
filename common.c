@@ -247,6 +247,13 @@ int send_update(int socket, struct update *u)
             return -1;
 
         break;
+    case U_CONFIG:
+        //debug_s( 0, "send update: U_CONFIG", u->opt_name);
+        if (send_string(socket, u->opt_name) == -1 ||
+            send_int16(socket, u->opt_value) == -1)
+            return -1;
+
+        break;
     case U_SHOT:
         //debug_s( 0, "send update: U_SHOT", "");
         if (send_shot(socket, &u->shot) == -1      ||
@@ -284,6 +291,12 @@ struct update *recv_update(int socket)
     case U_MAP:
         if (recv_int16(socket, &result->x) <= 0          ||
             recv_int16(socket, &result->new_height) <= 0)
+            goto fail;
+
+        break;
+    case U_CONFIG:
+        if ((result->opt_name = recv_string(socket)) == NULL ||
+            recv_int16(socket, &result->opt_value) <= 0)
             goto fail;
 
         break;
