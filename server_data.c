@@ -7,29 +7,109 @@ struct p_dyn_arr clients = {0};
 
 struct map_info map_info;
 map_t map = NULL;
-int game_started = 0;
-
-client_id_t player_id_counter = 0;
+bool_t game_started = FALSE;
 
 
-/* Move to server_game.c or something? */
-struct map_position get_impact_pos(struct shot *shot)
+/* helper for get_impact_pos() */
+double get_t_step(double prev_delta_x, double prev_t,
+                  short *direction, bool_t *one_side_clear,
+                  struct f_pair init_v, struct f_pair acc)
 {
-    /*
-     * x[0] = x0
-     * x[i] = x[i-1] + x_step
-     *   x_step = +-1 — depends on shot direction (left || right)
-     * y = y0 - (x-x0)*tg(angle) + (1/2)*g*((x-x0) / (v0*cos(angle)))^2
-     * y = y0 + c1*(x-x0) + c2*(x-x0)^2
-     *   x0 =? cl->player->pos.x
-     *   y0 =? cl->player->pos.y
-     *   v0 ~  power
-     *   c1 =  -tg(angle)
-     *   c2 =  (1/2)*g / (v0*cos(alpha))^2
-     * (y axis is oriented downwards)
-     */
-    /* Placeholder */
-    return (struct map_position) { 0, 0 };
+    double c1, c2;
+    double t_step1, t_step2;
+    
+    if (acc.x)
+    {
+        double D = sqrt(init_v.x*init_v.x + 2*init_v.x*acc.x*prev_t
+                        + 2*prev_delta_x + 2*(*direction));
+        if (!isnan(D))
+        {
+            c1 = -init_v.x - acc.x*prev_t;
+            c2 = acc.x;
+
+            t_step1 = (c1 + D) / c2;
+            t_step2 = (c1 - D) / c2;
+        }
+        else
+        {
+            /* Need to turn around to the opposite direction */
+            *direction = -(*direction);
+            return get_t_step(prev_delta_x, prev_t,
+                              direction, one_side_clear,
+                              init_v, acc);
+        }
+    }
+    else
+    {
+        c1 = prev_delta_x + *direction - init_v.x*prev_t;
+        c2 = init_v.x;
+
+        t_step1 = t_step2 = c1 / c2;
+    }
+    /* t_step1 >= t_step2 */
+
+    debug_f(0, "initial t step (1)", t_step1);
+    debug_f(0, "initial t step (2)", t_step2);
+
+    if (t_step1 >= 0)
+    {
+        return t_step1;
+    }
+    else if (t_step2 >= 0)
+    {
+        return t_step2;
+    }
+    else
+    {
+        /* No valid t_step found, turn back */
+        if (!one_side_clear)
+        {
+            *one_side_clear = TRUE;
+            *direction = -(*direction);
+        }
+        else
+        {
+            debug_s(5, "wtf", "Haven't found a valid t_step!");
+        }
+    }
+}
+
+/* TODO Detect collisions with tanks; test with WIND != 0 */
+/* Move to server_game.c or something? */
+struct map_position get_impact_pos(struct player *player, struct shot *shot)
+{
+    struct f_pair init_v = initial_v(shot);
+    struct f_pair acc = { WIND, GRAVITY };
+    short direction = fabs(init_v.x) / init_v.x;
+
+    bool_t one_side_clear = FALSE;
+    struct f_pair init_pos = initial_pos(player);
+    double cur_delta_x = 0;
+    double cur_t = 0;
+
+    while (TRUE) /* exit with return */
+    {
+        debug_f(0, "current delta_x", cur_delta_x);
+        double t_step = get_t_step(cur_delta_x, cur_t,
+                                   &direction, &one_side_clear,
+                                   init_v, acc);
+
+        if (t_step != 0)
+        {
+            cur_t += t_step;
+            struct f_pair cur_f_pos = shot_pos(init_pos, init_v, cur_t);
+            debug_f(0, "current x", cur_f_pos.x);
+            debug_f(0, "current y", cur_f_pos.y);
+            struct map_position cur_map_pos = round_to_map_pos(cur_f_pos);
+
+            /* TODO check for falling out of the map
+             * or being lower than the bottom */
+            if (cur_map_pos.y >= map[cur_map_pos.x])
+                return cur_map_pos;
+        }
+        /* x_step = direction */
+        cur_delta_x += direction;
+    }
 }
 
 void lock_clients(void)
@@ -136,6 +216,8 @@ struct client *new_client(char *nickname)
 
 client_id_t new_client_id(void)
 {
+    static client_id_t player_id_counter = 0;
+
     client_id_t result = ++player_id_counter;
     /* TODO fix it somehow */
     if (player_id_counter == 0)

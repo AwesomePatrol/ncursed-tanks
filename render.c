@@ -78,7 +78,7 @@ void draw_bullet_explosion(int pos_x, int pos_y, int x, int y)
     }
 }
 
-void render_shot(int s_angle, int s_power, int s_id)
+void render_shot(struct shot *shot, int s_id)
 {
     center_camera(players[s_id].pos);
     clear();
@@ -86,37 +86,37 @@ void render_shot(int s_angle, int s_power, int s_id)
     render_tanks();
     debug_d(1, "RenderShotX", players[s_id].pos.x);
     debug_d(1, "RenderShotY", players[s_id].pos.y);
-    debug_d(1, "RenderShot Angle", s_angle);
-    debug_d(1, "RenderShot Power", s_power);
+    debug_d(1, "RenderShot Angle", shot->angle);
+    debug_d(1, "RenderShot Power", shot->power);
     int input_ch;
-    double radians = deg_to_rad(s_angle);
-    struct f_pair init_v = {s_power * cos(radians) / C_POWER,
-          -s_power * sin(radians) / C_POWER};
+    struct f_pair init_v = initial_v(shot);
     /* position (x,y) must be either double or float */
-    struct f_pair init_pos = {players[s_id].pos.x, players[s_id].pos.y};
+    struct f_pair init_pos = initial_pos(&players[s_id]);
     timeout(SHOOT_TIMEOUT);
     float t=1;
+    /* this part is duplicated, use do...while? */
     struct f_pair b_pos = shot_pos(init_pos, init_v, t);
-    int x=(int) b_pos.x, y=(int) b_pos.y;
-    draw_bullet(dx, dy, x, y);
+    struct map_position map_pos = round_to_map_pos(b_pos);
+    draw_bullet(dx, dy, map_pos.x, map_pos.y);
     refresh();
+    /* end */
     input_ch = getch();
     if (input_ch != ERR)
         quit_key(input_ch);
     while (players[0].state)
     {
-        draw_blank_bullet(dx, dy, x, y);
-        debug_d(1, "BulletX", x);
-        debug_d(1, "BulletY", y);
+        draw_blank_bullet(dx, dy, map_pos.x, map_pos.y);
+        debug_d(1, "BulletX", map_pos.x);
+        debug_d(1, "BulletY", map_pos.y);
         t+=SHOOT_TIMEOUT/100;
         b_pos = shot_pos(init_pos, init_v, t);
-        x=(int) b_pos.x; y=(int) b_pos.y;
-        draw_bullet(dx, dy, x, y);
+        map_pos = round_to_map_pos(b_pos);
+        draw_bullet(dx, dy, map_pos.x, map_pos.y);
         refresh();
-        if (x > map_data->length  || x < 0)
+        if (map_pos.x > map_data->length  || map_pos.x < 0)
             break;
-        if (y > map_data->height || y >= g_map[x]) {
-            draw_bullet_explosion(dx, dy, x, y);
+        if (map_pos.y > map_data->height || map_pos.y >= g_map[map_pos.x]) {
+            draw_bullet_explosion(dx, dy, map_pos.x, map_pos.y);
             refresh();
             break;
         }

@@ -13,6 +13,7 @@
 #include "dyn_arr.h"
 #include "colors.h"
 #include "map_gen.h"
+#include "shot.h"
 
 #define DEFAULT_TIMEOUT 2000
 #define SHOOT_TIMEOUT 100 //200 = 5fps, 100 = 10fps
@@ -62,13 +63,10 @@ void draw_bullet(int pos_x, int pos_y, int x, int y);
 void draw_blank_bullet(int pos_x, int pos_y, int x, int y);
 void draw_shoot_menu();
 void draw_bullet_explosion(int pos_x, int pos_y, int x, int y);
-void render_shot(int s_angle, int s_power, int s_id);
+void render_shot(struct shot *shot, int s_id);
 void draw_stats();
 void draw_lobby();
 void render_map();
 void render_tanks();
-
-/* shot.c */
-struct f_pair shot_pos(struct f_pair init_pos, struct f_pair init_v, float t);
 
 #endif /* CLIENT_H */

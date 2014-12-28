@@ -29,9 +29,9 @@ extern struct p_dyn_arr clients;
 
 extern struct map_info map_info;
 extern map_t map;
-extern int game_started; /* bool */
+extern bool_t game_started;
 
-struct map_position get_impact_pos(struct shot *shot);
+struct map_position get_impact_pos(struct player *player, struct shot *shot);
 
 void lock_clients(void);
 void unlock_clients(void);

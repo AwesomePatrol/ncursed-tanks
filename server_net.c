@@ -43,7 +43,7 @@ void server_listen(void)
     debug_s(3, "listen", "Server started listening");
 
     /* listen until terminated */
-    while (1)
+    while (TRUE)
     {
         struct thread_data *thr_data = malloc(sizeof(*thr_data));
         *thr_data = (struct thread_data) {
@@ -206,6 +206,10 @@ void process_shoot_command(struct thread_data *data, int socket)
     debug_d( 0, "shot: power", shot->power);
 
     all_add_update(new_shot_update(shot, cl->id));
+    /* TODO calculate the damage, and update the map */
+    struct map_position impact_pos = get_impact_pos(cl->player, shot);
+    debug_d(0, "shot: impact x", impact_pos.x);
+    debug_d(0, "shot: impact y", impact_pos.y);
 
     next_turn();
     unlock_clients();                                            /* }}} */
@@ -218,7 +222,7 @@ void process_get_changes_command(struct thread_data *data, int socket)
     lock_clients();                                              /* {{{ */
     struct client *cl = find_client(data->client_id);
 
-    debug_d( 3, "sending changes to client #", cl->id);
+    //debug_d( 3, "sending changes to client #", cl->id);
 
     /* Send updates queue */
     send_uq(socket, cl->updates);
@@ -277,7 +281,7 @@ void start_game(void)
     struct client *cl = p_dyn_arr_get(&clients, 0);
     player_change_state(cl->player, PS_ACTIVE);
 
-    game_started = 1;
+    game_started = TRUE;
 }
 
 /* Advances turn to the next player */
@@ -293,7 +297,7 @@ void next_turn(void)
         return 1;
     }
 
-    int made_inactive = 0; /* bool */
+    bool_t made_inactive = FALSE;
 
     for (int i = 0; i < clients.count; i++)
     {
@@ -305,7 +309,7 @@ void next_turn(void)
             if (player->state == PS_ACTIVE)
             {
                 player_change_state(player, PS_WAITING);
-                made_inactive = 1;
+                made_inactive = TRUE;
             }
         }
         else

@@ -2,22 +2,6 @@
 /* Assume debug_open() is already called */
 #include "debug.h"
 
-/* converts degrees to radians */
-double deg_to_rad(int deg)
-{
-    switch (deg)
-    {
-        case 0:
-            return 0;
-        case 90:
-            return M_PI/2;
-        case 180:
-            return M_PI;
-        default:
-            return deg * M_PI / 180;
-    }
-}
-
 void clear_player(struct player *p)
 {
     free(p->nickname);
