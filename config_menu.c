@@ -3,7 +3,6 @@
 /* Dependent on the order of config variables. Very bad, needs to be fixed. */
 /* TODO Get the min/max values from config[] directly */
 const struct choice_info choices[] = {
-    {"number of players",        "INT {1..16}"},
     {"map width",                "INT {48..1024}"},
     {"map height",               "INT {48..1024}"},
     {"tank HP",                  "INT {1..1000}"},

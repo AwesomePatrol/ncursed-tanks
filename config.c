@@ -14,7 +14,6 @@
 FILE *config_file = NULL;
 
 struct config_item config[] = {
-    {"num_players", 2, 1, 16},
     {"map_width", 128, 48, 1024},
     {"map_height", 64, 48, 512},
     {"tank_hp", 100, 1, 1000},

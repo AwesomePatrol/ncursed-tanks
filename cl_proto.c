@@ -87,6 +87,10 @@ void fetch_changes()
                     ScreenUpdate u_shot = SCR_SHOOT;
                     dyn_arr_append(&ScrUpdates, &u_shot);
                     break;
+                case U_CONFIG:
+                    config_set(UpdateNet->opt_name, UpdateNet->opt_value);
+                    free(UpdateNet->opt_name);
+                    break;
                 default:
                     debug_d(3, "GetChangesType", UpdateNet->type);
             }

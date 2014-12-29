@@ -95,7 +95,7 @@ void render_shot(struct shot *shot, int s_id)
     struct f_pair init_pos = initial_pos(&players[s_id]);
     timeout(SHOOT_TIMEOUT);
     float t=1;
-    /* this part is duplicated, use do...while? */
+    /* this part is duplicated, because it's initial */
     struct f_pair b_pos = shot_pos(init_pos, init_v, acc, t);
     struct map_position map_pos = round_to_map_pos(b_pos);
     draw_bullet(dx, dy, map_pos.x, map_pos.y);
@@ -106,12 +106,14 @@ void render_shot(struct shot *shot, int s_id)
         quit_key(input_ch);
     while (players[0].state)
     {
+        /* remove drew bullet */
         draw_blank_bullet(dx, dy, map_pos.x, map_pos.y);
         debug_d(1, "BulletX", map_pos.x);
         debug_d(1, "BulletY", map_pos.y);
         t+=SHOOT_TIMEOUT/100;
         b_pos = shot_pos(init_pos, init_v, acc, t);
         map_pos = round_to_map_pos(b_pos);
+        /* draw a new one */
         draw_bullet(dx, dy, map_pos.x, map_pos.y);
         refresh();
         if (map_pos.x > map_data->length  || map_pos.x < 0)
@@ -121,6 +123,7 @@ void render_shot(struct shot *shot, int s_id)
             refresh();
             break;
         }
+        /* let player see the change */
         input_ch = getch();
         if (input_ch != ERR)
             quit_key(input_ch);
