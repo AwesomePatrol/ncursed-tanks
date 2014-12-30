@@ -88,7 +88,10 @@ void fetch_changes()
                     dyn_arr_append(&ScrUpdates, &u_shot);
                     break;
                 case U_CONFIG:
+                    debug_s(1, "ValueName", UpdateNet->opt_name);
+                    debug_d(1, "Value", UpdateNet->opt_value);
                     config_set(UpdateNet->opt_name, UpdateNet->opt_value);
+                    /* free name of the value */
                     free(UpdateNet->opt_name);
                     break;
                 default:
@@ -103,7 +106,7 @@ void fetch_changes()
     }
 }
 
-/* join the game and fetch map if successful */
+/* join the game. fetch map and changes if successful */
 int join_game(char *nickname)
 {
     send_int8(sock, C_JOIN);
