@@ -12,16 +12,16 @@ bool_t game_started = FALSE;
 
 /* helper for get_impact_pos() */
 double get_t_step(double prev_delta_x, double prev_t,
-                  short *direction, bool_t *one_side_clear,
+                  double *x_step, bool_t *one_side_clear,
                   struct f_pair init_v, struct f_pair acc)
 {
     double c1, c2;
     double t_step1, t_step2;
-    
+
     if (acc.x)
     {
         double D = sqrt(init_v.x*init_v.x
-                        + 2*acc.x*(prev_delta_x + *direction));
+                        + 2*acc.x*(prev_delta_x + *x_step));
         if (!isnan(D))
         {
             c1 = -init_v.x - acc.x*prev_t;
@@ -29,27 +29,29 @@ double get_t_step(double prev_delta_x, double prev_t,
 
             t_step1 = (c1 + D) / c2;
             t_step2 = (c1 - D) / c2;
+
+            debug_f(0, "t step (1)", t_step1);
+            debug_f(0, "t step (2)", t_step2);
         }
         else
         {
             /* Need to turn around to the opposite direction */
-            *direction = -(*direction);
+            *x_step = -(*x_step);
             return get_t_step(prev_delta_x, prev_t,
-                              direction, one_side_clear,
+                              x_step, one_side_clear,
                               init_v, acc);
         }
     }
     else
     {
-        c1 = prev_delta_x + *direction - init_v.x*prev_t;
+        c1 = prev_delta_x + *x_step - init_v.x*prev_t;
         c2 = init_v.x;
 
         t_step1 = t_step2 = c1 / c2;
+
+        debug_f(0, "t step", t_step1);
     }
     /* t_step1 >= t_step2 */
-
-    debug_f(0, "t step (1)", t_step1);
-    debug_f(0, "t step (2)", t_step2);
 
     if (t_step1 >= 0)
     {
@@ -65,7 +67,7 @@ double get_t_step(double prev_delta_x, double prev_t,
         if (!one_side_clear)
         {
             *one_side_clear = TRUE;
-            *direction = -(*direction);
+            *x_step = -(*x_step);
         }
         else
         {
@@ -80,18 +82,22 @@ struct map_position get_impact_pos(struct player *player, struct shot *shot)
 {
     struct f_pair init_v = initial_v(shot);
     struct f_pair acc = acceleration();
-    short direction = fabs(init_v.x) / init_v.x;
+    short init_direction = fabs(init_v.x) / init_v.x;
+
+    struct f_pair init_pos = initial_pos(player);
+    double x_step = (double)init_direction / COLLISION_X_PRECISION;
 
     bool_t one_side_clear = FALSE;
-    struct f_pair init_pos = initial_pos(player);
     double cur_delta_x = 0;
     double cur_t = 0;
+
+    debug_f(0, "shot: wind", acc.x);
 
     while (TRUE) /* exit with return */
     {
         debug_f(0, "current delta_x", cur_delta_x);
         double t_step = get_t_step(cur_delta_x, cur_t,
-                                   &direction, &one_side_clear,
+                                   &x_step, &one_side_clear,
                                    init_v, acc);
 
         if (t_step != 0)
@@ -108,8 +114,7 @@ struct map_position get_impact_pos(struct player *player, struct shot *shot)
             if (cur_map_pos.y >= map_y)
                 return (struct map_position) { cur_map_pos.x, map_y };
         }
-        /* x_step = direction */
-        cur_delta_x += direction;
+        cur_delta_x += x_step;
     }
 }
 

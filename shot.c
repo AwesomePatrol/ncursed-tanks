@@ -38,7 +38,8 @@ struct map_position round_to_map_pos(struct f_pair pos)
 {
     return (struct map_position) {
         round(pos.x - 0.5),
-        floor(pos.y)
+        /* Is using floor right? */
+        floor(pos.y - 0.5)
     };
 }
 

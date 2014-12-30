@@ -23,6 +23,9 @@ struct client
     pthread_mutex_t updates_mutex;
 };
 
+/* more -> better */
+#define COLLISION_X_PRECISION 16
+
 
 extern pthread_key_t thread_data;
 extern pthread_mutex_t clients_array_mutex;
