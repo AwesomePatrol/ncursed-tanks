@@ -218,6 +218,8 @@ void process_shoot_command(struct thread_data *data, int socket)
     debug_d(0, "shot: impact y", impact_pos.y);
     unlock_clients_array();                                      /* }}} */
 
+    update_map(impact_pos);
+
     next_turn();
 
     free(shot);
@@ -334,5 +336,14 @@ void next_turn(void)
     }
 
  end:
+    unlock_clients_array();                                      /* }}} */
+}
+
+void update_map(struct map_position impact_pos)
+{
+    lock_clients_array();                                        /* {{{ */
+
+    change_map(impact_pos.x, impact_pos.y + 1);
+
     unlock_clients_array();                                      /* }}} */
 }

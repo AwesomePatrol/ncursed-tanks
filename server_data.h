@@ -35,6 +35,9 @@ extern bool_t game_started;
 
 struct map_position get_impact_pos(struct player *player, struct shot *shot);
 
+void player_change_state(struct player *player, PlayerState state);
+void change_map(int16_t x, int16_t new_height);
+
 void lock_clients_array(void);
 void unlock_clients_array(void);
 void lock_updates(struct client *cl);
@@ -43,7 +46,6 @@ void unlock_updates(struct client *cl);
 void add_update(struct client *cl, struct update *upd);
 void all_add_update(struct update *upd);
 void add_client(struct client *cl);
-void player_change_state(struct player *player, PlayerState state);
 struct client **find_client_loc(client_id_t id);
 struct client *find_client_by_nickname(char *nickname);
 

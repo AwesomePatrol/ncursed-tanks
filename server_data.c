@@ -20,8 +20,8 @@ double get_t_step(double prev_delta_x, double prev_t,
     
     if (acc.x)
     {
-        double D = sqrt(init_v.x*init_v.x + 2*init_v.x*acc.x*prev_t
-                        + 2*prev_delta_x + 2*(*direction));
+        double D = sqrt(init_v.x*init_v.x
+                        + 2*acc.x*(prev_delta_x + *direction));
         if (!isnan(D))
         {
             c1 = -init_v.x - acc.x*prev_t;
@@ -104,8 +104,9 @@ struct map_position get_impact_pos(struct player *player, struct shot *shot)
 
             /* TODO check for falling out of the map
              * or being lower than the bottom */
-            if (cur_map_pos.y >= map[cur_map_pos.x])
-                return cur_map_pos;
+            int16_t map_y = map[cur_map_pos.x];
+            if (cur_map_pos.y >= map_y)
+                return (struct map_position) { cur_map_pos.x, map_y };
         }
         /* x_step = direction */
         cur_delta_x += direction;
@@ -171,6 +172,12 @@ void player_change_state(struct player *player, PlayerState state)
 {
     player->state = state;
     all_add_update(new_player_update(U_PLAYER, player));
+}
+
+void change_map(int16_t x, int16_t new_height)
+{
+    map[x] = new_height;
+    all_add_update(new_map_update(x, new_height));
 }
 
 /* Returns the pointer to the array element of the client that satisfies test.
