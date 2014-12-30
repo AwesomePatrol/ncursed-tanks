@@ -1,5 +1,4 @@
 #include "client.h"
-#include "math.h" //required by render_shot
 
 void draw_tank(Color color, int pos_x, int pos_y, int x, int y, int angle)
 {
@@ -164,7 +163,8 @@ void draw_lobby()
 void render_tanks()
 {
     for (int i=0; i<players_size; i++)
-        draw_tank( i == 0 ? COL_W : COL_Y,
+        if (players[i].state != PS_DEAD)
+            draw_tank( i == 0 ? COL_W : COL_Y,
                 dx, dy, players[i].pos.x, players[i].pos.y, 0);
 }
 
