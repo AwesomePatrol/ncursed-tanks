@@ -131,11 +131,13 @@ void process_join_command(struct thread_data *data, int socket)
         send_int8(socket, JR_GAME_IN_PROGRESS);
         goto fail;
     }
-    /* Check if the nickname already used */
-    lock_clients();                                              /* {{{ */
+    /* Check if the nickname is already used */
+    /* Lock kept for so long so that
+     * no different client with the same nickname can join */
+    lock_clients_array();                                        /* {{{ */
     if (find_client_by_nickname(nickname))
     {
-        unlock_clients();                                        /* }}} 1 */
+        unlock_clients_array();                                  /* }}} 1 */
         debug_s( 3, "join: nickname already taken", nickname);
         send_int8(socket, JR_NICKNAME_TAKEN);
         goto fail;
@@ -143,7 +145,7 @@ void process_join_command(struct thread_data *data, int socket)
 
     debug_s( 3, "join: new player", nickname);
     struct client *cl = new_client(nickname);
-    data->client_id = cl->id;
+    data->client = cl;
 
     send_int8(socket, JR_OK);
     send_int16(socket, cl->id);
@@ -156,6 +158,8 @@ void process_join_command(struct thread_data *data, int socket)
 
     add_client(cl);
 
+    unlock_clients_array();                                      /* }}} 2 */
+
     /* Add all existing players to updates queue */
     for (int i = 0; i < clients.count; i++)
     {
@@ -167,8 +171,6 @@ void process_join_command(struct thread_data *data, int socket)
     for (int i = 0; i < config_count; i++)
         add_update(cl, new_config_update(&config[i]));
 
-    unlock_clients();                                            /* }}} 2 */
-
     return;
 fail:
     free(nickname);
@@ -176,9 +178,9 @@ fail:
 
 void process_ready_command(struct thread_data *data)
 {
-    lock_clients();                                              /* {{{ */
-    struct client *cl = find_client(data->client_id);
+    struct client *cl = data->client;
 
+    lock_clients_array();                                        /* {{{ */
     /* Notify all players that the player has become ready */
     player_change_state(cl->player, PS_READY);
 
@@ -194,45 +196,45 @@ void process_ready_command(struct thread_data *data)
     start_game();
 
 end:
-    unlock_clients();                                            /* }}} */
+    unlock_clients_array();                                      /* }}} */
 }
 
 void process_shoot_command(struct thread_data *data, int socket)
 {
     struct shot *shot = recv_shot(socket);
 
-    lock_clients();                                              /* {{{ */
     /* TODO What if no client? */
-    struct client *cl = find_client(data->client_id);
+    struct client *cl = data->client;
 
     debug_d( 3, "shot: client #", cl->id);
     debug_d( 0, "shot: angle", shot->angle);
     debug_d( 0, "shot: power", shot->power);
 
+    lock_clients_array();                                        /* {{{ */
     all_add_update(new_shot_update(shot, cl->id));
     /* TODO calculate the damage, and update the map */
     struct map_position impact_pos = get_impact_pos(cl->player, shot);
     debug_d(0, "shot: impact x", impact_pos.x);
     debug_d(0, "shot: impact y", impact_pos.y);
+    unlock_clients_array();                                      /* }}} */
 
     next_turn();
-    unlock_clients();                                            /* }}} */
 
     free(shot);
 }
 
 void process_get_changes_command(struct thread_data *data, int socket)
 {
-    lock_clients();                                              /* {{{ */
-    struct client *cl = find_client(data->client_id);
+    struct client *cl = data->client;
 
     //debug_d( 3, "sending changes to client #", cl->id);
 
+    lock_updates(cl);                                            /* {{{ */
     /* Send updates queue */
     send_uq(socket, cl->updates);
 
     uq_clear(cl->updates);
-    unlock_clients();                                            /* }}} */
+    unlock_updates(cl);                                          /* }}} */
 }
 
 void process_get_map_command(struct thread_data *data, int socket)
@@ -247,14 +249,13 @@ void delete_cur_client(void)
 {
     struct thread_data *data = pthread_getspecific(thread_data);
 
-    /* No client ID, nothing to do */
-    /* TODO possibly move to find_client, to prevent breakage in other places */
-    if (!data->client_id)
+    /* No client, nothing to do */
+    if (!data->client)
         return;
 
-    lock_clients();                                              /* {{{ */
+    lock_clients_array();                                        /* {{{ */
 
-    struct client **client_loc = find_client_loc(data->client_id);
+    struct client **client_loc = find_client_loc(data->client->id);
     if (client_loc)
     {
         struct client *cl = *client_loc;
@@ -265,13 +266,13 @@ void delete_cur_client(void)
         p_dyn_arr_delete(&clients, (void **)client_loc);
     }
 
-    unlock_clients();                                            /* }}} */
+    unlock_clients_array();                                      /* }}} */
 }
 
 /* Called by other functions, doesn't do locking */
 void start_game(void)
 {
-    for (int i = 0; i < clients.count; i++)
+    for (int i = 1; i < clients.count; i++)
     {
         struct client *cl = p_dyn_arr_get(&clients, i);
 
@@ -303,6 +304,8 @@ void next_turn(void)
 
     bool_t made_inactive = FALSE;
 
+    lock_clients_array();                                        /* {{{ */
+
     for (int i = 0; i < clients.count; i++)
     {
         struct client *cl = p_dyn_arr_get(&clients, i);
@@ -318,7 +321,7 @@ void next_turn(void)
         }
         else
         {
-            if (make_active_if_not(player)) return;
+            if (make_active_if_not(player)) goto end;
         }
     }
     /* Player made inactive but the next player still not made active */
@@ -327,6 +330,9 @@ void next_turn(void)
     {
         struct client *cl = p_dyn_arr_get(&clients, i);
 
-        if (make_active_if_not(cl->player)) return;
+        if (make_active_if_not(cl->player)) goto end;
     }
+
+ end:
+    unlock_clients_array();                                      /* }}} */
 }

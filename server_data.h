@@ -11,7 +11,7 @@ struct thread_data
     pthread_t thread;
     int socket;
 
-    client_id_t client_id;
+    struct client *client;
 };
 
 struct client
@@ -19,11 +19,13 @@ struct client
     client_id_t id;
     struct player *player;
     struct updates_queue *updates;
+
+    pthread_mutex_t updates_mutex;
 };
 
 
 extern pthread_key_t thread_data;
-extern pthread_mutex_t clients_mutex;
+extern pthread_mutex_t clients_array_mutex;
 
 extern struct p_dyn_arr clients;
 
@@ -33,15 +35,16 @@ extern bool_t game_started;
 
 struct map_position get_impact_pos(struct player *player, struct shot *shot);
 
-void lock_clients(void);
-void unlock_clients(void);
+void lock_clients_array(void);
+void unlock_clients_array(void);
+void lock_updates(struct client *cl);
+void unlock_updates(struct client *cl);
 
 void add_update(struct client *cl, struct update *upd);
 void all_add_update(struct update *upd);
 void add_client(struct client *cl);
 void player_change_state(struct player *player, PlayerState state);
 struct client **find_client_loc(client_id_t id);
-struct client *find_client(client_id_t id);
 struct client *find_client_by_nickname(char *nickname);
 
 struct client *new_client(char *nickname);

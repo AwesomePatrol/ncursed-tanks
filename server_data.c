@@ -1,7 +1,7 @@
 #include "server_data.h"
 
 pthread_key_t thread_data;
-pthread_mutex_t clients_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t clients_array_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 struct p_dyn_arr clients = {0};
 
@@ -112,26 +112,42 @@ struct map_position get_impact_pos(struct player *player, struct shot *shot)
     }
 }
 
-void lock_clients(void)
+void lock_clients_array(void)
 {
-    pthread_mutex_lock(&clients_mutex);
+    //debug_s(0, "lock clients array", "Locking");
+    pthread_mutex_lock(&clients_array_mutex);
 }
 
-void unlock_clients(void)
+void unlock_clients_array(void)
 {
-    pthread_mutex_unlock(&clients_mutex);
+    //debug_s(0, "unlock clients array", "Unlocking");
+    pthread_mutex_unlock(&clients_array_mutex);
+}
+
+void lock_updates(struct client *cl)
+{
+    pthread_mutex_lock(&cl->updates_mutex);
+}
+
+void unlock_updates(struct client *cl)
+{
+    pthread_mutex_unlock(&cl->updates_mutex);
 }
 
 /* frees upd */
 void add_update(struct client *cl, struct update *upd)
 {
     struct update upd_copy = copy_update(upd);
+
+    lock_updates(cl);                                            /* {{{ */
     uq_append(cl->updates, &upd_copy);
+    unlock_updates(cl);                                          /* }}} */
 
     free(upd);
 }
 
 /* frees upd */
+/* clients_array must be locked already, doesn't do it on its own */
 void all_add_update(struct update *upd)
 {
     for (int i = 0; i < clients.count; i++)
@@ -183,11 +199,6 @@ struct client **find_client_loc(client_id_t id)
     return find_client_loc_by(test);
 }
 
-struct client *find_client(client_id_t id)
-{
-    return *find_client_loc(id);
-}
-
 struct client *find_client_by_nickname(char *nickname)
 {
     int test(struct client *cl)
@@ -209,6 +220,7 @@ struct client *new_client(char *nickname)
         .id = id,
         .player = new_player(nickname, id),
         .updates = new_uq(),
+        .updates_mutex = PTHREAD_MUTEX_INITIALIZER,
     };
 
     return result;
@@ -231,6 +243,7 @@ void clear_client(struct client *cl)
 {
     if (uq_is_nonempty(cl->updates))
         free_uq(cl->updates);
+    pthread_mutex_destroy(&cl->updates_mutex);
     clear_player(cl->player);
     free(cl->player);
 }

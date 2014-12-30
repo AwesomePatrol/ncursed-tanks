@@ -74,7 +74,7 @@ void init_game(void)
 void exit_cleanup(void)
 {
     free(map);
-    pthread_mutex_destroy(&clients_mutex);
+    pthread_mutex_destroy(&clients_array_mutex);
     /* TODO close sockets from threads */
     /* for every player */
     debug_d(0, "cleanup: number of clients", clients.count);
