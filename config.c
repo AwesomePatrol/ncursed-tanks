@@ -51,7 +51,7 @@ void read_config()
         {
             char *name;
             char *value_s;
-            int value;
+            config_value_t value;
 
             /* read name */
             name = read_delimited(config_file, ' ');
@@ -69,8 +69,8 @@ void read_config()
                 break;
             free(value_s);
 
-            debug_s(1, "config: read name", name);
-            debug_d(1, "config: read value", value);
+            debug_s(0, "config: read name", name);
+            debug_d(0, "config: read value", value);
             config_set(name, value);
 
             free(name);
@@ -88,8 +88,9 @@ void write_config()
     fclose(config_file);
 }
 
-int config_get(char *name)
+config_value_t config_get(char *name)
 {
+    /* TODO Do something about the linear search. Use a hash table? */
     for (int i = 0; i < config_count; i++)
         if (strcmp(config[i].name, name) == 0)
             return config[i].value;
@@ -109,6 +110,7 @@ void config_set(char *name, config_value_t value)
         }
     }
     /* No such name found. Doing nothing about it for now. */
+    debug_s(5, "config_set: No option found in config", name);
 }
 
 
@@ -144,8 +146,9 @@ char *read_delimited(FILE *stream, int delim)
     }
 
     /* remove delimiter at the end */
-    if (str[len] == delim)
-        str[len] = '\0';
+    if (str[len - 1] == delim)
+        str[len - 1] = '\0';
+    /* TODO shrink allocated size after this? */
 
     return str;
 }
