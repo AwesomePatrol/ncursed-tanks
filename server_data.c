@@ -48,8 +48,8 @@ double get_t_step(double prev_delta_x, double prev_t,
     }
     /* t_step1 >= t_step2 */
 
-    debug_f(0, "initial t step (1)", t_step1);
-    debug_f(0, "initial t step (2)", t_step2);
+    debug_f(0, "t step (1)", t_step1);
+    debug_f(0, "t step (2)", t_step2);
 
     if (t_step1 >= 0)
     {
