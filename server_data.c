@@ -205,8 +205,15 @@ void player_change_state(struct player *player, PlayerState state)
 
 void player_do_damage(struct player *player, int16_t damage)
 {
-    player->hitpoints -= config_get("dmg_cap");
+    player->hitpoints -= damage;
+    if (player->hitpoints <= 0)
+        player_die(player);
     all_add_update(new_player_update(U_PLAYER, player));
+}
+
+void player_die(struct player *player)
+{
+    player_change_state(player, PS_DEAD);
 }
 
 void change_map(int16_t x, int16_t new_height)

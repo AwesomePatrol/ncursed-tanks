@@ -42,6 +42,7 @@ map_t map_with_tanks(void);
 
 void player_change_state(struct player *player, PlayerState state);
 void player_do_damage(struct player *player, int16_t damage);
+void player_die(struct player *player);
 void change_map(int16_t x, int16_t new_height);
 
 void lock_clients_array(void);
