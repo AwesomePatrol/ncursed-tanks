@@ -1,4 +1,4 @@
-#include "map_gen.h"
+#include "map.h"
 
 map_t generate_map(struct map_info *info)
 {

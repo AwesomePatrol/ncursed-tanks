@@ -15,7 +15,7 @@
 #include "config.h"
 #include "dyn_arr.h"
 #include "debug.h"
-#include "map_gen.h"
+#include "map.h"
 #include "shot.h"
 #include "server_updates_queue.h"
 
