@@ -12,7 +12,6 @@
 #include <sys/types.h>
 #include <netinet/in.h>
 
-#include "bool.h"
 #include "config.h"
 #include "dyn_arr.h"
 #include "debug.h"

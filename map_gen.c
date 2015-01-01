@@ -19,3 +19,18 @@ map_t generate_map(struct map_info *info)
 
     return map;
 }
+
+map_t copy_map(map_t map, struct map_info *info)
+{
+    size_t map_size = info->length * sizeof(map_elt_t);
+    map_t new_map = malloc(map_size);
+
+    memcpy(new_map, map, map_size);
+
+    return new_map;
+}
+
+bool_t is_inside_map(struct map_position pos, struct map_info *info)
+{
+    return pos.x >= 0 && pos.x < info->length;
+}

@@ -7,6 +7,7 @@ struct p_dyn_arr clients = {0};
 
 struct map_info map_info;
 map_t map = NULL;
+map_t tanks_map = NULL;
 bool_t game_started = FALSE;
 
 
@@ -27,8 +28,8 @@ double get_t_step(double prev_delta_x, double prev_t,
             c1 = -init_v.x - acc.x*prev_t;
             c2 = acc.x;
 
-            t_step1 = (c1 + D) / c2;
-            t_step2 = (c1 - D) / c2;
+            t_step1 = (c1 - D) / c2;
+            t_step2 = (c1 + D) / c2;
 
             debug_f(0, "t step (1)", t_step1);
             debug_f(0, "t step (2)", t_step2);
@@ -51,7 +52,7 @@ double get_t_step(double prev_delta_x, double prev_t,
 
         debug_f(0, "t step", t_step1);
     }
-    /* t_step1 >= t_step2 */
+    /* t_step1 <= t_step2 */
 
     if (t_step1 >= 0)
     {
@@ -76,7 +77,6 @@ double get_t_step(double prev_delta_x, double prev_t,
     }
 }
 
-/* TODO Detect collisions with tanks; test with WIND != 0 */
 /* Move to server_game.c or something? */
 struct map_position get_impact_pos(struct player *player, struct shot *shot)
 {
@@ -103,19 +103,43 @@ struct map_position get_impact_pos(struct player *player, struct shot *shot)
         if (t_step != 0)
         {
             cur_t += t_step;
-            struct f_pair cur_f_pos = shot_pos(init_pos, init_v, acc, cur_t);
-            debug_f(0, "current x", cur_f_pos.x);
-            debug_f(0, "current y", cur_f_pos.y);
-            struct map_position cur_map_pos = round_to_map_pos(cur_f_pos);
+            struct f_pair f_pos = shot_pos(init_pos, init_v, acc, cur_t);
+            debug_f(0, "current x", f_pos.x);
+            debug_f(0, "current y", f_pos.y);
+            struct map_position map_pos = round_to_map_pos(f_pos);
+            map_elt_t map_y;
 
-            /* TODO check for falling out of the map
-             * or being lower than the bottom */
-            int16_t map_y = map[cur_map_pos.x];
-            if (cur_map_pos.y >= map_y)
-                return (struct map_position) { cur_map_pos.x, map_y };
+            /* The bullet might return from the edge of the map,
+             * so stop only when it falls to the bottom */
+            if (!is_inside_map(map_pos, &map_info))
+                map_y = map_info.height;
+            else
+                map_y = tanks_map[map_pos.x];
+
+            if (map_pos.y >= map_y)
+                return (struct map_position) { map_pos.x, map_y };
         }
         cur_delta_x += x_step;
     }
+}
+
+/* Doesn't lock clients array, must be already locked */
+map_t map_with_tanks(void)
+{
+    debug_s(0, "copy map", "Starting");
+    map_t new_map = copy_map(map, &map_info);
+    debug_s(0, "copy map", "Done");
+
+    for (int i = 0; i < clients.count; i++)
+    {
+        struct client *cl = p_dyn_arr_get(&clients, i);
+
+        /* Assume a client always has a player */
+        /* Raise the map where there is a tank */
+        new_map[cl->player->pos.x]--;
+    }
+
+    return new_map;
 }
 
 void lock_clients_array(void)
@@ -176,6 +200,12 @@ void add_client(struct client *cl)
 void player_change_state(struct player *player, PlayerState state)
 {
     player->state = state;
+    all_add_update(new_player_update(U_PLAYER, player));
+}
+
+void player_do_damage(struct player *player, int16_t damage)
+{
+    player->hitpoints -= config_get("dmg_cap");
     all_add_update(new_player_update(U_PLAYER, player));
 }
 

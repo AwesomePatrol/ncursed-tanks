@@ -212,13 +212,15 @@ void process_shoot_command(struct thread_data *data, int socket)
 
     lock_clients_array();                                        /* {{{ */
     all_add_update(new_shot_update(shot, cl->id));
-    /* TODO calculate the damage, and update the map */
+    unlock_clients_array();                                      /* }}} */
+
     struct map_position impact_pos = get_impact_pos(cl->player, shot);
     debug_d(0, "shot: impact x", impact_pos.x);
     debug_d(0, "shot: impact y", impact_pos.y);
-    unlock_clients_array();                                      /* }}} */
 
-    update_map(impact_pos);
+    shot_update_map(impact_pos);
+
+    shot_do_damage(impact_pos);
 
     next_turn();
 
@@ -274,6 +276,9 @@ void delete_cur_client(void)
 /* Called by other functions, doesn't do locking */
 void start_game(void)
 {
+    tanks_map = map_with_tanks();
+    debug_s(0, "start game", "Copied map");
+
     for (int i = 1; i < clients.count; i++)
     {
         struct client *cl = p_dyn_arr_get(&clients, i);
@@ -339,11 +344,29 @@ void next_turn(void)
     unlock_clients_array();                                      /* }}} */
 }
 
-void update_map(struct map_position impact_pos)
+void shot_update_map(struct map_position impact_pos)
 {
     lock_clients_array();                                        /* {{{ */
 
     change_map(impact_pos.x, impact_pos.y + 1);
 
+    unlock_clients_array();                                      /* }}} */
+}
+
+void shot_do_damage(struct map_position impact_pos)
+{
+    lock_clients_array();                                        /* {{{ */
+    for (int i = 0; i < clients.count; i++)
+    {
+        struct client *cl = p_dyn_arr_get(&clients, i);
+        struct player *player = cl->player;
+
+        if (player->pos.x == impact_pos.x)
+        {
+            /* Found the tank which must receive damage */
+            player_do_damage(player, config_get("dmg_cap"));
+            break;
+        }
+    }
     unlock_clients_array();                                      /* }}} */
 }
