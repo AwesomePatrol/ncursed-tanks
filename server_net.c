@@ -217,10 +217,16 @@ void process_shoot_command(struct thread_data *data, int socket)
     struct map_position impact_pos = get_impact_pos(cl->player, shot);
     debug_d(0, "shot: impact x", impact_pos.x);
     debug_d(0, "shot: impact y", impact_pos.y);
+    if (is_inside_map(impact_pos, &map_info))
+        debug_d(0, "shot: map y @ impact pos", map[impact_pos.x]);
+    else
+        debug_s(0, "shot", "Impact position outside map");
+
+    shot_do_damage(impact_pos);
 
     shot_update_map(impact_pos);
 
-    shot_do_damage(impact_pos);
+    tanks_map = map_with_tanks();
 
     next_turn();
 
@@ -344,27 +350,71 @@ void next_turn(void)
     unlock_clients_array();                                      /* }}} */
 }
 
+double min(double a, double b)
+{
+    return a <= b ? a : b;
+}
+
+/* helper for shot_update_map() */
+void update_map_at(struct f_pair pos, struct map_position map_pos,
+                   struct f_pair orig_pos,
+                   config_value_t radius)
+{
+    double map_y = map_y_to_float(map[map_pos.x]);
+
+    double x_diff = pos.x - orig_pos.x;
+    double y_diff = sqrt(radius*radius - x_diff*x_diff);
+    double change_amount =
+        min(pos.y + y_diff, map_y) - min(pos.y - y_diff, map_y);
+    debug_f(0, "update_map_at: change amount", change_amount);
+
+    lock_clients_array();                                        /* {{{ */
+    change_map(map_pos.x, map[map_pos.x] + round(change_amount));
+    unlock_clients_array();                                      /* }}} */
+}
+
 void shot_update_map(struct map_position impact_pos)
 {
-    lock_clients_array();                                        /* {{{ */
+    config_value_t radius = config_get("dmg_radius");
+    debug_d(0, "damage radius", radius);
 
-    change_map(impact_pos.x, impact_pos.y + 1);
+    if (!is_inside_map(impact_pos, &map_info))
+        return;
 
-    unlock_clients_array();                                      /* }}} */
+    struct f_pair orig_pos = map_pos_to_float(impact_pos);
+    double left_x = orig_pos.x - radius;
+    double right_x = orig_pos.x + radius;
+    debug_f(0, "left x", left_x);
+    debug_f(0, "right x", right_x);
+
+    struct f_pair pos = { left_x, orig_pos.y };
+    for (; pos.x <= right_x; pos.x += 1)
+    {
+        debug_f(0, "update map: current x", pos.x);
+        struct map_position map_pos = round_to_map_pos(pos);
+
+        if (is_inside_map(map_pos, &map_info))
+            update_map_at(pos, map_pos, orig_pos, radius);
+    }
 }
 
 void shot_do_damage(struct map_position impact_pos)
 {
+    if (!is_inside_map(impact_pos, &map_info))
+        return;
+
     lock_clients_array();                                        /* {{{ */
     for (int i = 0; i < clients.count; i++)
     {
         struct client *cl = p_dyn_arr_get(&clients, i);
         struct player *player = cl->player;
 
-        if (player->pos.x == impact_pos.x)
+        if (player->state != PS_DEAD      &&
+            player->pos.x == impact_pos.x)
         {
             /* Found the tank which must receive damage */
             player_do_damage(player, config_get("dmg_cap"));
+            debug_s(3, "damaged player", player->nickname);
             break;
         }
     }

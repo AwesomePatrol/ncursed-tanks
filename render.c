@@ -109,7 +109,7 @@ void render_shot(struct shot *shot, int s_id)
         draw_blank_bullet(dx, dy, map_pos.x, map_pos.y);
         debug_d(1, "BulletX", map_pos.x);
         debug_d(1, "BulletY", map_pos.y);
-        t+=SHOOT_TIMEOUT/100;
+        t+=(float)SHOOT_TIMEOUT/100;
         b_pos = shot_pos(init_pos, init_v, acc, t);
         map_pos = round_to_map_pos(b_pos);
         /* draw a new one */

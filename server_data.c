@@ -117,7 +117,7 @@ struct map_position get_impact_pos(struct player *player, struct shot *shot)
                 map_y = tanks_map[map_pos.x];
 
             if (map_pos.y >= map_y)
-                return (struct map_position) { map_pos.x, map_y };
+                return map_pos;
         }
         cur_delta_x += x_step;
     }
@@ -126,17 +126,18 @@ struct map_position get_impact_pos(struct player *player, struct shot *shot)
 /* Doesn't lock clients array, must be already locked */
 map_t map_with_tanks(void)
 {
-    debug_s(0, "copy map", "Starting");
     map_t new_map = copy_map(map, &map_info);
-    debug_s(0, "copy map", "Done");
 
     for (int i = 0; i < clients.count; i++)
     {
         struct client *cl = p_dyn_arr_get(&clients, i);
-
         /* Assume a client always has a player */
+        struct player *player = cl->player;
+
         /* Raise the map where there is a tank */
-        new_map[cl->player->pos.x]--;
+        /* Don't for a dead player */
+        if (player->state != PS_DEAD)
+            new_map[player->pos.x]--;
     }
 
     return new_map;
@@ -216,7 +217,7 @@ void player_die(struct player *player)
     player_change_state(player, PS_DEAD);
 }
 
-void change_map(int16_t x, int16_t new_height)
+void change_map(int16_t x, map_height_t new_height)
 {
     map[x] = new_height;
     all_add_update(new_map_update(x, new_height));
