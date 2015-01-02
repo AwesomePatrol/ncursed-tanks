@@ -222,7 +222,7 @@ void process_shoot_command(struct thread_data *data, int socket)
     else
         debug_s(0, "shot", "Impact position outside map");
 
-    shot_do_damage(impact_pos);
+    shot_deal_damage(impact_pos);
 
     shot_update_map(impact_pos);
 
@@ -398,7 +398,7 @@ void shot_update_map(struct map_position impact_pos)
     }
 }
 
-void shot_do_damage(struct map_position impact_pos)
+void shot_deal_damage(struct map_position impact_pos)
 {
     if (!is_inside_map(impact_pos, &map_info))
         return;
@@ -413,7 +413,7 @@ void shot_do_damage(struct map_position impact_pos)
             player->pos.x == impact_pos.x)
         {
             /* Found the tank which must receive damage */
-            player_do_damage(player, config_get("dmg_cap"));
+            player_deal_damage(player, config_get("dmg_cap"));
             debug_s(3, "damaged player", player->nickname);
             break;
         }

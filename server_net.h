@@ -21,7 +21,7 @@ void process_get_map_command(struct thread_data *data, int socket);
 void start_game(void);
 void next_turn(void);
 void shot_update_map(struct map_position impact_pos);
-void shot_do_damage(struct map_position impact_pos);
+void shot_deal_damage(struct map_position impact_pos);
 void delete_cur_client(void);
 
 #endif /* SERVER_NET_H */

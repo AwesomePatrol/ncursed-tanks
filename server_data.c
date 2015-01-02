@@ -204,7 +204,7 @@ void player_change_state(struct player *player, PlayerState state)
     all_add_update(new_player_update(U_PLAYER, player));
 }
 
-void player_do_damage(struct player *player, int16_t damage)
+void player_deal_damage(struct player *player, int16_t damage)
 {
     player->hitpoints -= damage;
     if (player->hitpoints <= 0)
