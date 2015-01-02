@@ -396,6 +396,31 @@ void shot_update_map(struct map_position impact_pos)
         if (is_inside_map(map_pos, &map_info))
             update_map_at(pos, map_pos, orig_pos, radius);
     }
+
+    /* Place all tanks above ground back onto the ground */
+    lock_clients_array();                                        /* {{{ */
+    for (int i = 0; i < clients.count; i++)
+    {
+        struct client *cl = p_dyn_arr_get(&clients, i);
+        struct player *player = cl->player;
+        map_height_t map_y = map[player->pos.x];
+
+        if (player->pos.y < map_y)
+            player->pos.y = new_player_y(player->pos.x);
+    }
+    unlock_clients_array();                                      /* }}} */
+}
+
+int16_t damage_to_player(struct f_pair impact_pos, struct f_pair player_pos)
+{
+    config_value_t damage_cap = config_get("dmg_cap");
+    config_value_t radius = config_get("dmg_radius");
+    struct f_pair diff = { player_pos.x - impact_pos.x,
+                           player_pos.y - impact_pos.y };
+    double distance = sqrt(diff.x*diff.x + diff.y*diff.y);
+
+    /* damage in the impact point - damage_cap, on the edge of the radius - 0 */
+    return damage_cap - distance * ((double)damage_cap / radius);
 }
 
 void shot_deal_damage(struct map_position impact_pos)
@@ -403,18 +428,21 @@ void shot_deal_damage(struct map_position impact_pos)
     if (!is_inside_map(impact_pos, &map_info))
         return;
 
+    struct f_pair f_impact_pos = map_pos_to_float(impact_pos);
+
     lock_clients_array();                                        /* {{{ */
     for (int i = 0; i < clients.count; i++)
     {
         struct client *cl = p_dyn_arr_get(&clients, i);
         struct player *player = cl->player;
 
-        if (player->state != PS_DEAD      &&
-            player->pos.x == impact_pos.x)
+        if (player->state != PS_DEAD)
         {
-            /* Found the tank which must receive damage */
-            player_deal_damage(player, config_get("dmg_cap"));
-            debug_s(3, "damaged player", player->nickname);
+            struct f_pair f_player_pos = map_pos_to_float(player->pos);
+
+            int16_t damage = damage_to_player(f_impact_pos, f_player_pos);
+            if (damage > 0)
+                player_deal_damage(player, damage);
             break;
         }
     }

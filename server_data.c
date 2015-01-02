@@ -210,6 +210,8 @@ void player_deal_damage(struct player *player, int16_t damage)
     if (player->hitpoints <= 0)
         player_die(player);
     all_add_update(new_player_update(U_PLAYER, player));
+    debug_s(3, "damage: player", player->nickname);
+    debug_d(3, "damage", damage);
 }
 
 void player_die(struct player *player)
@@ -315,17 +317,22 @@ struct player *new_player(char *nickname, client_id_t id)
         .nickname = nickname,
         .hitpoints = config_get("tank_hp"),
         .pos = { player_x,
-                 map[player_x] - 1 }
+                 new_player_y(player_x) }
     };
 
     return result;
 }
 
-int new_player_x(void)
+int16_t new_player_x(void)
 {
     int notank_margin = config_get("map_margin");
     return notank_margin
         + rand() % (map_info.length - 2 * notank_margin);
+}
+
+map_height_t new_player_y(int16_t x)
+{
+    return map[x] - 1;
 }
 
 struct update *new_player_update(UpdateType type, struct player *player)
