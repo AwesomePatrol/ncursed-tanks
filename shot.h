@@ -18,4 +18,7 @@ struct f_pair acceleration(void);
 struct f_pair initial_pos(struct player *player);
 struct map_position round_to_map_pos(struct f_pair pos);
 
+double distance(struct f_pair a, struct f_pair b);
+int damage(struct player *p, struct f_pair s);
+
 #endif /* SHOT_H */
