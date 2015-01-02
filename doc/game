@@ -9,8 +9,7 @@ Client may be configured only by command line.
 Client
 ------
 First you connect to the server using comand line parameters.
-Once all the clients connect (players number >= 0.7 * number speciefied by server conf)
-every player set his ready and the game starts.
+Once all the clients set their status as ready, the game starts.
 
 Gameplay
 --------

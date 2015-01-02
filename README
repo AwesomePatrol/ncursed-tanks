@@ -45,3 +45,4 @@ Build
 -----
 run "make" to build whole project
 run "make clean" to remove build files
+run "make doc" to generate documentation

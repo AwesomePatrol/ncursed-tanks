@@ -1,8 +1,12 @@
 Config
 ======
-players_number INT // {1..16}
 map_width INT // {48..1024}, values around 140 are the best
 map_height INT // {48..512}, these does not affect gameplay much
 tank_hp INT // {1..1000} choose 1 for one-shot game, 1000 is for very long games
 dmg_radius INT // {2..16} how does dmg scale with distance
 dmg_cap INT // {1..1000} what's the maximum dmg bullet can inflict to tank
+gravity INT // {1..10000} gravity in the game (how fast bullets fall)
+wind INT // {-10000..10000} self-explanatory
+power_c INT // {20..100} power coefficient. what can be maximum initial velocity (scaling)
+map_margin INT // {2..128} map margin with no tanks
+tank_distance INT // {1..128} how far apart tanks should be (initially)
