@@ -84,7 +84,7 @@ struct map_position get_impact_pos(struct player *player, struct shot *shot)
     struct f_pair acc = acceleration();
     short init_direction = fabs(init_v.x) / init_v.x;
 
-    struct f_pair init_pos = initial_pos(player);
+    struct f_pair init_pos = map_pos_to_float(player->pos);
     double x_step = (double)init_direction / COLLISION_X_PRECISION;
 
     bool_t one_side_clear = FALSE;

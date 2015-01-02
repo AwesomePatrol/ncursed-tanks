@@ -91,7 +91,7 @@ void render_shot(struct shot *shot, int s_id)
     struct f_pair init_v = initial_v(shot);
     struct f_pair acc = acceleration();
     /* position (x,y) must be either double or float */
-    struct f_pair init_pos = initial_pos(&players[s_id]);
+    struct f_pair init_pos = map_pos_to_float(players[s_id].pos);
     timeout(SHOOT_TIMEOUT);
     float t=1;
     /* this part is duplicated, because it's initial */

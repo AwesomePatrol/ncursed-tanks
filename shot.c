@@ -29,9 +29,21 @@ struct f_pair acceleration(void)
     };
 }
 
-struct f_pair initial_pos(struct player *player)
+double map_x_to_float(int16_t x)
 {
-    return (struct f_pair) { player->pos.x + 0.5, player->pos.y + 0.5 };
+    return x + 0.5;
+}
+double map_y_to_float(map_height_t y)
+{
+    return y + 0.5;
+}
+
+struct f_pair map_pos_to_float(struct map_position map_pos)
+{
+    return (struct f_pair) {
+        map_x_to_float(map_pos.x),
+        map_y_to_float(map_pos.y)
+    };
 }
 
 struct map_position round_to_map_pos(struct f_pair pos)
