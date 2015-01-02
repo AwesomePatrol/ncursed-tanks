@@ -1,19 +1,17 @@
 #TRY to keep the list in order
-Write documentation (gameplay, usage, syntax, etc.).
 Code core game stuff.
     * server
-        ** collision detection -> place,dmg
-        ** read config and send to clients {C_CONFIG or U_CONFIG}
+        ** collision detection -> dmg
         ** end-game statistics
-	** make tanks not just 1 point on the map + detect collisions with them
+	    ** make tanks not just 1 point on the map + detect collisions with them
         ** support multiple games
     * client
-        ** get config
+        ** move players[] to dyn_arr
         ** winner/loser and statistics end-game screen
         ** reconnect
-        ** move to struct map_position format
     * common
-        ** switch to using getaddrinfo for parsing IP, ...
+        ** write documentation (gameplay, usage, syntax, …)
+        ** switch to using getaddrinfo for parsing IP, …
         ** replace nested functions (GCC extension) with another method
 Gather ideas for weaponry and abilities.
 Document every weapon and ability.
