@@ -4,6 +4,19 @@ int dx = 0, dy = 0;
 int angle = 90, power = 50;
 u_int16_t players_size = 0; 
 
+void print_help()
+{
+    puts("Usage: client [OPTION]... SERVER_IP PLAYER_NAME");
+    puts("OPTION may be:");
+    puts("-w, --width WIDTH\t specify width (number of columns) of a window");
+    puts("-h, --height HEIGHT\t specify height (number of lines) of a window");
+    puts("");
+    puts("Run client --help to see this message");
+    puts("Terminal size must be at least 24x20");
+    puts("");
+    puts("For complete documentation look for ./doc in project's files");
+}
+
 void init_curses()
 {
     initscr(); /* initialize screen to draw on */
@@ -30,17 +43,47 @@ void init_curses()
 
 int main(int argc, char *argv[])
 {
-    /* Be sure we have proper arguments */
-    if ( argc <= 2 || strlen(argv[1]) < 7
-            || strlen(argv[2]) < 3)
+    unsigned int cmd_lines=0, cmd_cols=0;
+
+    /* Help and help only */
+    if ( argc > 1 )
+        if ( strcmp(argv[1],"--help") == 0) {
+            print_help();
+            return EXIT_SUCCESS;
+        }
+    
+    /* Too few arguments error */
+    if ( argc <= 2 )
     {
-        if (DEBUG <= 5) puts("Wrong command-line arguments!");
+        if (DEBUG <= 5) puts("Too few arguments!");
         return EXIT_FAILURE;
     }
-    
+
+    /* In case we have at least two extra command line arguments */
+    if ( argc >= 5 )
+    {
+        if (strcmp(argv[1],"--width") == 0 || strcmp(argv[1],"-w") == 0)
+            cmd_cols=atoi(argv[2]);
+        if (strcmp(argv[1],"--height") == 0 || strcmp(argv[1],"-h") == 0)
+            cmd_lines=atoi(argv[2]);
+    }
+
+    /* In case we have exactly four extra command line arguments */
+    if ( argc == 7 )
+    {
+        if (strcmp(argv[3],"--width") == 0 || strcmp(argv[3],"-w") == 0)
+            cmd_cols=atoi(argv[4]);
+        if (strcmp(argv[3],"--height") == 0 || strcmp(argv[3],"-h") == 0)
+            cmd_lines=atoi(argv[4]);
+    }
+
+    /* Ignore values that are not proper */
+    if (cmd_cols < 24) cmd_cols=0;
+    if (cmd_lines < 20) cmd_lines=0;
+
     /* Open debug_file */
-    char *debug_filename = malloc(strlen(argv[2])+strlen(".debug")+1);
-    strcpy(debug_filename, argv[2]);
+    char *debug_filename = malloc(strlen(argv[argc-1])+strlen(".debug")+1);
+    strcpy(debug_filename, argv[argc-1]);
     strcat(debug_filename, ".debug");
     debug_open(debug_filename);
     
@@ -57,7 +100,7 @@ int main(int argc, char *argv[])
     dest.sin_family = AF_INET;
     
     /* set destination IP number */ 
-    dest.sin_addr.s_addr = inet_addr(argv[1]);
+    dest.sin_addr.s_addr = inet_addr(argv[argc-2]);
 
     /* set destination port number */
     dest.sin_port = htons(PORTNUM);
@@ -75,12 +118,16 @@ int main(int argc, char *argv[])
     sock = cl_sock;
     
     /* join_game */
-    if (join_game(argv[2]) < 0)
+    if (join_game(argv[argc-1]) < 0)
         return EXIT_FAILURE;/* some errors occured */
 
     /* Init ncurses */
     init_curses();
     
+    /* Set window width and height from cmd line */
+    if (cmd_cols) COLS=cmd_cols;
+    if (cmd_lines) LINES=cmd_lines;
+
     debug_d( 1, "lines", LINES);
     debug_d( 1, "columns", COLS);
 
