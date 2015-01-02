@@ -107,7 +107,7 @@ struct map_position get_impact_pos(struct player *player, struct shot *shot)
             debug_f(0, "current x", f_pos.x);
             debug_f(0, "current y", f_pos.y);
             struct map_position map_pos = round_to_map_pos(f_pos);
-            map_elt_t map_y;
+            map_height_t map_y;
 
             /* The bullet might return from the edge of the map,
              * so stop only when it falls to the bottom */

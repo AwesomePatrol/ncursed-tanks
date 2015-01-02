@@ -3,7 +3,7 @@
 map_t generate_map(struct map_info *info)
 {
     // TODO map terrain types, for now just flat terrain
-    map_t map = malloc(info->length * sizeof(map_elt_t));
+    map_t map = malloc(info->length * sizeof(map_height_t));
     int cur_height = info->height / 2;
 
     srand(info->seed);
@@ -22,7 +22,7 @@ map_t generate_map(struct map_info *info)
 
 map_t copy_map(map_t map, struct map_info *info)
 {
-    size_t map_size = info->length * sizeof(map_elt_t);
+    size_t map_size = info->length * sizeof(map_height_t);
     map_t new_map = malloc(map_size);
 
     memcpy(new_map, map, map_size);
