@@ -38,7 +38,8 @@ struct map_position round_to_map_pos(struct f_pair pos)
 {
     return (struct map_position) {
         round(pos.x - 0.5),
-        /* Is using floor right? */
+        /* Is using floor right?
+         * why - 0.5? IMO without this it'll be alright*/
         floor(pos.y - 0.5)
     };
 }
@@ -57,4 +58,15 @@ double deg_to_rad(int deg)
         default:
             return deg * M_PI / 180;
     }
+}
+
+/* calculate distance between two specified points (f_pair)*/
+double distance(struct f_pair a, struct f_pair b)
+{
+    if (a.x == b.x)
+        return a.y > b.y ? a.y-b.y : b.y-a.y;
+    if (a.y == b.y)
+        return a.x > b.x ? a.x-b.x : b.x-a.x;
+    double px=a.x-b.x, py=a.y-b.y;
+    return sqrt(px*px+py*py);
 }
