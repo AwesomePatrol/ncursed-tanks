@@ -71,26 +71,3 @@ double deg_to_rad(int deg)
             return deg * M_PI / 180;
     }
 }
-
-/* calculate distance between two specified points (f_pair)*/
-double distance(struct f_pair a, struct f_pair b)
-{
-    if (a.x == b.x)
-        return a.y > b.y ? a.y-b.y : b.y-a.y;
-    if (a.y == b.y)
-        return a.x > b.x ? a.x-b.x : b.x-a.x;
-    double px=a.x-b.x, py=a.y-b.y;
-    return sqrt(px*px+py*py);
-}
-
-/* calculate damage to specified player */
-int damage(struct player *p, struct f_pair s)
-{
-    struct f_pair t_pos = initial_pos(p);
-    double dis = distance(t_pos, s);
-    if (dis > config_get("dmg_radius"))
-        return 0;
-    if (dis <= 1)
-        return config_get("dmg_cap");
-    return config_get("dmg_cap")/dis;
-}
