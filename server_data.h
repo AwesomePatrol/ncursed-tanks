@@ -34,11 +34,15 @@ extern struct p_dyn_arr clients;
 
 extern struct map_info map_info;
 extern map_t map;
+extern map_t tanks_map;
 extern bool_t game_started;
 
 struct map_position get_impact_pos(struct player *player, struct shot *shot);
+map_t map_with_tanks(void);
 
 void player_change_state(struct player *player, PlayerState state);
+void player_deal_damage(struct player *player, int16_t damage);
+void player_die(struct player *player);
 void change_map(int16_t x, int16_t new_height);
 
 void lock_clients_array(void);
@@ -57,7 +61,8 @@ client_id_t new_client_id(void);
 void clear_client(struct client *cl);
 void free_client(struct client *cl);
 struct player *new_player(char *nickname, client_id_t id);
-int new_player_x(void);
+int16_t new_player_x(void);
+map_height_t new_player_y(int16_t x);
 struct update *new_player_update(UpdateType type, struct player *player);
 struct update *new_config_update(struct config_item *opt);
 struct update *new_shot_update(struct shot *shot, client_id_t id);

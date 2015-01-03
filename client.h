@@ -12,7 +12,7 @@
 #include "debug.h"
 #include "dyn_arr.h"
 #include "colors.h"
-#include "map_gen.h"
+#include "map.h"
 #include "shot.h"
 
 #define DEFAULT_TIMEOUT 2000

@@ -212,13 +212,21 @@ void process_shoot_command(struct thread_data *data, int socket)
 
     lock_clients_array();                                        /* {{{ */
     all_add_update(new_shot_update(shot, cl->id));
-    /* TODO calculate the damage, and update the map */
+    unlock_clients_array();                                      /* }}} */
+
     struct map_position impact_pos = get_impact_pos(cl->player, shot);
     debug_d(0, "shot: impact x", impact_pos.x);
     debug_d(0, "shot: impact y", impact_pos.y);
-    unlock_clients_array();                                      /* }}} */
+    if (is_inside_map(impact_pos, &map_info))
+        debug_d(0, "shot: map y @ impact pos", map[impact_pos.x]);
+    else
+        debug_s(0, "shot", "Impact position outside map");
 
-    update_map(impact_pos);
+    shot_deal_damage(impact_pos);
+
+    shot_update_map(impact_pos);
+
+    tanks_map = map_with_tanks();
 
     next_turn();
 
@@ -274,6 +282,9 @@ void delete_cur_client(void)
 /* Called by other functions, doesn't do locking */
 void start_game(void)
 {
+    tanks_map = map_with_tanks();
+    debug_s(0, "start game", "Copied map");
+
     for (int i = 1; i < clients.count; i++)
     {
         struct client *cl = p_dyn_arr_get(&clients, i);
@@ -339,11 +350,101 @@ void next_turn(void)
     unlock_clients_array();                                      /* }}} */
 }
 
-void update_map(struct map_position impact_pos)
+double min(double a, double b)
 {
+    return a <= b ? a : b;
+}
+
+/* helper for shot_update_map() */
+void update_map_at(struct f_pair pos, struct map_position map_pos,
+                   struct f_pair orig_pos,
+                   config_value_t radius)
+{
+    double map_y = map_y_to_float(map[map_pos.x]);
+
+    double x_diff = pos.x - orig_pos.x;
+    double y_diff = sqrt(radius*radius - x_diff*x_diff);
+    double change_amount =
+        min(pos.y + y_diff, map_y) - min(pos.y - y_diff, map_y);
+    debug_f(0, "update_map_at: change amount", change_amount);
+
     lock_clients_array();                                        /* {{{ */
+    change_map(map_pos.x, map[map_pos.x] + round(change_amount));
+    unlock_clients_array();                                      /* }}} */
+}
 
-    change_map(impact_pos.x, impact_pos.y + 1);
+void shot_update_map(struct map_position impact_pos)
+{
+    config_value_t radius = config_get("dmg_radius");
+    debug_d(0, "damage radius", radius);
 
+    if (!is_inside_map(impact_pos, &map_info))
+        return;
+
+    struct f_pair orig_pos = map_pos_to_float(impact_pos);
+    double left_x = orig_pos.x - radius;
+    double right_x = orig_pos.x + radius;
+    debug_f(0, "left x", left_x);
+    debug_f(0, "right x", right_x);
+
+    struct f_pair pos = { left_x, orig_pos.y };
+    for (; pos.x <= right_x; pos.x += 1)
+    {
+        debug_f(0, "update map: current x", pos.x);
+        struct map_position map_pos = round_to_map_pos(pos);
+
+        if (is_inside_map(map_pos, &map_info))
+            update_map_at(pos, map_pos, orig_pos, radius);
+    }
+
+    /* Place all tanks above ground back onto the ground */
+    lock_clients_array();                                        /* {{{ */
+    for (int i = 0; i < clients.count; i++)
+    {
+        struct client *cl = p_dyn_arr_get(&clients, i);
+        struct player *player = cl->player;
+        map_height_t map_y = map[player->pos.x];
+
+        if (player->pos.y < map_y)
+            player->pos.y = new_player_y(player->pos.x);
+    }
+    unlock_clients_array();                                      /* }}} */
+}
+
+int16_t damage_to_player(struct f_pair impact_pos, struct f_pair player_pos)
+{
+    config_value_t damage_cap = config_get("dmg_cap");
+    config_value_t radius = config_get("dmg_radius");
+    struct f_pair diff = { player_pos.x - impact_pos.x,
+                           player_pos.y - impact_pos.y };
+    double distance = sqrt(diff.x*diff.x + diff.y*diff.y);
+
+    /* damage in the impact point - damage_cap, on the edge of the radius - 0 */
+    return damage_cap - distance * ((double)damage_cap / radius);
+}
+
+void shot_deal_damage(struct map_position impact_pos)
+{
+    if (!is_inside_map(impact_pos, &map_info))
+        return;
+
+    struct f_pair f_impact_pos = map_pos_to_float(impact_pos);
+
+    lock_clients_array();                                        /* {{{ */
+    for (int i = 0; i < clients.count; i++)
+    {
+        struct client *cl = p_dyn_arr_get(&clients, i);
+        struct player *player = cl->player;
+
+        if (player->state != PS_DEAD)
+        {
+            struct f_pair f_player_pos = map_pos_to_float(player->pos);
+
+            int16_t damage = damage_to_player(f_impact_pos, f_player_pos);
+            if (damage > 0)
+                player_deal_damage(player, damage);
+            break;
+        }
+    }
     unlock_clients_array();                                      /* }}} */
 }

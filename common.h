@@ -6,6 +6,8 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 
+#include "bool.h"
+
 #define PORTNUM 7979 /* Port Number */
 
 #define MAX_PLAYERS 16
