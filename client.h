@@ -22,6 +22,7 @@
 typedef enum ScreenUpdate {SCR_SHOOT, SCR_LOBBY, SCR_STATS, SCR_TANKS,
     SCR_SHOOT_MENU, SCR_MAP, SCR_ALL} ScreenUpdate;
 extern struct dyn_arr ScrUpdates;
+extern struct dyn_arr MapUpdates;
 struct map_info *map_data;
 map_t g_map;
 extern int dx, dy;
@@ -41,6 +42,7 @@ int shoot_menu(int input_character);
 int lobby_menu(int input_character);
 
 /* scene.c */
+void map_update();
 void render_scene();
 void shoot_menu_scene();
 void lobby_scene();

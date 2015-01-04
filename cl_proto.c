@@ -27,7 +27,9 @@ void fetch_changes()
             switch (UpdateNet->type) {
                 case U_MAP:
                     debug_s(1, "Update", "map");
-                    g_map[UpdateNet->x] = UpdateNet->new_height;
+                    struct map_position map_u = (struct map_position) {
+                        UpdateNet->x, UpdateNet->new_height};
+                    dyn_arr_append(&MapUpdates, &map_u);
                     break;
                 case U_ADD_PLAYER:
                     debug_s(1, "AddPlayer", UpdateNet->player.nickname);
@@ -61,7 +63,7 @@ void fetch_changes()
                                 break;
                         }
                     } else
-                        debug_s(1, "UpdatePlayer", "wrong id");
+                        debug_s(5, "UpdatePlayer", "wrong id");
                     break;
                 case U_DEL_PLAYER:
                     debug_s(1, "DeletePlayer", UpdateNet->player.nickname);
@@ -73,7 +75,7 @@ void fetch_changes()
                         players[play_d_i] = players[players_size];
                     }
                     else
-                        debug_s(1, "DeletePlayer", "wrong id");
+                        debug_s(5, "DeletePlayer", "wrong id");
                     /* free player's nickname from update */
                     clear_player(&UpdateNet->player);
                     ScreenUpdate del_player = SCR_TANKS;
@@ -95,7 +97,7 @@ void fetch_changes()
                     free(UpdateNet->opt_name);
                     break;
                 default:
-                    debug_d(3, "GetChangesType", UpdateNet->type);
+                    debug_d(5, "UnknownGetChangesType", UpdateNet->type);
             }
             free(UpdateNet);
         }

@@ -1,5 +1,15 @@
 #include "client.h"
 
+void map_update()
+{
+    for (int i=0; i<MapUpdates.count; i++)
+    {
+        struct map_position *map_u = dyn_arr_get(&MapUpdates, i);
+        g_map[map_u->x]=map_u->y;
+    }
+    dyn_arr_clear(&MapUpdates);
+}
+
 void render_scene()
 {
     /* TODO: shorten this code */
@@ -34,7 +44,7 @@ void render_scene()
                 map=1;
                 break;
             default:
-                debug_d(1, "UnknownValueScrUpdate", *scr_u);
+                debug_d(5, "UnknownValueScrUpdate", *scr_u);
         }
     }
     dyn_arr_clear(&ScrUpdates);
@@ -42,6 +52,7 @@ void render_scene()
         if (shoot) { /* it's a VERY special case */
             render_shot(&s_update.shot,
                         find_player(s_update.player_id));
+            map_update();
         } else {
             switch (players[0].state) {
                 case PS_JOINED:
@@ -70,7 +81,7 @@ void render_scene()
                     if (shoot_menu) draw_shoot_menu();
                     break;
                 default:
-                    debug_d(1, "UnknownState", players[0].state);
+                    debug_d(5, "UnknownState", players[0].state);
             }
             refresh();
         }

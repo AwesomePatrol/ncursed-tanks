@@ -3,6 +3,7 @@
 #define MAX_POWER 100
 int camera_focus=0;
 struct dyn_arr ScrUpdates = { sizeof(ScreenUpdate) };
+struct dyn_arr MapUpdates = { sizeof(struct map_position) };
 
 /* move camera using i,k,j,l keys */
 int camera_move(int input_character)
