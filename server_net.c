@@ -355,21 +355,35 @@ double min(double a, double b)
     return a <= b ? a : b;
 }
 
+void make_smooth(int x, short int direction)
+{
+    while ( x < map_info.length && x > 0
+            && (map[x]-map[direction ? x+1 : x-1]) >= 3 )
+    {
+        change_map(direction ? x+1 : x-1, map[x]-2);
+        direction ? x++ : x--;
+    }
+}
+
 /* helper for shot_update_map() */
 void update_map_at(struct f_pair pos, struct map_position map_pos,
                    struct f_pair orig_pos,
-                   config_value_t radius)
+                   config_value_t radius)/* too many arguments */
 {
-    double map_y = map_y_to_float(map[map_pos.x]);
-
-    double x_diff = pos.x - orig_pos.x;
-    double y_diff = sqrt(radius*radius - x_diff*x_diff);
-    double change_amount =
-        min(pos.y + y_diff, map_y) - min(pos.y - y_diff, map_y);
+    double change_amount = 1;/* this could scale with radius */
     debug_f(0, "update_map_at: change amount", change_amount);
 
     lock_clients_array();                                        /* {{{ */
-    change_map(map_pos.x, map[map_pos.x] + round(change_amount));
+    change_map(map_pos.x, map[map_pos.x] + change_amount);
+    if (radius >= 3 && map_pos.x > 0 && map_pos.x < map_info.length) {
+        change_map(map_pos.x-1, map[map_pos.x-1] + change_amount);
+        change_map(map_pos.x+1, map[map_pos.x+1] + change_amount);
+        make_smooth(map_pos.x+1, 1);
+        make_smooth(map_pos.x-1, 0);
+    } else {
+        make_smooth(map_pos.x, 1);
+        make_smooth(map_pos.x, 0);
+    }
     unlock_clients_array();                                      /* }}} */
 }
 
