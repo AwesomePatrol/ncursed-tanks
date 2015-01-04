@@ -24,7 +24,7 @@ typedef enum ScreenUpdate {SCR_SHOOT, SCR_LOBBY, SCR_STATS, SCR_TANKS,
 extern struct dyn_arr ScrUpdates;
 extern struct dyn_arr MapUpdates;
 extern struct dyn_arr Players;
-struct player *loc_player;
+extern struct player *loc_player;
 extern int16_t loc_player_id; 
 struct map_info *map_data;
 map_t g_map;

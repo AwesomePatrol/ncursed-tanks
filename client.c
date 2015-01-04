@@ -2,6 +2,7 @@
 
 int dx = 0, dy = 0;
 int angle = 90, power = 50;
+struct player *loc_player = NULL;
 int16_t loc_player_id =0;
 
 void print_help()

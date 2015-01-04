@@ -36,22 +36,28 @@ void fetch_changes()
                     break;
                 case U_ADD_PLAYER:
                     debug_s(1, "AddPlayer", UpdateNet->player.nickname);
-                    if (loc_player_id == UpdateNet->player.id)
-                        /* wow! we get ourselfs */
+                    if (loc_player_id == UpdateNet->player.id) {
+                        /* wow! we get ourself */
+                        debug_s(1, "AddPlayer", "recv loc_player");
                         loc_player =
                             dyn_arr_append(&Players, &UpdateNet->player);
-                    else {
-                        /* yet another player in game */
+                    } else {
+                        /* yay! yet another player in game */
                         int play_i = find_player(UpdateNet->player.id);
                         if (play_i >= 0) {
                             /* woops! It seems we already have this player */
+                            debug_s(1, "AddPlayer", "->UpdatePlayer");
                             clear_player(dyn_arr_get(&Players, play_i));
                             struct player *u_player =
                                 dyn_arr_get(&Players, play_i);
                             *u_player = UpdateNet->player;
-                        } else
+                        } else {
+                            debug_s(1, "AddPlayer", "Append");
+                            if (loc_player != NULL) debug_d(1, "LocPlayer(before)", loc_player->state);
                             dyn_arr_append(&Players, &UpdateNet->player);
+                        }
                     }
+                    if (loc_player != NULL) debug_d(1, "LocPlayer(after)", loc_player->state);
                     /* add SCR_LOBBY to screen update queue */
                     ScreenUpdate add_player = SCR_LOBBY;
                     dyn_arr_append(&ScrUpdates, &add_player);
@@ -61,9 +67,9 @@ void fetch_changes()
                     int play_u_i = find_player(UpdateNet->player.id);
                     if (play_u_i >= 0) {
                         /* free player-to-delete's nickname */
-                        clear_player(dyn_arr_get(&Players, play_u_i));
                         struct player *u_player =
                             dyn_arr_get(&Players, play_u_i);
+                        clear_player(u_player);
                         *u_player = UpdateNet->player;
                         /* add ScreenUpdate to queue based on state */ 
                         ScreenUpdate scr_u_player;

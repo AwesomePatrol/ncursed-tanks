@@ -10,8 +10,6 @@
 
 #define PORTNUM 7979 /* Port Number */
 
-#define MAX_PLAYERS 16
-
 /*
  * command         args                reply
  *   \- requirements
