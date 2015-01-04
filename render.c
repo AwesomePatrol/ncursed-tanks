@@ -148,8 +148,6 @@ void draw_stats()
 
 void draw_lobby()
 {
-    put_col_str(loc_player->state == PS_READY ? COL_G : COL_W,
-            1, 1, loc_player->nickname);
     for (int i=0; i<Players.count; i++) {
         struct player *cur_pl = dyn_arr_get(&Players, i);
         put_col_str((cur_pl->state == PS_READY) ? COL_G :
