@@ -137,26 +137,23 @@ void render_shot(struct shot *shot, int s_id)
 }
 void draw_stats()
 {
-    attron(COLOR_PAIR((int) COL_W));
-    mvprintw(1, COLS-strlen(loc_player->nickname)-6,
-            "%s:%d    ", loc_player->nickname, loc_player->hitpoints);
-    attroff(COLOR_PAIR((int) COL_W));
-    attron(COLOR_PAIR((int) COL_Y));
-    for (int i=1; i<Players.count; i++) {
+    for (int i=0; i<Players.count; i++) {
         struct player *cur_pl = dyn_arr_get(&Players, i);
+        attron(COLOR_PAIR((int) (cur_pl == loc_player) ? COL_W : COL_Y));
         mvprintw(1+i, COLS-strlen(cur_pl->nickname)-6,
                 "%s:%d    ", cur_pl->nickname, cur_pl->hitpoints);
+        attroff(COLOR_PAIR((int) (cur_pl == loc_player) ? COL_W : COL_Y));
     }
-    attroff(COLOR_PAIR((int) COL_Y));
 }
 
 void draw_lobby()
 {
     put_col_str(loc_player->state == PS_READY ? COL_G : COL_W,
             1, 1, loc_player->nickname);
-    for (int i=1; i<Players.count; i++) {
+    for (int i=0; i<Players.count; i++) {
         struct player *cur_pl = dyn_arr_get(&Players, i);
-        put_col_str(cur_pl->state == PS_READY ? COL_G : COL_Y,
+        put_col_str((cur_pl->state == PS_READY) ? COL_G :
+                (cur_pl == loc_player) ? COL_W :COL_Y,
                 1+i, 1, cur_pl->nickname);
     }
     for (int i=0; i<Players.count; i++) {

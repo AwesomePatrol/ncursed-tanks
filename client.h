@@ -53,6 +53,7 @@ void wait_scene();
 /* cl_proto.c */
 void fetch_map();
 void fetch_changes();
+void update_loc_player();
 int find_player(u_int16_t player_id);
 int join_game(char *nickname);
 void send_shoot();

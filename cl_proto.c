@@ -20,6 +20,11 @@ int find_player(u_int16_t player_id)
     return -1; /* returns -1 case not found */
 }
 
+void update_loc_player()
+{
+    loc_player = dyn_arr_get(&Players, find_player(loc_player_id));
+}
+
 /* fetch changes and apply them */
 void fetch_changes()
 {
@@ -53,11 +58,10 @@ void fetch_changes()
                             *u_player = UpdateNet->player;
                         } else {
                             debug_s(1, "AddPlayer", "Append");
-                            if (loc_player != NULL) debug_d(1, "LocPlayer(before)", loc_player->state);
                             dyn_arr_append(&Players, &UpdateNet->player);
+                            update_loc_player();
                         }
                     }
-                    if (loc_player != NULL) debug_d(1, "LocPlayer(after)", loc_player->state);
                     /* add SCR_LOBBY to screen update queue */
                     ScreenUpdate add_player = SCR_LOBBY;
                     dyn_arr_append(&ScrUpdates, &add_player);
@@ -90,12 +94,13 @@ void fetch_changes()
                 case U_DEL_PLAYER:
                     debug_s(1, "DeletePlayer", UpdateNet->player.nickname);
                     int play_d_i = find_player(UpdateNet->player.id);
-                    if (play_d_i > 0) {
+                    if (play_d_i >= 0) {
                         /* free player's nickname */
                         struct player *d_player =
                             dyn_arr_get(&Players, play_d_i);
                         clear_player(d_player);
                         dyn_arr_delete(&Players, d_player);
+                        update_loc_player();
                     }
                     else
                         debug_s(5, "DeletePlayer", "wrong id");
