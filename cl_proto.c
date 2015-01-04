@@ -11,9 +11,12 @@ void fetch_map()
 /* find the address of player with a given id */
 int find_player(u_int16_t player_id)
 {
-    for (int i=0; i<players_size; i++)
-        if (player_id == players[i].id)
+    for (int i=0; i<Players.count; i++)
+    {
+        struct player *pl = dyn_arr_get(&Players, i);
+        if (player_id == pl->id)
             return i;
+    }
     return -1; /* returns -1 case not found */
 }
 
@@ -33,13 +36,23 @@ void fetch_changes()
                     break;
                 case U_ADD_PLAYER:
                     debug_s(1, "AddPlayer", UpdateNet->player.nickname);
-                    int play_i = find_player(UpdateNet->player.id);
-                    if (play_i >= 0)
-                            players[play_i] = UpdateNet->player;
+                    if (loc_player_id == UpdateNet->player.id)
+                        /* wow! we get ourselfs */
+                        loc_player =
+                            dyn_arr_append(&Players, &UpdateNet->player);
                     else {
-                        players[players_size] = UpdateNet->player;
-                        players_size++;
+                        /* yet another player in game */
+                        int play_i = find_player(UpdateNet->player.id);
+                        if (play_i >= 0) {
+                            /* woops! It seems we already have this player */
+                            clear_player(dyn_arr_get(&Players, play_i));
+                            struct player *u_player =
+                                dyn_arr_get(&Players, play_i);
+                            *u_player = UpdateNet->player;
+                        } else
+                            dyn_arr_append(&Players, &UpdateNet->player);
                     }
+                    /* add SCR_LOBBY to screen update queue */
                     ScreenUpdate add_player = SCR_LOBBY;
                     dyn_arr_append(&ScrUpdates, &add_player);
                     break;
@@ -48,18 +61,21 @@ void fetch_changes()
                     int play_u_i = find_player(UpdateNet->player.id);
                     if (play_u_i >= 0) {
                         /* free player-to-delete's nickname */
-                        clear_player(&players[play_u_i]);
-                        players[play_u_i] = UpdateNet->player;
-                        ScreenUpdate u_player;
-                        switch (players[play_u_i].state)
+                        clear_player(dyn_arr_get(&Players, play_u_i));
+                        struct player *u_player =
+                            dyn_arr_get(&Players, play_u_i);
+                        *u_player = UpdateNet->player;
+                        /* add ScreenUpdate to queue based on state */ 
+                        ScreenUpdate scr_u_player;
+                        switch (u_player->state)
                         {
                             case PS_DEAD:
-                                u_player = SCR_TANKS;
-                                dyn_arr_append(&ScrUpdates, &u_player);
+                                scr_u_player = SCR_TANKS;
+                                dyn_arr_append(&ScrUpdates, &scr_u_player);
                                 break;
                             case PS_READY:
-                                u_player = SCR_LOBBY;
-                                dyn_arr_append(&ScrUpdates, &u_player);
+                                scr_u_player = SCR_LOBBY;
+                                dyn_arr_append(&ScrUpdates, &scr_u_player);
                                 break;
                         }
                     } else
@@ -69,15 +85,17 @@ void fetch_changes()
                     debug_s(1, "DeletePlayer", UpdateNet->player.nickname);
                     int play_d_i = find_player(UpdateNet->player.id);
                     if (play_d_i > 0) {
-                        players_size--;
                         /* free player's nickname */
-                        clear_player(&players[play_d_i]);
-                        players[play_d_i] = players[players_size];
+                        struct player *d_player =
+                            dyn_arr_get(&Players, play_d_i);
+                        clear_player(d_player);
+                        dyn_arr_delete(&Players, d_player);
                     }
                     else
                         debug_s(5, "DeletePlayer", "wrong id");
                     /* free player's nickname from update */
                     clear_player(&UpdateNet->player);
+                    /* add SCR_TANKS to screen update queue */
                     ScreenUpdate del_player = SCR_TANKS;
                     dyn_arr_append(&ScrUpdates, &del_player);
                     break;
@@ -119,8 +137,7 @@ int join_game(char *nickname)
     switch (jr) {
         case JR_OK:
             debug_s(1, "ClientName", nickname);
-            recv_int16(sock, &players[0].id);
-            players_size++;/*hopefully will receive itself in next update */
+            recv_int16(sock, &loc_player_id);
             fetch_map(sock);
             fetch_changes(sock);
             break;

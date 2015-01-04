@@ -2,7 +2,6 @@
 
 int dx = 0, dy = 0;
 int angle = 90, power = 50;
-u_int16_t players_size = 0; 
 
 void print_help()
 {
@@ -133,15 +132,16 @@ int main(int argc, char *argv[])
 
     lobby_scene();
     
-    while (players[0].state)
+    while (loc_player->state)
     {
         wait_scene();
         shoot_menu_scene();
     }
 
     /*free!*/
-    for (int i=0; i<players_size; i++)
-        clear_player(&players[i]);
+    for (int i=0; i<Players.count; i++)
+        clear_player(dyn_arr_get(&Players,i));
+    dyn_arr_clear(&Players);
     free(debug_filename);
     free(map_data);
 

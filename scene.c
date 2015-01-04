@@ -54,7 +54,7 @@ void render_scene()
                         find_player(s_update.player_id));
             map_update();
         } else {
-            switch (players[0].state) {
+            switch (loc_player->state) {
                 case PS_JOINED:
                 case PS_READY:
                     if (lobby) {
@@ -81,7 +81,7 @@ void render_scene()
                     if (shoot_menu) draw_shoot_menu();
                     break;
                 default:
-                    debug_d(5, "UnknownState", players[0].state);
+                    debug_d(5, "UnknownState", loc_player->state);
             }
             refresh();
         }
@@ -95,15 +95,15 @@ void lobby_scene()
     clear();
     draw_lobby();
     refresh();
-    while (players[0].state == PS_JOINED
-            || players[0].state == PS_READY)
+    while (loc_player->state == PS_JOINED
+            || loc_player->state == PS_READY)
     {
         fetch_changes();
         render_scene();
         input_ch = getch();
         if (input_ch == ERR)
             continue;
-        if (players[0].state == PS_JOINED && lobby_menu(input_ch))
+        if (loc_player->state == PS_JOINED && lobby_menu(input_ch))
             continue;
         quit_key(input_ch);
     }
@@ -114,14 +114,14 @@ void shoot_menu_scene()
 {
     int input_ch;
     /* initial render */
-    center_camera(players[0].pos);
+    center_camera(loc_player->pos);
     clear();
     render_map();
     render_tanks();
     draw_stats();
     draw_shoot_menu();
     refresh();
-    while (players[0].state == PS_ACTIVE)
+    while (loc_player->state == PS_ACTIVE)
     {
         fetch_changes();
         render_scene();
@@ -139,13 +139,14 @@ void wait_scene()
 {
     int input_ch;
     /* initial render */
-    center_camera(players[camera_focus].pos);
+    struct player *c_player = dyn_arr_get(&Players, camera_focus);
+    center_camera(c_player->pos);
     clear();
     render_map();
     render_tanks();
     draw_stats();
     refresh();
-    while (players[0].state == PS_WAITING)
+    while (loc_player->state == PS_WAITING)
     {
         fetch_changes();
         render_scene();

@@ -4,6 +4,7 @@
 int camera_focus=0;
 struct dyn_arr ScrUpdates = { sizeof(ScreenUpdate) };
 struct dyn_arr MapUpdates = { sizeof(struct map_position) };
+struct dyn_arr Players = { sizeof(struct player) };
 
 /* move camera using i,k,j,l keys */
 int camera_move(int input_character)
@@ -52,8 +53,9 @@ int change_camera_focus(int input_character)
             return 0;
     }
     if (camera_focus > players_size-1) camera_focus=0;
-    if (camera_focus < 0) camera_focus=players_size-1;
-    center_camera(players[camera_focus].pos);
+    if (camera_focus < 0) camera_focus=Players.count;
+    struct player *c_player = dyn_arr_get(&Players, camera_focus);
+    center_camera(c_player->pos);
     return 1;
 }
 
@@ -125,7 +127,7 @@ int lobby_menu(int input_character)
     switch (input_character)
     {
         case ' ':
-            if (players[0].state == PS_JOINED) {
+            if (loc_player->state == PS_JOINED) {
                 send_int8(sock, C_READY);
                 fetch_changes();
             }
