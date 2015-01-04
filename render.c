@@ -79,19 +79,20 @@ void draw_bullet_explosion(int pos_x, int pos_y, int x, int y)
 
 void render_shot(struct shot *shot, int s_id)
 {
-    center_camera(players[s_id].pos);
+    struct player *shoot_pl = dyn_arr_get(&Players, s_id);
+    center_camera(shoot_pl->pos);
     clear();
     render_map();
     render_tanks();
-    debug_d(1, "RenderShotX", players[s_id].pos.x);
-    debug_d(1, "RenderShotY", players[s_id].pos.y);
+    debug_d(1, "RenderShotX", shoot_pl->pos.x);
+    debug_d(1, "RenderShotY", shoot_pl->pos.y);
     debug_d(1, "RenderShot Angle", shot->angle);
     debug_d(1, "RenderShot Power", shot->power);
     int input_ch;
     struct f_pair init_v = initial_v(shot);
     struct f_pair acc = acceleration();
     /* position (x,y) must be either double or float */
-    struct f_pair init_pos = map_pos_to_float(players[s_id].pos);
+    struct f_pair init_pos = map_pos_to_float(shoot_pl->pos);
     timeout(SHOOT_TIMEOUT);
     float t=1;
     /* this part is duplicated, because it's initial */
@@ -103,7 +104,7 @@ void render_shot(struct shot *shot, int s_id)
     input_ch = getch();
     if (input_ch != ERR)
         quit_key(input_ch);
-    while (players[0].state)
+    while (loc_player->state)
     {
         /* remove drew bullet */
         draw_blank_bullet(dx, dy, map_pos.x, map_pos.y);
@@ -129,43 +130,52 @@ void render_shot(struct shot *shot, int s_id)
     }
     input_ch = getch(); // let players
     input_ch = getch(); // see the explosion
-    center_camera(players[camera_focus].pos);
+    struct player *c_player = dyn_arr_get(&Players, camera_focus);
+    center_camera(c_player->pos);
     /* SCR_ALL is already in screen update queue by center_camera*/
     timeout(DEFAULT_TIMEOUT); //back to original
 }
 void draw_stats()
 {
     attron(COLOR_PAIR((int) COL_W));
-    mvprintw(1, COLS-strlen(players[0].nickname)-6,
-            "%s:%d    ", players[0].nickname, players[0].hitpoints);
+    mvprintw(1, COLS-strlen(loc_player->nickname)-6,
+            "%s:%d    ", loc_player->nickname, loc_player->hitpoints);
     attroff(COLOR_PAIR((int) COL_W));
     attron(COLOR_PAIR((int) COL_Y));
-    for (int i=1; i<players_size; i++)
-        mvprintw(1+i, COLS-strlen(players[i].nickname)-6,
-                "%s:%d    ", players[i].nickname, players[i].hitpoints);
+    for (int i=1; i<Players.count; i++) {
+        struct player *cur_pl = dyn_arr_get(&Players, i);
+        mvprintw(1+i, COLS-strlen(cur_pl->nickname)-6,
+                "%s:%d    ", cur_pl->nickname, cur_pl->hitpoints);
+    }
     attroff(COLOR_PAIR((int) COL_Y));
 }
 
 void draw_lobby()
 {
-    put_col_str(players[0].state == PS_READY ? COL_G : COL_W,
-            1, 1, players[0].nickname);
-    for (int i=1; i<players_size; i++)
-        put_col_str(players[i].state == PS_READY ? COL_G : COL_Y,
-                1+i, 1, players[i].nickname);
-    for (int i=0; i<players_size; i++)
+    put_col_str(loc_player->state == PS_READY ? COL_G : COL_W,
+            1, 1, loc_player->nickname);
+    for (int i=1; i<Players.count; i++) {
+        struct player *cur_pl = dyn_arr_get(&Players, i);
+        put_col_str(cur_pl->state == PS_READY ? COL_G : COL_Y,
+                1+i, 1, cur_pl->nickname);
+    }
+    for (int i=0; i<Players.count; i++) {
+        struct player *cur_pl = dyn_arr_get(&Players, i);
         put_col_str(COL_W, 1+i, 30,
-                players[i].state == PS_READY ? "READY" : "NOT READY");
+                cur_pl->state == PS_READY ? "READY" : "NOT READY");
+    }
     put_col_str(COL_W, LINES-3, 1,
             "Press space to mark yourself as ready");
 }
 
 void render_tanks()
 {
-    for (int i=0; i<players_size; i++)
-        if (players[i].state != PS_DEAD)
+    for (int i=0; i<Players.count; i++) {
+        struct player *cur_pl = dyn_arr_get(&Players, i);
+        if (cur_pl->state != PS_DEAD)
             draw_tank( i == 0 ? COL_W : COL_Y,
-                dx, dy, players[i].pos.x, players[i].pos.y, 0);
+                dx, dy, cur_pl->pos.x, cur_pl->pos.y, 0);
+    }
 }
 
 void render_map()

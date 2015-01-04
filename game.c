@@ -52,7 +52,7 @@ int change_camera_focus(int input_character)
         default:
             return 0;
     }
-    if (camera_focus > players_size-1) camera_focus=0;
+    if (camera_focus > Players.count-1) camera_focus=0;
     if (camera_focus < 0) camera_focus=Players.count;
     struct player *c_player = dyn_arr_get(&Players, camera_focus);
     center_camera(c_player->pos);
@@ -82,7 +82,7 @@ int quit_key(int input_character)
     switch(input_character)
     {
         case 'q':
-            players[0].state = PS_NO_PLAYER;
+            loc_player->state = PS_NO_PLAYER;
             return 1;
             break;
         default:
