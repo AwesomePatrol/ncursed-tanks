@@ -459,7 +459,6 @@ void shot_deal_damage(struct map_position impact_pos)
             int16_t damage = damage_to_player(f_impact_pos, f_player_pos);
             if (damage > 0)
                 player_deal_damage(player, damage);
-            break;
         }
     }
     unlock_clients_array();                                      /* }}} */

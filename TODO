@@ -1,17 +1,16 @@
 #TRY to keep the list in order
-Code core game stuff.
     * server
-        ** collision detection -> dmg
         ** end-game statistics
 	    ** make tanks not just 1 point on the map + detect collisions with them
         ** support multiple games
+        ** add friendly-fire
     * client
-        ** move players[] to dyn_arr
         ** winner/loser and statistics end-game screen
         ** reconnect
     * common
         ** write documentation (gameplay, usage, syntax, …)
         ** switch to using getaddrinfo for parsing IP, …
         ** replace nested functions (GCC extension) with another method
-Gather ideas for weaponry and abilities.
-Document every weapon and ability.
+    * later
+        ** gather ideas for weaponry and abilities.
+        ** document every weapon and ability.
