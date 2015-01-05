@@ -432,9 +432,11 @@ int16_t damage_to_player(struct f_pair impact_pos, struct f_pair player_pos)
     struct f_pair diff = { player_pos.x - impact_pos.x,
                            player_pos.y - impact_pos.y };
     double distance = sqrt(diff.x*diff.x + diff.y*diff.y);
-
+    if (distance > radius) return 0;
+    if (distance <= 2) return damage_cap;
+    return damage_cap/(distance-1);
     /* damage in the impact point - damage_cap, on the edge of the radius - 0 */
-    return damage_cap - distance * ((double)damage_cap / radius);
+    //return damage_cap - distance * ((double)damage_cap / radius);
 }
 
 void shot_deal_damage(struct map_position impact_pos)

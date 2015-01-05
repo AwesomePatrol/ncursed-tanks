@@ -100,7 +100,7 @@ int shoot_menu(int input_character)
             if (power < MAX_POWER) power++;
             break;
         case KEY_DOWN:
-            if (power > 0) power--;
+            if (power > 1) power--;
             break;
         case KEY_RIGHT:
             if (angle > 0) angle--;

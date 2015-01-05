@@ -146,7 +146,8 @@ void wait_scene()
     render_tanks();
     draw_stats();
     refresh();
-    while (loc_player->state == PS_WAITING)
+    while (loc_player->state == PS_WAITING
+            || loc_player->state == PS_DEAD)
     {
         fetch_changes();
         render_scene();
