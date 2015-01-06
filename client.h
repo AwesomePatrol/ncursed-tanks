@@ -19,8 +19,10 @@
 #define SHOOT_TIMEOUT 100 //200 = 5fps, 100 = 10fps
 
 /* GLOBAL */
-typedef enum ScreenUpdate {SCR_SHOOT, SCR_LOBBY, SCR_STATS, SCR_TANKS,
-    SCR_SHOOT_MENU, SCR_MAP, SCR_ALL} ScreenUpdate;
+typedef enum ScreenUpdate {SCR_SHOOT, SCR_LOBBY, SCR_STATS,
+    SCR_TANKS, SCR_SHOOT_MENU, SCR_MAP, SCR_ALL} ScreenUpdate;
+typedef enum ScreenMove {SCR_OK, SCR_UP, SCR_DOWN, SCR_LEFT,
+    SCR_RIGHT} ScreenMove;
 extern struct dyn_arr ScrUpdates;
 extern struct dyn_arr MapUpdates;
 extern struct dyn_arr Players;
@@ -64,7 +66,7 @@ void put_col_str(Color color, int y, int x, const char *str);
 /* render.c */
 void draw_tank(Color color, int pos_x, int pos_y, int x, int y, int angle);
 void draw_map(map_t map, int pos_x, int pos_y, int width, int height);
-void draw_bullet(int pos_x, int pos_y, int x, int y);
+ScreenMove draw_bullet(int pos_x, int pos_y, int x, int y);
 void draw_blank_bullet(int pos_x, int pos_y, int x, int y);
 void draw_shoot_menu();
 void draw_bullet_explosion(int pos_x, int pos_y, int x, int y);

@@ -27,16 +27,21 @@ void draw_map(map_t map, int pos_x, int pos_y, int width, int height)
     }
 }
 
-void draw_bullet(int pos_x, int pos_y, int x, int y)
+ScreenMove draw_bullet(int pos_x, int pos_y, int x, int y)
 {
     int xx = x-pos_x;
     int yy = y-pos_y;
-    if (xx >= 0 && xx <= COLS && yy <= LINES) {
-        if (yy >= 0)
-            put_col_str(COL_R, yy, xx, "#");
-        else
-            put_col_str(COL_R, 0, xx, "^");
-    }
+    if (xx < 0)
+        return SCR_LEFT;
+    if (xx > COLS)
+        return SCR_RIGHT;
+    if (yy > LINES)
+        return SCR_DOWN;
+    if (yy >= 0)
+        put_col_str(COL_R, yy, xx, "#");
+    else
+        put_col_str(COL_R, 0, xx, "^");
+    return SCR_OK;
 }
 
 void draw_blank_bullet(int pos_x, int pos_y, int x, int y)
@@ -114,7 +119,21 @@ void render_shot(struct shot *shot, int s_id)
         b_pos = shot_pos(init_pos, init_v, acc, t);
         map_pos = round_to_map_pos(b_pos);
         /* draw a new one */
-        draw_bullet(dx, dy, map_pos.x, map_pos.y);
+        switch (draw_bullet(dx, dy, map_pos.x, map_pos.y)) {
+            case SCR_OK:
+                break;
+            case SCR_UP:
+            case SCR_LEFT:
+            case SCR_RIGHT:
+                center_camera(map_pos);
+                clear();
+                render_map();
+                render_tanks();
+                draw_bullet(dx, dy, map_pos.x, map_pos.y);
+                break;
+            default:
+                debug_s(5, "ScreenMove(shot)", "Wrong ScrMove value");
+        }
         refresh();
         if (map_pos.x > map_data->length  || map_pos.x < 0)
             break;
@@ -139,10 +158,12 @@ void draw_stats()
 {
     for (int i=0; i<Players.count; i++) {
         struct player *cur_pl = dyn_arr_get(&Players, i);
-        attron(COLOR_PAIR((int) (cur_pl == loc_player) ? COL_W : COL_Y));
+        attron(COLOR_PAIR((int) (cur_pl->state == PS_DEAD) ? COL_R :
+                    (cur_pl == loc_player) ? COL_W : COL_Y));
         mvprintw(1+i, COLS-strlen(cur_pl->nickname)-6,
                 "%s:%d    ", cur_pl->nickname, cur_pl->hitpoints);
-        attroff(COLOR_PAIR((int) (cur_pl == loc_player) ? COL_W : COL_Y));
+        attroff(COLOR_PAIR((int) (cur_pl->state == PS_DEAD) ? COL_R :
+                    (cur_pl == loc_player) ? COL_W : COL_Y));
     }
 }
 
