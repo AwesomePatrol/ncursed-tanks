@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
     int cl_sock;
     struct addrinfo hints, *servlist, *p;
     memset(&hints, 0, sizeof(hints));
-    hints.ai_family = AF_UNSPEC;
+    hints.ai_family = AF_UNSPEC; /* IPv4 or IPv6 */
     hints.ai_socktype = SOCK_STREAM;
 
     if (getaddrinfo(argv[argc-2], portnum, &hints, &servlist) != 0)
