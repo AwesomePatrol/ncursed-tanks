@@ -2,7 +2,13 @@ all: server client config_menu
 
 DOXYGENCONF=doxygen.conf
 
-CFLAGS += -std=c99
+-include localdefs.mk
+
+ifdef DEBUG
+	CFLAGS += -O1 -std=c99 -D _DEBUG #-Wall
+else
+	CFLAGS += -O2 -std=c99
+endif
 
 OBJS_server := server.o common.o server_data.o server_net.o dyn_arr.o server_updates_queue.o config.o debug.o map.o shot.o
 OBJS_client := client.o common.o debug.o dyn_arr.o cl_proto.o game.o scene.o map.o shot.o render.o draw.o config.o

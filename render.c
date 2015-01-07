@@ -1,4 +1,7 @@
 #include "client.h"
+/* the best value of RENDER_MARGIN is 0 for time being
+ * other values cause SCR_ALL multiple times */
+#define RENDER_MARGIN 0
 
 void draw_tank(Color color, int pos_x, int pos_y, int x, int y, int angle)
 {
@@ -31,11 +34,11 @@ ScreenMove draw_bullet(int pos_x, int pos_y, int x, int y)
 {
     int xx = x-pos_x;
     int yy = y-pos_y;
-    if (xx < 0)
+    if (xx < RENDER_MARGIN)
         return SCR_LEFT;
-    if (xx > COLS)
+    if (xx > COLS-RENDER_MARGIN)
         return SCR_RIGHT;
-    if (yy > LINES)
+    if (yy > LINES-RENDER_MARGIN)
         return SCR_DOWN;
     if (yy >= 0)
         put_col_str(COL_R, yy, xx, "#");

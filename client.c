@@ -84,9 +84,11 @@ int main(int argc, char *argv[])
 
     /* Open debug_file */
     char *debug_filename = malloc(strlen(argv[argc-1])+strlen(".debug")+1);
-    strcpy(debug_filename, argv[argc-1]);
-    strcat(debug_filename, ".debug");
-    debug_open(debug_filename);
+    if (DEBUG <= 5) {
+        strcpy(debug_filename, argv[argc-1]);
+        strcat(debug_filename, ".debug");
+        debug_open(debug_filename);
+    }
     
     /* Get connection to server */
     int cl_sock;

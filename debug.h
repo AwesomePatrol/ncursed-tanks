@@ -3,8 +3,12 @@
 
 #include <errno.h>
 
-#define DEBUG 0 /* DEBUG: set 5 for ERROR, set 3 for INFO, set 0 for DEBUG
+#ifdef _DEBUG
+#   define DEBUG 0
+#else
+#   define DEBUG 5 /* DEBUG: set 5 for ERROR, set 3 for INFO, set 0 for DEBUG
                    VALUES higher than 5 will result in silent execution*/
+#endif
 
 void debug_open(const char *filename);
 void debug_s(int lvl, const char *name, const char *str);
