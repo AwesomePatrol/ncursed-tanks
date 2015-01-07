@@ -5,8 +5,10 @@
         ** support multiple games
         ** add friendly-fire
     * client
+        ** refactor command-line
         ** winner/loser and statistics end-game screen
         ** reconnect
+        ** on-screen keyboard (for touch capable devices)
     * common
         ** write documentation (gameplay, usage, syntax, …)
         ** switch to using getaddrinfo for parsing IP, …
