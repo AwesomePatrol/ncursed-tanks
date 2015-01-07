@@ -1,17 +1,16 @@
 #TRY to keep the list in order
     * server
+        ** switch to using getaddrinfo for parsing IP, …
         ** end-game statistics
 	    ** make tanks not just 1 point on the map + detect collisions with them
         ** support multiple games
         ** add friendly-fire
     * client
-        ** refactor command-line
         ** winner/loser and statistics end-game screen
         ** reconnect
         ** on-screen keyboard (for touch capable devices)
     * common
         ** write documentation (gameplay, usage, syntax, …)
-        ** switch to using getaddrinfo for parsing IP, …
         ** replace nested functions (GCC extension) with another method
     * later
         ** gather ideas for weaponry and abilities.

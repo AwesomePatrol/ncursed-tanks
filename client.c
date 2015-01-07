@@ -1,3 +1,4 @@
+#define _GNU_SOURCE /* we need this if we want to use getaddrinfo */
 #include "client.h"
 
 int dx = 0, dy = 0;
@@ -6,7 +7,8 @@ struct player *loc_player = NULL;
 int16_t loc_player_id =0;
 
 unsigned int cmd_lines=0, cmd_cols=0;
-unsigned int portnum=7979;
+char default_portnum[] = "7979";
+char *portnum = default_portnum;
 
 void print_help()
 {
@@ -15,8 +17,8 @@ void print_help()
     puts("-w, --width WIDTH\t specify width (number of columns) of a window");
     puts("-h, --height HEIGHT\t specify height (number of lines) of a window");
     puts("-p, --port PORT\t specify on what port client connects a server");
+    puts("--help\t show this message");
     puts("");
-    puts("Run client --help to see this message");
     puts("Terminal size must be at least 24x20");
     puts("Wrong values will be ignored");
     puts("");
@@ -42,7 +44,7 @@ short int parse_cmd(int argc, char *argv[])
             cmd_lines=atoi(argv[i+1]);
         if (strcmp(argv[i],"--port") == 0
                 || strcmp(argv[i],"-p") == 0)
-            portnum=atoi(argv[i+1]);
+            portnum=argv[i+1];
     }
     return 0;
 }
@@ -98,31 +100,31 @@ int main(int argc, char *argv[])
     
     /* Get connection to server */
     int cl_sock;
-    struct sockaddr_in dest; 
- 
-    cl_sock = socket(AF_INET, SOCK_STREAM, 0);
+    struct addrinfo hints, *servlist, *p;
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_socktype = SOCK_STREAM;
 
-    /* zero the struct */
-    memset(&dest, 0, sizeof(dest));
-    
-    /* support for IPv4 */
-    dest.sin_family = AF_INET;
-    
-    /* set destination IP number */ 
-    dest.sin_addr.s_addr = inet_addr(argv[argc-2]);
+    if (getaddrinfo(argv[argc-2], portnum, &hints, &servlist) != 0)
+        return EXIT_FAILURE;
 
-    /* set destination port number */
-    dest.sin_port = htons(portnum);
+    for (p = servlist; p != NULL; p = p->ai_next) {
+           cl_sock = socket(p->ai_family, p->ai_socktype, p->ai_protocol);
+            if (cl_sock == -1)
+                continue;
+            if (connect(cl_sock, p->ai_addr, p->ai_addrlen) != -1)
+                break; /* for now on we have connection with server */
+    }
 
     /* in case socket or connection is broken we should fail here */
-    if ( cl_sock == -1 ||
-         connect(cl_sock, (struct sockaddr *)&dest, sizeof(struct sockaddr))
-         == -1 )
-    {
+    if ( p == NULL ) {
         if (DEBUG <= 5) puts("Socket or connection is broken!");
         return EXIT_FAILURE;
     }
     
+    /* this is no longer needed, free! */
+    freeaddrinfo(servlist);
+
     /* for now on we use sock (a global variable) instead of cl_sock */
     sock = cl_sock;
     
