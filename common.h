@@ -8,8 +8,6 @@
 
 #include "bool.h"
 
-#define PORTNUM 7979 /* Port Number */
-
 /*
  * command         args                reply
  *   \- requirements

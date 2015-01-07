@@ -5,17 +5,46 @@ int angle = 90, power = 50;
 struct player *loc_player = NULL;
 int16_t loc_player_id =0;
 
+unsigned int cmd_lines=0, cmd_cols=0;
+unsigned int portnum=7979;
+
 void print_help()
 {
     puts("Usage: client [OPTION]... SERVER_IP PLAYER_NAME");
     puts("OPTION may be:");
     puts("-w, --width WIDTH\t specify width (number of columns) of a window");
     puts("-h, --height HEIGHT\t specify height (number of lines) of a window");
+    puts("-p, --port PORT\t specify on what port client connects a server");
     puts("");
     puts("Run client --help to see this message");
     puts("Terminal size must be at least 24x20");
+    puts("Wrong values will be ignored");
     puts("");
     puts("For complete documentation look for ./doc in project's files");
+}
+
+short int parse_cmd(int argc, char *argv[])
+{
+    if (argc == 2 && strcmp(argv[1],"--help")) {
+        print_help();
+        return 1;
+    }
+    for (int i=1; i<(argc-2); i++) {
+        if (strcmp(argv[i],"--help") == 0) {
+            print_help();
+            return 1;
+        }
+        if (strcmp(argv[i],"--width") == 0
+                || strcmp(argv[i],"-w") == 0)
+            cmd_cols=atoi(argv[i+1]);
+        if (strcmp(argv[i],"--height") == 0
+                || strcmp(argv[i],"-h") == 0)
+            cmd_lines=atoi(argv[i+1]);
+        if (strcmp(argv[i],"--port") == 0
+                || strcmp(argv[i],"-p") == 0)
+            portnum=atoi(argv[i+1]);
+    }
+    return 0;
 }
 
 void init_curses()
@@ -44,15 +73,7 @@ void init_curses()
 
 int main(int argc, char *argv[])
 {
-    unsigned int cmd_lines=0, cmd_cols=0;
 
-    /* Help and help only */
-    if ( argc > 1 )
-        if ( strcmp(argv[1],"--help") == 0) {
-            print_help();
-            return EXIT_SUCCESS;
-        }
-    
     /* Too few arguments error */
     if ( argc <= 2 )
     {
@@ -60,23 +81,9 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    /* In case we have at least two extra command line arguments */
-    if ( argc >= 5 )
-    {
-        if (strcmp(argv[1],"--width") == 0 || strcmp(argv[1],"-w") == 0)
-            cmd_cols=atoi(argv[2]);
-        if (strcmp(argv[1],"--height") == 0 || strcmp(argv[1],"-h") == 0)
-            cmd_lines=atoi(argv[2]);
-    }
-
-    /* In case we have exactly four extra command line arguments */
-    if ( argc == 7 )
-    {
-        if (strcmp(argv[3],"--width") == 0 || strcmp(argv[3],"-w") == 0)
-            cmd_cols=atoi(argv[4]);
-        if (strcmp(argv[3],"--height") == 0 || strcmp(argv[3],"-h") == 0)
-            cmd_lines=atoi(argv[4]);
-    }
+    /* Parse command line arguments */
+    if (parse_cmd(argc, argv) == 1)
+        return EXIT_SUCCESS;
 
     /* Ignore values that are not proper */
     if (cmd_cols < 24) cmd_cols=0;
@@ -84,11 +91,10 @@ int main(int argc, char *argv[])
 
     /* Open debug_file */
     char *debug_filename = malloc(strlen(argv[argc-1])+strlen(".debug")+1);
-    if (DEBUG <= 5) {
-        strcpy(debug_filename, argv[argc-1]);
-        strcat(debug_filename, ".debug");
+    strcpy(debug_filename, argv[argc-1]);
+    strcat(debug_filename, ".debug");
+    if (DEBUG <= 3)
         debug_open(debug_filename);
-    }
     
     /* Get connection to server */
     int cl_sock;
@@ -106,7 +112,7 @@ int main(int argc, char *argv[])
     dest.sin_addr.s_addr = inet_addr(argv[argc-2]);
 
     /* set destination port number */
-    dest.sin_port = htons(PORTNUM);
+    dest.sin_port = htons(portnum);
 
     /* in case socket or connection is broken we should fail here */
     if ( cl_sock == -1 ||

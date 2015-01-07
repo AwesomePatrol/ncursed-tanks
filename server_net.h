@@ -4,6 +4,8 @@
 #include "server_lib_includes.h"
 #include "server_data.h"
 
+#define PORTNUM 7979
+
 extern int server_socket; /* socket used to listen for incoming connections */
 
 void init_server(void);
