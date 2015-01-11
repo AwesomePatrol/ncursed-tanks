@@ -37,7 +37,8 @@ extern map_t map;
 extern map_t tanks_map;
 extern bool_t game_started;
 
-struct map_position get_impact_pos(struct player *player, struct shot *shot);
+struct map_position get_impact_pos(struct player *player, struct shot *shot,
+                                   double *impact_t);
 map_t map_with_tanks(void);
 
 void player_change_state(struct player *player, PlayerState state);
@@ -66,6 +67,7 @@ map_height_t new_player_y(int16_t x);
 struct update *new_player_update(UpdateType type, struct player *player);
 struct update *new_config_update(struct config_item *opt);
 struct update *new_shot_update(struct shot *shot, client_id_t id);
+struct update *new_shot_impact_update(double impact_t);
 struct update *new_map_update(int16_t x, int16_t new_height);
 struct update copy_update(struct update *u);
 void clear_update(struct update *u);

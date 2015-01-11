@@ -78,7 +78,9 @@ double get_t_step(double prev_delta_x, double prev_t,
 }
 
 /* Move to server_game.c or something? */
-struct map_position get_impact_pos(struct player *player, struct shot *shot)
+/* Sets *impact_t to impact time, returns impact position */
+struct map_position get_impact_pos(struct player *player, struct shot *shot,
+                                   double *impact_t)
 {
     struct f_pair init_v = initial_v(shot);
     struct f_pair acc = acceleration();
@@ -117,7 +119,10 @@ struct map_position get_impact_pos(struct player *player, struct shot *shot)
                 map_y = tanks_map[map_pos.x];
 
             if (map_pos.y >= map_y)
+            {
+                *impact_t = cur_t;
                 return map_pos;
+            }
         }
         cur_delta_x += x_step;
     }
@@ -363,6 +368,16 @@ struct update *new_shot_update(struct shot *shot, client_id_t id)
         .type = U_SHOT,
         .shot = *shot,
         .player_id = id,
+    };
+    return result;
+}
+
+struct update *new_shot_impact_update(double impact_t)
+{
+    struct update *result = malloc(sizeof(*result));
+    *result = (struct update) {
+        .type = U_SHOT_IMPACT,
+        .impact_t = round(impact_t / IMPACT_T_NET_PRECISION),
     };
     return result;
 }

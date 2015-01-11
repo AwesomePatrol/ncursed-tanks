@@ -80,7 +80,7 @@ int recv_int16(int socket, int16_t *i)
 {
     int test = recvall(socket, i, sizeof(*i));
 
-    if (test != -1 && test != 0)
+    if (test > 0)
         *i = ntohs(*i);
     return test;
 }
@@ -89,7 +89,7 @@ int recv_int32(int socket, int32_t *i)
 {
     int test = recvall(socket, i, sizeof(*i));
 
-    if (test != -1 && test != 0)
+    if (test > 0)
         *i = ntohl(*i);
     return test;
 }
@@ -98,9 +98,9 @@ int recv_int32(int socket, int32_t *i)
 int send_string(int socket, char *str)
 {
     int16_t size = strlen(str) + 1;
-    if (send_int16(socket, size) == -1)
-        return -1;
-    if (sendall(socket, str, size) == -1)
+
+    if (send_int16(socket, size) == -1   ||
+        sendall(socket, str, size) == -1)
         return -1;
     return 0;
 }
@@ -261,6 +261,11 @@ int send_update(int socket, struct update *u)
             return -1;
 
         break;
+    case U_SHOT_IMPACT:
+        if (send_int16(socket, u->impact_t) == -1)
+            return -1;
+
+        break;
     }
     return 0;
 }
@@ -307,6 +312,11 @@ struct update *recv_update(int socket)
 
         result->shot = *shot;
         free(shot);
+
+        break;
+    case U_SHOT_IMPACT:
+        if(recv_int16(socket, &result->impact_t) <= 0)
+            goto fail;
 
         break;
     }

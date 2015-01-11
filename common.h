@@ -83,10 +83,15 @@ struct shot
 
 /**** Game updates sent by server ****/
 
+/* Precision for sending/receiving impact time through the net.
+ * Higher value -> higher precision. */
+#define IMPACT_T_NET_PRECISION 100
+
 /* U_EMPTY -- end of updates -- no pending updates left */
 typedef enum UpdateType
 {
-    U_EMPTY = 0, U_MAP, U_CONFIG, U_SHOT, U_PLAYER, U_ADD_PLAYER, U_DEL_PLAYER,
+    U_EMPTY = 0, U_MAP, U_CONFIG, U_SHOT, U_SHOT_IMPACT,
+    U_PLAYER, U_ADD_PLAYER, U_DEL_PLAYER,
 } UpdateType;
 
 struct update
@@ -114,6 +119,8 @@ struct update
             struct shot shot;
             int16_t player_id;
         };
+        /* for U_SHOT_IMPACT */
+        int16_t impact_t;
     };
 };
 

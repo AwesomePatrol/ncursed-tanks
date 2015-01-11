@@ -11,6 +11,7 @@
 #endif
 
 void debug_open(const char *filename);
+
 void debug_s(int lvl, const char *name, const char *str);
 void debug_d(int lvl, const char *name, long long dec);
 void debug_f(int lvl, const char *name, double num);

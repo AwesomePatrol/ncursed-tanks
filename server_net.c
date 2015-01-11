@@ -214,13 +214,19 @@ void process_shoot_command(struct thread_data *data, int socket)
     all_add_update(new_shot_update(shot, cl->id));
     unlock_clients_array();                                      /* }}} */
 
-    struct map_position impact_pos = get_impact_pos(cl->player, shot);
+    double impact_t;
+    struct map_position impact_pos = get_impact_pos(cl->player, shot,
+                                                    &impact_t);
     debug_d(0, "shot: impact x", impact_pos.x);
     debug_d(0, "shot: impact y", impact_pos.y);
     if (is_inside_map(impact_pos, &map_info))
         debug_d(0, "shot: map y @ impact pos", map[impact_pos.x]);
     else
         debug_s(0, "shot", "Impact position outside map");
+
+    lock_clients_array();                                        /* {{{ */
+    all_add_update(new_shot_impact_update(impact_t));
+    unlock_clients_array();                                      /* }}} */
 
     shot_deal_damage(impact_pos);
 
