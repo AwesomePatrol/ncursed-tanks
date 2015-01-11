@@ -119,10 +119,9 @@ void fetch_changes()
                     dyn_arr_append(&ScrUpdates, &u_shot);
                     break;
                 case U_SHOT_IMPACT:
-                    g_impact_t= (float) IMPACT_T_NET_PRECISION
-                        * UpdateNet->impact_t;
-                    debug_d(1, "ImpactTime*Precision",
-                            (int) g_impact_t*IMPACT_T_NET_PRECISION);
+                    debug_d(1, "ImpactTime*Precision", UpdateNet->impact_t);
+                    g_impact_t= (float) UpdateNet->impact_t
+                        / IMPACT_T_NET_PRECISION;
                     break;
                 case U_CONFIG:
                     debug_s(1, "ValueName", UpdateNet->opt_name);

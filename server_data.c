@@ -377,7 +377,7 @@ struct update *new_shot_impact_update(double impact_t)
     struct update *result = malloc(sizeof(*result));
     *result = (struct update) {
         .type = U_SHOT_IMPACT,
-        .impact_t = round(impact_t / IMPACT_T_NET_PRECISION),
+        .impact_t = round(impact_t * IMPACT_T_NET_PRECISION),
     };
     return result;
 }
