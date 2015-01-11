@@ -140,7 +140,7 @@ void render_shot(struct shot *shot, int s_id)
         refresh();
         if (map_pos.x > map_data->length  || map_pos.x < 0)
             break;
-        if (map_pos.y > map_data->height || map_pos.y >= g_map[map_pos.x]) {
+        if (t > g_impact_t) {
             draw_bullet_explosion(dx, dy, map_pos.x, map_pos.y);
             refresh();
             break;

@@ -35,7 +35,8 @@ map_t g_map;
 extern int dx, dy;
 extern int angle, power;
 extern u_int16_t players_size;
-extern int camera_focus;
+int camera_focus;
+float g_impact_t;
 int sock;
 struct update s_update;
 
