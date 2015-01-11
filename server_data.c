@@ -213,8 +213,10 @@ void player_deal_damage(struct player *player, int16_t damage)
 {
     player->hitpoints -= damage;
     if (player->hitpoints <= 0)
+        /* adds an update as well */
         player_die(player);
-    all_add_update(new_player_update(U_PLAYER, player));
+    else
+        all_add_update(new_player_update(U_PLAYER, player));
     debug_s(3, "damage: player", player->nickname);
     debug_d(3, "damage", damage);
 }

@@ -232,6 +232,8 @@ void process_shoot_command(struct thread_data *data, int socket)
 
     shot_update_map(impact_pos);
 
+    /* TODO check for end of game */
+
     tanks_map = map_with_tanks();
 
     next_turn();
