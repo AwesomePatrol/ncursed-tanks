@@ -37,10 +37,6 @@ extern map_t map;
 extern map_t tanks_map;
 extern bool_t game_started;
 
-struct map_position get_impact_pos(struct player *player, struct shot *shot,
-                                   double *impact_t);
-map_t map_with_tanks(void);
-
 void player_change_state(struct player *player, PlayerState state);
 void player_deal_damage(struct player *player, int16_t damage);
 void player_die(struct player *player);
