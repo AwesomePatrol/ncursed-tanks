@@ -11,9 +11,11 @@
         ** winner/loser and statistics end-game screen
         ** reconnect
         ** on-screen keyboard (for touch capable devices)
+        ** port to PSP
     * common
         ** write documentation (gameplay, usage, syntax, …)
         ** replace nested functions (GCC extension) with another method
     * later
         ** gather ideas for weaponry and abilities.
         ** document every weapon and ability.
+        ** test under different compilers?
