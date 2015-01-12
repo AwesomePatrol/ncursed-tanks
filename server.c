@@ -74,6 +74,7 @@ void init_game(void)
 void exit_cleanup(void)
 {
     free(map);
+    free(tanks_map);
     pthread_mutex_destroy(&clients_array_mutex);
     /* TODO close sockets from threads */
     /* for every player */
