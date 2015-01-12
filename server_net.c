@@ -43,7 +43,7 @@ void server_listen(void)
     debug_s(3, "listen", "Server started listening");
 
     /* listen until terminated */
-    while (TRUE)
+    while (true)
     {
         struct thread_data *thr_data = malloc(sizeof(*thr_data));
         *thr_data = (struct thread_data) {

@@ -2,7 +2,7 @@
 
 /* helper for get_impact_pos() */
 double get_t_step(double prev_delta_x, double prev_t,
-                  double *x_step, bool_t *one_side_clear,
+                  double *x_step, bool *one_side_clear,
                   struct f_pair init_v, struct f_pair acc)
 {
     double c1, c2;
@@ -56,7 +56,7 @@ double get_t_step(double prev_delta_x, double prev_t,
         /* No valid t_step found, turn back */
         if (!one_side_clear)
         {
-            *one_side_clear = TRUE;
+            *one_side_clear = true;
             *x_step = -(*x_step);
         }
         else
@@ -78,13 +78,13 @@ struct map_position get_impact_pos(struct player *player, struct shot *shot,
     struct f_pair init_pos = map_pos_to_float(player->pos);
     double x_step = (double)init_direction / COLLISION_X_PRECISION;
 
-    bool_t one_side_clear = FALSE;
+    bool one_side_clear = false;
     double cur_delta_x = 0;
     double cur_t = 0;
 
     debug_f(0, "shot: wind", acc.x);
 
-    while (TRUE) /* exit with return */
+    while (true) /* exit with return */
     {
         debug_f(0, "current delta_x", cur_delta_x);
         double t_step = get_t_step(cur_delta_x, cur_t,
@@ -172,7 +172,7 @@ void start_game(void)
     struct client *cl = p_dyn_arr_get(&clients, 0);
     player_change_state(cl->player, PS_ACTIVE);
 
-    game_started = TRUE;
+    game_started = true;
 }
 
 /* Advances turn to the next player */
@@ -188,7 +188,7 @@ void next_turn(void)
         return 1;
     }
 
-    bool_t made_inactive = FALSE;
+    bool made_inactive = false;
 
     lock_clients_array();                                        /* {{{ */
 
@@ -202,7 +202,7 @@ void next_turn(void)
             if (player->state == PS_ACTIVE)
             {
                 player_change_state(player, PS_WAITING);
-                made_inactive = TRUE;
+                made_inactive = true;
             }
         }
         else

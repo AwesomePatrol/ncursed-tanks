@@ -35,7 +35,7 @@ extern struct p_dyn_arr clients;
 extern struct map_info map_info;
 extern map_t map;
 extern map_t tanks_map;
-extern bool_t game_started;
+extern bool game_started;
 
 void player_change_state(struct player *player, PlayerState state);
 void player_deal_damage(struct player *player, int16_t damage);

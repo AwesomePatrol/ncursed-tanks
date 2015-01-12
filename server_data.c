@@ -8,7 +8,7 @@ struct p_dyn_arr clients = {0};
 struct map_info map_info;
 map_t map = NULL;
 map_t tanks_map = NULL;
-bool_t game_started = FALSE;
+bool game_started = false;
 
 
 void lock_clients_array(void)

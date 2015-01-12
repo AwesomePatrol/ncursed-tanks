@@ -3,10 +3,9 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
-
-#include "bool.h"
 
 /*
  * command         args                reply
