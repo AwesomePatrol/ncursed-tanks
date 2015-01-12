@@ -1,8 +1,6 @@
 #ifndef SERVER_LIB_INCLUDES_H
 #define SERVER_LIB_INCLUDES_H
 
-#define _POSIX_C_SOURCE 200809L
-
 #include "common.h"
 
 #include <stdio.h>

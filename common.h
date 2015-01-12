@@ -1,6 +1,20 @@
 #ifndef COMMON_H
 #define COMMON_H
 
+/*
+ * common.h:
+ *
+ * Datatypes common to client and server
+ * (including functions for sending/receiving them over the network)
+ *
+ * Must be included before any other headers in a file
+ */
+
+/* needed for *addrinfo, sigaction, strdup
+ * the value can be increased if required by another thing
+ */
+#define _POSIX_C_SOURCE 200809L
+
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>

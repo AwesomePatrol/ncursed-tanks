@@ -1,4 +1,3 @@
-#define _GNU_SOURCE /* we need this if we want to use getaddrinfo */
 #include "client.h"
 
 int dx = 0, dy = 0;
