@@ -94,6 +94,21 @@ int recv_int32(int socket, int32_t *i)
     return test;
 }
 
+int send_bool(int socket, bool b)
+{
+    return send_int8(socket, b);
+}
+
+int recv_bool(int socket, bool *b)
+{
+    u_int8_t b_net;
+    int test = recv_int8(socket, &b_net);
+
+    if (test > 0)
+        *b = b_net;
+    return test;
+}
+
 /* returns 0 on success, -1 on failure */
 int send_string(int socket, char *str)
 {

@@ -154,6 +154,9 @@ int recv_int8(int socket, int8_t *i);
 int recv_int16(int socket, int16_t *i);
 int recv_int32(int socket, int32_t *i);
 
+int send_bool(int socket, bool b);
+int recv_bool(int socket, bool *b);
+
 int send_string(int socket, char *str);
 char *recv_string(int socket);
 
