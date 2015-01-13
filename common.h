@@ -74,6 +74,7 @@ struct f_pair
 struct player
 {
     PlayerState state;
+    bool is_connected;
     /* A value of 0 is invalid */
     int16_t id;
     char *nickname;

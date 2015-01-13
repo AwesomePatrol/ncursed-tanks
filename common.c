@@ -165,6 +165,7 @@ struct map_info *recv_map_info(int socket)
 int send_player(int socket, struct player *p)
 {
     if (send_int8(socket, p->state) == -1        ||
+        send_bool(socket, p->is_connected) == -1 ||
         send_int16(socket, p->id) == -1          ||
         send_string(socket, p->nickname) == -1   ||
         send_int16(socket, p->hitpoints) == -1   ||
@@ -180,6 +181,7 @@ struct player *recv_player(int socket)
     struct map_position *pos;
 
     if (recv_int8(socket, &state_net) <= 0               ||
+        recv_bool(socket, &result->is_connected) <= 0    ||
         recv_int16(socket, &result->id) <= 0             ||
         (result->nickname = recv_string(socket)) == NULL ||
         recv_int16(socket, &result->hitpoints) <= 0      ||

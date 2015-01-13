@@ -183,6 +183,7 @@ struct player *new_player(char *nickname, client_id_t id)
 
     *result = (struct player) {
         .state = PS_JOINED,
+        .is_connected = true,
         .id = id,
         .nickname = nickname,
         .hitpoints = config_get("tank_hp"),
