@@ -53,10 +53,14 @@ typedef enum JoinReply
  * PS_READY     - ready to start the game
  * PS_WAITING   - waiting for its turn
  * PS_ACTIVE    - player's turn
+ *
+ * PS_WINNER    - winner of the game
+ * PS_LOSER     - loser  of the game
  */
 typedef enum PlayerState
 {
-    PS_NO_PLAYER = 0, PS_JOINED, PS_READY, PS_WAITING, PS_ACTIVE, PS_DEAD
+    PS_NO_PLAYER = 0, PS_JOINED, PS_READY, PS_WAITING, PS_ACTIVE, PS_DEAD,
+    PS_WINNER, PS_LOSER
 } PlayerState;
 
 struct map_position

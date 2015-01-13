@@ -8,8 +8,13 @@ struct map_position get_impact_pos(struct player *player, struct shot *shot,
 map_t map_with_tanks(void);
 int16_t damage_to_player(struct f_pair impact_pos, struct f_pair player_pos);
 
+
+void init_game(void);
+void game_cleanup(void);
+
 void start_game(void);
 void next_turn(void);
+bool end_game_if_needed(void);
 
 void shot_update_map(struct map_position impact_pos);
 void shot_deal_damage(struct map_position impact_pos);

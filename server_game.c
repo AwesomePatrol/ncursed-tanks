@@ -152,12 +152,40 @@ int16_t damage_to_player(struct f_pair impact_pos, struct f_pair player_pos)
 }
 
 
+void init_game(void)
+{
+    unsigned int random_seed;
+
+    /* Initialize random number renerator with current time */
+    random_seed = time(NULL);
+    srand(random_seed);
+
+    map_info.seed = rand();
+
+    map_info.length = config_get("map_width");
+    map_info.height = config_get("map_height");
+
+    map = generate_map(&map_info);
+}
+
+/* Cleans up the game state */
+void game_cleanup(void)
+{
+    game_started = false; /* Allow threads to remove players on disconnection */
+
+    /* TODO Need to somehow get rid of all the remaining players later */
+
+    free(map);       map = NULL;
+    free(tanks_map); tanks_map = NULL;
+}
+
 /* Called by other functions, doesn't do locking */
 void start_game(void)
 {
+    /* TODO move tanks_map creation to process_shoot_command? */
     tanks_map = map_with_tanks();
-    debug_s(0, "start game", "Copied map");
 
+    /* Mark all players as waiting for their turns */
     for (int i = 1; i < clients.count; i++)
     {
         struct client *cl = p_dyn_arr_get(&clients, i);
@@ -221,6 +249,46 @@ void next_turn(void)
 
  end:
     unlock_clients_array();                                      /* }}} */
+}
+
+bool end_game_if_needed(void)
+{
+    /* Check for end of game */
+    int num_living_players = 0;
+
+    lock_clients_array();                                        /* {{{ */
+    for (int i = 0; i < clients.count; i++)
+    {
+        struct client *cl = p_dyn_arr_get(&clients, i);
+
+        if (cl->player->state != PS_DEAD)
+            num_living_players++;
+        if (num_living_players > 1)
+        {
+            unlock_clients_array();                              /* }}} 1 */
+            return false;
+        }
+    }
+    /* At this point, only one living player remains */
+
+    /***** GAME OVER *****/
+    debug_s(3, "only one living player remains", "Game over");
+
+    /* Mark dead players as PS_LOSER and living players as PS_WINNER */
+    for (int i = 0; i < clients.count; i++)
+    {
+        struct client *cl = p_dyn_arr_get(&clients, i);
+        struct player *player = cl->player;
+
+        player_change_state(player,
+                            player->state != PS_DEAD ?
+                                PS_WINNER : PS_LOSER);
+    }
+    unlock_clients_array();                                      /* }}} 2 */
+
+    game_cleanup();
+
+    return true;
 }
 
 double min(double a, double b)
@@ -329,11 +397,12 @@ void process_impact(struct map_position impact_pos)
 
     shot_update_map(impact_pos);
 
-    /* TODO check for end of game */
+    if (!end_game_if_needed())
+    {
+        /* TODO change it so that it just doesn't allocate each time? */
+        free(tanks_map);
+        tanks_map = map_with_tanks();
 
-    /* TODO change it so that it just doesn't allocate each time? */
-    free(tanks_map);
-    tanks_map = map_with_tanks();
-
-    next_turn();
+        next_turn();
+    }
 }

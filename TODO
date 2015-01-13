@@ -1,7 +1,6 @@
 #TRY to keep the list in order
     * server
-        ** deal with end of game
-        ** add new player states: PS_DISCONNECTED, PS_WINNER, PS_LOSER
+        ** deal with end of game _properly_
         ** handle reconnection
         ** switch to using getaddrinfo for parsing IP, …
         ** end-game statistics

@@ -1,7 +1,6 @@
 #include "server.h"
 
 void init_signals(void);
-void init_game(void);
 
 void exit_cleanup(void);
 void terminate_handler(int signum);
@@ -55,26 +54,10 @@ won't be able to clean up!");
     }
 }
 
-void init_game(void)
-{
-    unsigned int random_seed;
-
-    /* Initialize random number renerator with current time */
-    random_seed = time(NULL);
-    srand(random_seed);
-
-    map_info.seed = rand();
-
-    map_info.length = config_get("map_width");
-    map_info.height = config_get("map_height");
-
-    map = generate_map(&map_info);
-}
-
 void exit_cleanup(void)
 {
-    free(map);
-    free(tanks_map);
+    game_cleanup();
+
     pthread_mutex_destroy(&clients_array_mutex);
     /* TODO close sockets from threads */
     /* for every player */
