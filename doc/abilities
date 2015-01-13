@@ -1,0 +1,6 @@
+#cd - cooldown
+DOUBLE_SHOT (%, cd): tank shoots two bullets. 2nd deals $% of dmg
+MOVE (length, cd): tank moves $length. direction choosen by angle (<90 ? right left)
+SNIPER (cd): shoots blank bullet (deals no dmg)
+ENHANCE (%, cd): next shot deals dmg increased by %
+AOE (radius, cd): next shot deals AoE dmg in increased radius by $radius
