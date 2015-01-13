@@ -194,13 +194,6 @@ struct player *new_player(char *nickname, client_id_t id)
     return result;
 }
 
-int16_t new_player_x(void)
-{
-    int notank_margin = config_get("map_margin");
-    return notank_margin
-        + rand() % (map_info.length - 2 * notank_margin);
-}
-
 map_height_t new_player_y(int16_t x)
 {
     return map[x] - 1;

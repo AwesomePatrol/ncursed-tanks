@@ -2,7 +2,6 @@
     * server
         ** deal with end of game _properly_
         ** handle reconnection
-        ** place tanks with a margin between them
         ** add lock-if-not-locked function for simplicity
         ** switch to using getaddrinfo for parsing IP, …
         ** end-game statistics

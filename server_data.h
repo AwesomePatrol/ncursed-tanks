@@ -2,6 +2,7 @@
 #define SERVER_DATA_H
 
 #include "server_lib_includes.h"
+#include "server_game.h"
 
 /* type of (struct player).id */
 typedef __typeof__((struct player) {0}.id) client_id_t;
@@ -58,7 +59,6 @@ client_id_t new_client_id(void);
 void clear_client(struct client *cl);
 void free_client(struct client *cl);
 struct player *new_player(char *nickname, client_id_t id);
-int16_t new_player_x(void);
 map_height_t new_player_y(int16_t x);
 struct update *new_player_update(UpdateType type, struct player *player);
 struct update *new_config_update(struct config_item *opt);

@@ -1,5 +1,41 @@
 #include "server_game.h"
 
+/* Helper for new_player_x */
+bool player_x_too_close(int16_t x)
+{
+    int tank_distance = config_get("tank_distance");
+    bool result = false;
+
+    /* Find a player that is too close to x,
+     * return true if found. */
+    for (int i = 0; i < clients.count; i++)
+    {
+        struct client *cl = p_dyn_arr_get(&clients, i);
+
+        if (abs(cl->player->pos.x - x) < tank_distance)
+        {
+            result = true;
+            goto end;
+        }
+    }
+ end:
+    return result;
+}
+
+int16_t new_player_x(void)
+{
+    int notank_margin = config_get("map_margin");
+    int16_t x;
+
+    /* Generate position until it isn't too close to other tanks */
+    do
+        x = notank_margin
+            + rand() % (map_info.length - 2 * notank_margin);
+    while (player_x_too_close(x));
+
+    return x;
+}
+
 /* helper for get_impact_pos() */
 double get_t_step(double prev_delta_x, double prev_t,
                   double *x_step, bool *one_side_clear,
