@@ -21,6 +21,7 @@ void process_shoot_command(struct thread_data *data, int socket);
 void process_get_changes_command(struct thread_data *data, int socket);
 void process_get_map_command(struct thread_data *data, int socket);
 
-void delete_cur_client(void);
+void disconnect_cur_client(void);
+void delete_client(struct client *client);
 
 #endif /* SERVER_NET_H */

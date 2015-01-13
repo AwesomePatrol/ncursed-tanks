@@ -87,8 +87,7 @@ void *connection_thread(void *thr_data)
     /* TODO print (stored) client IP */
     debug_s( 3, "client closed connection", "");
 
-    /* provided that game not started */
-    delete_cur_client();
+    disconnect_cur_client();
 
     free(data);
 }
@@ -254,18 +253,40 @@ void process_get_map_command(struct thread_data *data, int socket)
     send_map_info(socket, &map_info);
 }
 
-/* Checks if the current thread has a client and removes it */
-void delete_cur_client(void)
+/* Marks the current player as disconnected
+ * or removes it if the game hasn't started yet */
+void disconnect_cur_client(void)
 {
     struct thread_data *data = pthread_getspecific(thread_data);
+    struct client *cl = data->client;
 
-    /* No client, nothing to do */
-    if (!data->client)
+    /* Thread has no client struct, nothing to do */
+    if (!cl)
         return;
 
+    if (!game_started) // still in lobby, can delete players
+    {
+        delete_client(cl);
+    }
+    else
+    {
+        /* Mark current player as disconnected and add an update about it */
+        struct player *player = cl->player;
+
+        player->is_connected = false;
+
+        lock_clients_array();                                        /* {{{ */
+        all_add_update(new_player_update(U_PLAYER, player));
+        unlock_clients_array();                                      /* }}} */
+    }
+}
+
+/* Removes the given client and notifies clients about this */
+void delete_client(struct client *client)
+{
     lock_clients_array();                                        /* {{{ */
 
-    struct client **client_loc = find_client_loc(data->client->id);
+    struct client **client_loc = find_client_loc(client->id);
     if (client_loc)
     {
         struct client *cl = *client_loc;

@@ -2,20 +2,22 @@
     * server
         ** deal with end of game
         ** add new player states: PS_DISCONNECTED, PS_WINNER, PS_LOSER
+        ** handle reconnection
         ** switch to using getaddrinfo for parsing IP, …
         ** end-game statistics
         ** support multiple games
         ** make tanks not just 1 point on the map + detect collisions with them
         ** add friendly-fire
     * client
+        ** change booleans-as-ints to bool from <stdbool.h>
         ** winner/loser and statistics end-game screen
         ** reconnect
         ** on-screen keyboard (for touch capable devices)
-        ** port to PSP
     * common
         ** write documentation (gameplay, usage, syntax, …)
         ** replace nested functions (GCC extension) with another method
     * later
         ** gather ideas for weaponry and abilities.
         ** document every weapon and ability.
+        ** port to PSP
         ** test under different compilers?

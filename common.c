@@ -94,6 +94,21 @@ int recv_int32(int socket, int32_t *i)
     return test;
 }
 
+int send_bool(int socket, bool b)
+{
+    return send_int8(socket, b);
+}
+
+int recv_bool(int socket, bool *b)
+{
+    u_int8_t b_net;
+    int test = recv_int8(socket, &b_net);
+
+    if (test > 0)
+        *b = b_net;
+    return test;
+}
+
 /* returns 0 on success, -1 on failure */
 int send_string(int socket, char *str)
 {
@@ -150,6 +165,7 @@ struct map_info *recv_map_info(int socket)
 int send_player(int socket, struct player *p)
 {
     if (send_int8(socket, p->state) == -1        ||
+        send_bool(socket, p->is_connected) == -1 ||
         send_int16(socket, p->id) == -1          ||
         send_string(socket, p->nickname) == -1   ||
         send_int16(socket, p->hitpoints) == -1   ||
@@ -165,6 +181,7 @@ struct player *recv_player(int socket)
     struct map_position *pos;
 
     if (recv_int8(socket, &state_net) <= 0               ||
+        recv_bool(socket, &result->is_connected) <= 0    ||
         recv_int16(socket, &result->id) <= 0             ||
         (result->nickname = recv_string(socket)) == NULL ||
         recv_int16(socket, &result->hitpoints) <= 0      ||
