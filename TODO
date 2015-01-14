@@ -1,13 +1,12 @@
 #TRY to keep the list in order
     * server
         ** deal with end of game _properly_
-        ** handle reconnection
         ** add lock-if-not-locked function for simplicity
         ** switch to using getaddrinfo for parsing IP, …
         ** end-game statistics
         ** support multiple games
-        ** make tanks not just 1 point on the map + detect collisions with them
         ** add friendly-fire
+        ** make tanks not just 1 point on the map + detect collisions with them
     * client
         ** change booleans-as-ints to bool from <stdbool.h>
         ** winner/loser and statistics end-game screen
