@@ -22,29 +22,46 @@
 #include <arpa/inet.h>
 
 /*
- * command         args                reply
+ * command           args                reply
  *   \- requirements
- * C_JOIN          string nickname     JoinReply[, int16_t id]
- *   sends id only if JoinReply is JR_OK
- * C_GET_MAP                           struct map_info
- * C_SHOOT         struct shot         
+ * C_CREATE_GAME   string name          CreateGameReply
+ * C_SET_CONFIG    struct config_option SetConfigReply
+ *   \- client joined, game not started
+ * C_JOIN          string nickname,     JoinReply[, int16_t player_id]
+ *                 string game_name
+ *   sends player_id only if JoinReply is JR_OK
+ * C_GET_MAP                            struct map_info
+ *   \- client joined
+ * C_SHOOT         struct shot          
  *   \- game started, state == PS_ACTIVE
- * C_GET_CHANGES                       list(struct update)
+ * C_GET_CHANGES                        list(struct update)
  *   \- client joined
  * 
  * list(X) means sending / receiving a series of X with an empty X in the end.
  */
 typedef enum Command
 {
+    C_CREATE_GAME = 'G', C_SET_CONFIG = 'S',
     C_JOIN = 'J', C_READY = 'R',
     C_GET_CHANGES = 'C', C_GET_MAP = 'M',
     C_SHOOT = 'F',
 } Command;
 
+typedef enum CreateGameReply
+{
+    CGR_OK, CGR_GAME_EXISTS
+} CreateGameReply;
+
+typedef enum SetConfigReply
+{
+    SCR_OK, SCR_OUT_OF_RANGE
+} SetConfigReply;
+
 /* JR_GAME_IN_PROGRESS - not allowed to join because game already started */
 typedef enum JoinReply
 {
-    JR_OK, JR_GAME_IN_PROGRESS, JR_NICKNAME_TAKEN, JR_FORBIDDEN
+    JR_OK,
+    JR_NO_SUCH_GAME, JR_GAME_IN_PROGRESS, JR_NICKNAME_TAKEN, JR_FORBIDDEN,
 } JoinReply;
 
 /*
@@ -93,6 +110,12 @@ struct map_info
     u_int16_t height;
 };
 
+struct config_option
+{
+    char *name;
+    int32_t value;
+};
+
 struct shot
 {
     int16_t angle; /* in degrees, can be 0..359 */
@@ -126,11 +149,7 @@ struct update
             int16_t new_height;
         };
         /* for U_CONFIG */
-        struct
-        {
-            char *opt_name;
-            int32_t opt_value;
-        };
+        struct config_option option;
         /* for U_SHOT */
         struct
         {

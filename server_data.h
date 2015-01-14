@@ -24,6 +24,18 @@ struct client
     pthread_mutex_t updates_mutex;
 };
 
+struct game
+{
+    struct map_info map_info;
+    map_t map;
+    map_t tanks_map;
+
+    struct p_dyn_arr clients;
+    pthread_mutex_t clients_array_mutex;
+
+    bool game_started;
+};
+
 /* more -> better */
 #define COLLISION_X_PRECISION 16
 
