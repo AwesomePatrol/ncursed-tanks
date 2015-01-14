@@ -122,42 +122,82 @@ void process_command(Command cmd)
 void process_join_command(struct thread_data *data, int socket)
 {
     char *nickname = recv_string(socket);
+    struct client *cl;
 
-    if (game_started)
-    {
-        debug_s( 3, "join: game already in progress, player tried to join",
-                 nickname);
-        send_int8(socket, JR_GAME_IN_PROGRESS);
-        goto fail;
-    }
-    /* Check if the nickname is already used */
+    /* Check if the client with this nickname is already present */
     /* Lock kept for so long so that
      * no different client with the same nickname can join */
     lock_clients_array();                                        /* {{{ */
-    if (find_client_by_nickname(nickname))
+    cl = find_client_by_nickname(nickname);
+    bool nickname_found = (bool) cl;
+
+    if (game_started)
     {
-        unlock_clients_array();                                  /* }}} 1 */
-        debug_s( 3, "join: nickname already taken", nickname);
-        send_int8(socket, JR_NICKNAME_TAKEN);
-        goto fail;
+        debug_s( 3, "join", "Game already in progress");
+
+        if (nickname_found)
+            if (!cl->player->is_connected)
+            {
+                debug_s(3, "join: player rejoins", nickname);
+                player_set_connected(cl->player, true);
+
+                free(nickname);
+                /* cl already set to the found client */
+                goto join_ok;
+            }
+            else
+            {
+                goto nickname_taken;
+            }
+        else
+            goto game_in_progress;
+    }
+    else
+    {
+        if (nickname_found)
+        {
+            goto nickname_taken;
+        }
+        else
+        {
+            debug_s( 3, "join: new player", nickname);
+            cl = new_client(nickname);
+
+            /* Notify all other clients of the new player
+             * and then add the new client to the array */
+            /* In that way only clients that have already joined
+             * are going to receive the notification */
+            all_add_update(new_player_update(U_ADD_PLAYER, cl->player));
+
+            add_client(cl);
+
+            goto join_ok;
+        }
     }
 
-    debug_s( 3, "join: new player", nickname);
-    struct client *cl = new_client(nickname);
+game_in_progress:
+    unlock_clients_array();                                  /* }}} 1 */
+    debug_s( 3, "join: new player not allowed to join during game",
+             nickname);
+    send_int8(socket, JR_GAME_IN_PROGRESS);
+
+    free(nickname);
+    return;
+
+nickname_taken:
+    unlock_clients_array();                                  /* }}} 2 */
+    debug_s( 3, "join: nickname already taken", nickname);
+    send_int8(socket, JR_NICKNAME_TAKEN);
+
+    free(nickname);
+    return;
+
+join_ok:
+    unlock_clients_array();                                  /* }}} 3 */
     data->client = cl;
 
     send_int8(socket, JR_OK);
     send_int16(socket, cl->id);
-
-    /* Notify all other clients of the new player
-     * and then add the new client to the array */
-    /* In that way only clients that have already joined
-     * are going to receive the notification */
-    all_add_update(new_player_update(U_ADD_PLAYER, cl->player));
-
-    add_client(cl);
-
-    unlock_clients_array();                                      /* }}} 2 */
 
     /* Add all existing players to updates queue */
     for (int i = 0; i < clients.count; i++)
@@ -169,10 +209,6 @@ void process_join_command(struct thread_data *data, int socket)
     /* Add current config to updates queue */
     for (int i = 0; i < config_count; i++)
         add_update(cl, new_config_update(&config[i]));
-
-    return;
-fail:
-    free(nickname);
 }
 
 void process_ready_command(struct thread_data *data)
@@ -273,10 +309,10 @@ void disconnect_cur_client(void)
         /* Mark current player as disconnected and add an update about it */
         struct player *player = cl->player;
 
-        player->is_connected = false;
+        debug_s( 3, "player disconnected", player->nickname);
 
         lock_clients_array();                                        /* {{{ */
-        all_add_update(new_player_update(U_PLAYER, player));
+        player_set_connected(player, false);
         unlock_clients_array();                                      /* }}} */
     }
 }

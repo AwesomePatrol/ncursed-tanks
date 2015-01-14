@@ -39,6 +39,7 @@ extern map_t tanks_map;
 extern bool game_started;
 
 void player_change_state(struct player *player, PlayerState state);
+void player_set_connected(struct player *player, bool is_connected);
 void player_deal_damage(struct player *player, int16_t damage);
 void player_die(struct player *player);
 void change_map(int16_t x, int16_t new_height);

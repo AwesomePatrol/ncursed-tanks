@@ -72,6 +72,12 @@ void player_change_state(struct player *player, PlayerState state)
     all_add_update(new_player_update(U_PLAYER, player));
 }
 
+void player_set_connected(struct player *player, bool is_connected)
+{
+    player->is_connected = is_connected;
+    all_add_update(new_player_update(U_PLAYER, player));
+}
+
 void player_deal_damage(struct player *player, int16_t damage)
 {
     player->hitpoints -= damage;
