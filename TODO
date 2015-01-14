@@ -8,9 +8,7 @@
         ** support multiple games
         ** make tanks not just 1 point on the map + detect collisions with them
     * client
-        ** change booleans-as-ints to bool from <stdbool.h>
-        ** winner/loser and statistics end-game screen
-        ** reconnect
+        ** statistics in end-game screen
         ** on-screen keyboard (for touch capable devices)
     * common
         ** write documentation (gameplay, usage, syntax, …)
