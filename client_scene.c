@@ -159,3 +159,22 @@ void wait_scene()
         quit_key(input_ch);
     }
 }
+
+void post_game_scene()
+{
+    int input_ch;
+    /* initial render */
+    clear();
+    render_post_game();
+    refresh();
+    while (loc_player->state == PS_WINNER
+            || loc_player->state == PS_LOSER)
+    {
+        fetch_changes();
+        input_ch = getch();
+        if (input_ch == ERR)
+            continue;
+        quit_key(input_ch);
+        break;
+    }
+}
