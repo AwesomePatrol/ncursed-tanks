@@ -1,16 +1,18 @@
 #include "client.h"
 
 #define MAX_POWER 100
+#define SHOOT_FAST_STEP 2
 int camera_focus=0;
 struct dyn_arr ScrUpdates = { sizeof(ScreenUpdate) };
 struct dyn_arr MapUpdates = { sizeof(struct map_position) };
 struct dyn_arr Players = { sizeof(struct player) };
+int shoot_last_key=0;
+unsigned int shoot_press_key=0;
 
 /* move camera using i,k,j,l keys */
 int camera_move(int input_character)
 {
-    switch (input_character)
-    {
+    switch (input_character) {
         case 'i':
             if (dy > 0)
                 dy--;
@@ -41,8 +43,7 @@ int camera_move(int input_character)
 /* use m,n keys to change camera focus */
 int change_camera_focus(int input_character)
 {
-    switch (input_character)
-    {
+    switch (input_character) {
         case 'm':
             camera_focus++;
             break;
@@ -79,8 +80,7 @@ void center_camera(struct map_position d_pos)
 /* start quit or write debug, always run on the end of all key functions*/
 int quit_key(int input_character)
 {
-    switch(input_character)
-    {
+    switch(input_character) {
         case 'q':
             loc_player->state = PS_NO_PLAYER;
             return 1;
@@ -91,11 +91,11 @@ int quit_key(int input_character)
     }
     return 0;
 }
+
 /* manage up,down,lef,right keys in shoot_menu */
 int shoot_menu(int input_character)
 {
-    switch (input_character)
-    {
+    switch (input_character) {
         case KEY_UP:
             if (power < MAX_POWER) power++;
             break;
@@ -113,7 +113,31 @@ int shoot_menu(int input_character)
             send_shoot();
             break;
         default:
+            if (shoot_press_key>0) shoot_press_key--;
             return 0;
+    }
+    if (shoot_last_key == input_character) {
+        if (shoot_press_key > 3) {
+            switch (input_character) {
+            case KEY_UP:
+                if (power < MAX_POWER-SHOOT_FAST_STEP) power+=SHOOT_FAST_STEP;
+                break;
+            case KEY_DOWN:
+                if (power > SHOOT_FAST_STEP) power-=SHOOT_FAST_STEP;
+                break;
+            case KEY_RIGHT:
+                if (angle > SHOOT_FAST_STEP) angle-=SHOOT_FAST_STEP;
+                break;
+            case KEY_LEFT:
+                if (angle < 180-SHOOT_FAST_STEP) angle+=SHOOT_FAST_STEP;
+                break;
+            }
+        }
+        else
+            shoot_press_key++;
+    } else {
+        shoot_last_key=input_character;
+        shoot_press_key=0;
     }
     /* add SCR_SHOOT_MENU to screen update queue */
     ScreenUpdate u_shoot_menu = SCR_SHOOT_MENU;
@@ -124,8 +148,7 @@ int shoot_menu(int input_character)
 /* manage space in lobby */
 int lobby_menu(int input_character)
 {
-    switch (input_character)
-    {
+    switch (input_character) {
         case ' ':
             if (loc_player->state == PS_JOINED) {
                 send_int8(sock, C_READY);
