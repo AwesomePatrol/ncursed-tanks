@@ -207,7 +207,7 @@ void render_tanks()
     for (int i=0; i<Players.count; i++) {
         struct player *cur_pl = dyn_arr_get(&Players, i);
         if (cur_pl->state != PS_DEAD)
-            draw_tank( i == 0 ? COL_W : COL_Y,
+            draw_tank( cur_pl == loc_player ? COL_W : COL_Y,
                 dx, dy, cur_pl->pos.x, cur_pl->pos.y, 0);
     }
 }

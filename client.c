@@ -24,11 +24,11 @@ void print_help()
     puts("For complete documentation look for ./doc in project's files");
 }
 
-short int parse_cmd(int argc, char *argv[])
+bool parse_cmd(int argc, char *argv[])
 {
     if (argc == 2 && strcmp(argv[1],"--help")) {
         print_help();
-        return 1;
+        return true;
     }
     for (int i=1; i<(argc-2); i++) {
         if (strcmp(argv[i],"--help") == 0) {
@@ -45,7 +45,7 @@ short int parse_cmd(int argc, char *argv[])
                 || strcmp(argv[i],"-p") == 0)
             portnum=argv[i+1];
     }
-    return 0;
+    return false;
 }
 
 void init_curses()
@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
     }
 
     /* Parse command line arguments */
-    if (parse_cmd(argc, argv) == 1)
+    if (parse_cmd(argc, argv))
         return EXIT_SUCCESS;
 
     /* Ignore values that are not proper */
@@ -141,6 +141,7 @@ int main(int argc, char *argv[])
     debug_d( 1, "lines", LINES);
     debug_d( 1, "columns", COLS);
 
+    /* main loop */
     while (loc_player->state)
     {
         if (loc_player->state == PS_READY ||
@@ -152,7 +153,7 @@ int main(int argc, char *argv[])
             loc_player->state == PS_LOSER)post_game_scene();
     }
 
-    /*free!*/
+    /* free! */
     for (int i=0; i<Players.count; i++)
         clear_player(dyn_arr_get(&Players,i));
     dyn_arr_clear(&Players);

@@ -13,35 +13,35 @@ void map_update()
 void render_scene()
 {
     /* TODO: shorten this code */
-    short int shoot=0, lobby=0, stats=0, tanks=0, shoot_menu=0, map=0;
-    for (int i = 0; i < ScrUpdates.count; i++)
+    bool shoot=false, lobby=false, stats=false, tanks=false, shoot_menu=false, map=false;
+    for (int i = false; i < ScrUpdates.count; i++)
     {
         ScreenUpdate *scr_u = dyn_arr_get(&ScrUpdates, i);
         switch (*scr_u) {
             case SCR_SHOOT:
-                shoot=1;
+                shoot=true;
                 break;
             case SCR_LOBBY:
-                lobby=1;
+                lobby=true;
                 break;
             case SCR_STATS:
-                stats=1;
+                stats=true;
                 break;
             case SCR_TANKS:
-                tanks=1;
+                tanks=true;
                 break;
             case SCR_SHOOT_MENU:
-                shoot_menu=1;
+                shoot_menu=true;
                 break;
             case SCR_MAP:
-                map=1;
+                map=true;
                 break;
             case SCR_ALL:
-                lobby=1;
-                stats=1;
-                tanks=1;
-                shoot_menu=1;
-                map=1;
+                lobby=true;
+                stats=true;
+                tanks=true;
+                shoot_menu=true;
+                map=true;
                 break;
             default:
                 debug_d(5, "UnknownValueScrUpdate", *scr_u);
