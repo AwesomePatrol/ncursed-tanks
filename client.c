@@ -141,12 +141,15 @@ int main(int argc, char *argv[])
     debug_d( 1, "lines", LINES);
     debug_d( 1, "columns", COLS);
 
-    lobby_scene();
-    
     while (loc_player->state)
     {
-        wait_scene();
-        shoot_menu_scene();
+        if (loc_player->state == PS_READY ||
+            loc_player->state == PS_JOINED)lobby_scene();
+        if (loc_player->state == PS_WAITING ||
+            loc_player->state == PS_DEAD) wait_scene();
+        if (loc_player->state == PS_ACTIVE) shoot_menu_scene();
+        if (loc_player->state == PS_WINNER ||
+            loc_player->state == PS_LOSER)post_game_scene();
     }
 
     /*free!*/

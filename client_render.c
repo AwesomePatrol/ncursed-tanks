@@ -126,6 +126,7 @@ void render_shot(struct shot *shot, int s_id)
             case SCR_OK:
                 break;
             case SCR_UP:
+            case SCR_DOWN:
             case SCR_LEFT:
             case SCR_RIGHT:
                 center_camera(map_pos);
@@ -159,6 +160,18 @@ void render_shot(struct shot *shot, int s_id)
     /* SCR_ALL is already in screen update queue by center_camera*/
     timeout(DEFAULT_TIMEOUT); //back to original
 }
+
+void render_post_game()
+{
+    for (int i=0; i<Players.count; i++) {
+        struct player *cur_pl = dyn_arr_get(&Players, i);
+        attron(COLOR_PAIR((int) (cur_pl->state == PS_WINNER) ? COL_R : COL_Y));
+        mvprintw(1+i, 1, "%s:%s", cur_pl->nickname,
+            (cur_pl->state == PS_WINNER) ? "WINNER" : "LOSER");
+        attroff(COLOR_PAIR((int) (cur_pl->state == PS_WINNER) ? COL_R : COL_Y));
+    }
+}
+
 void draw_stats()
 {
     for (int i=0; i<Players.count; i++) {

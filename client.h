@@ -19,7 +19,7 @@
 #define DEFAULT_TIMEOUT 2000
 #define SHOOT_TIMEOUT 100 //200 = 5fps, 100 = 10fps
 
-/* GLOBAL */
+/* GLOBAL VARIABLES */
 typedef enum ScreenUpdate {SCR_SHOOT, SCR_LOBBY, SCR_STATS,
     SCR_TANKS, SCR_SHOOT_MENU, SCR_MAP, SCR_ALL} ScreenUpdate;
 typedef enum ScreenMove {SCR_OK, SCR_UP, SCR_DOWN, SCR_LEFT,
@@ -39,7 +39,7 @@ float g_impact_t;
 int sock;
 struct update s_update;
 
-/* game.c */
+/* client_game.c */
 int camera_move(int input_character);
 int change_camera_focus(int input_character);
 void center_camera(struct map_position d_pos);
@@ -47,14 +47,15 @@ int quit_key(int input_character);
 int shoot_menu(int input_character);
 int lobby_menu(int input_character);
 
-/* scene.c */
+/* client_scene.c */
 void map_update();
 void render_scene();
 void shoot_menu_scene();
 void lobby_scene();
 void wait_scene();
+void post_game_scene();
 
-/* cl_proto.c */
+/* client_net.c */
 void fetch_map();
 void fetch_changes();
 void update_loc_player();
@@ -62,10 +63,10 @@ int find_player(u_int16_t player_id);
 int join_game(char *nickname);
 void send_shoot();
 
-/* draw.c */
+/* client_draw.c */
 void put_col_str(Color color, int y, int x, const char *str);
 
-/* render.c */
+/* client_render.c */
 void draw_tank(Color color, int pos_x, int pos_y, int x, int y, int angle);
 void draw_map(map_t map, int pos_x, int pos_y, int width, int height);
 ScreenMove draw_bullet(int pos_x, int pos_y, int x, int y);
@@ -73,6 +74,7 @@ void draw_blank_bullet(int pos_x, int pos_y, int x, int y);
 void draw_shoot_menu();
 void draw_bullet_explosion(int pos_x, int pos_y, int x, int y);
 void render_shot(struct shot *shot, int s_id);
+void render_post_game();
 void draw_stats();
 void draw_lobby();
 void render_map();
