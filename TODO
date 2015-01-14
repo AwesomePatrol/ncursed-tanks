@@ -1,11 +1,11 @@
 #TRY to keep the list in order
     * server
-        ** deal with end of game _properly_
         ** add lock-if-not-locked function for simplicity
+        ** deal with end of game _properly_ (return to lobby)
+        ** fix shooting (e.g. when angle = 90°) (+ friendly fire)
         ** switch to using getaddrinfo for parsing IP, …
         ** end-game statistics
         ** support multiple games
-        ** add friendly-fire
         ** make tanks not just 1 point on the map + detect collisions with them
     * client
         ** change booleans-as-ints to bool from <stdbool.h>
