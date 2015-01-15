@@ -72,13 +72,6 @@ typedef enum AbilityType
     A_NONE = 0, A_DOUBLE_SHOT, A_MOVE, A_SNIPE
 } AbilityType;
 
-struct ability
-{
-    AbilityType type;
-    int16_t cooldown;
-    int16_t parameter;
-};
-
 struct map_position
 {
     int16_t x;
@@ -94,13 +87,24 @@ struct f_pair
 struct player
 {
     PlayerState state;
-    struct ability ability;
     bool is_connected;
     /* A value of 0 is invalid */
     int16_t id;
     char *nickname;
     int16_t hitpoints;
     struct map_position pos;
+
+    int16_t ability_id;
+    int16_t ability_cooldown;
+};
+
+struct ability
+{
+    int16_t id;
+    char *name;
+    AbilityType type;
+    int16_t cooldown;
+    /* TODO ability parameter list */
 };
 
 struct map_info
