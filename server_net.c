@@ -111,6 +111,7 @@ void process_command(Command cmd)
         break;
     case C_ABILITY:
         process_ability_command(data, socket);
+        break;
     case C_GET_CHANGES:
         process_get_changes_command(data, socket);
         break;
