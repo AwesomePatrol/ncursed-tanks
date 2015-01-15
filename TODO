@@ -13,8 +13,11 @@
     * common
         ** write documentation (gameplay, usage, syntax, …)
         ** replace nested functions (GCC extension) with another method
-    * later
+    * abilities
         ** gather ideas for weaponry and abilities.
         ** document every weapon and ability.
+        ** read abilities.conf
+        ** write code for every ability in server_abilities 
+    * later
         ** port to PSP
         ** test under different compilers?

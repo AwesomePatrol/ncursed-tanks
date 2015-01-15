@@ -30,7 +30,7 @@
  * C_GET_MAP                           struct map_info
  * C_SHOOT         struct shot         
  *   \- game started, state == PS_ACTIVE
- * C_ABILITY       
+ * C_ABILITY       struct shot
  * C_GET_CHANGES                       list(struct update)
  *   \- client joined
  * 
@@ -123,7 +123,7 @@ struct shot
 /* U_EMPTY -- end of updates -- no pending updates left */
 typedef enum UpdateType
 {
-    U_EMPTY = 0, U_MAP, U_CONFIG, U_SHOT, U_SHOT_IMPACT,
+    U_EMPTY = 0, U_MAP, U_CONFIG, U_ABILITIES_CONFIG, U_SHOT, U_SHOT_IMPACT,
     U_PLAYER, U_ADD_PLAYER, U_DEL_PLAYER,
 } UpdateType;
 
