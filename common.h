@@ -26,9 +26,11 @@
  *   \- requirements
  * C_JOIN          string nickname     JoinReply[, int16_t id]
  *   sends id only if JoinReply is JR_OK
+ * C_READY         ability_id
  * C_GET_MAP                           struct map_info
  * C_SHOOT         struct shot         
  *   \- game started, state == PS_ACTIVE
+ * C_ABILITY       
  * C_GET_CHANGES                       list(struct update)
  *   \- client joined
  * 
@@ -38,7 +40,7 @@ typedef enum Command
 {
     C_JOIN = 'J', C_READY = 'R',
     C_GET_CHANGES = 'C', C_GET_MAP = 'M',
-    C_SHOOT = 'F',
+    C_SHOOT = 'F', C_ABILITY = 'A'
 } Command;
 
 /* JR_GAME_IN_PROGRESS - not allowed to join because game already started */
