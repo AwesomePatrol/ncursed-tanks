@@ -65,6 +65,18 @@ typedef enum PlayerState
     PS_WINNER, PS_LOSER
 } PlayerState;
 
+typedef enum AbilityType
+{
+    A_NONE = 0, A_DOUBLE_SHOT, A_MOVE, A_SNIPE
+} AbilityType;
+
+struct ability
+{
+    AbilityType type;
+    int16_t cooldown;
+    int16_t parameter;
+};
+
 struct map_position
 {
     int16_t x;
@@ -80,6 +92,7 @@ struct f_pair
 struct player
 {
     PlayerState state;
+    struct ability ability;
     bool is_connected;
     /* A value of 0 is invalid */
     int16_t id;

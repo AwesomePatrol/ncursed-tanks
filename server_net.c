@@ -1,4 +1,5 @@
 #include "server_net.h"
+#include "server_abilities.h"
 
 int server_socket; /* socket used to listen for incoming connections */
 /* socket info about the machine connecting to us */
@@ -108,6 +109,8 @@ void process_command(Command cmd)
     case C_SHOOT:
         process_shoot_command(data, socket);
         break;
+    case C_ABILITY:
+        process_ability_command(data, socket);
     case C_GET_CHANGES:
         process_get_changes_command(data, socket);
         break;
@@ -266,6 +269,32 @@ void process_shoot_command(struct thread_data *data, int socket)
     process_impact(impact_pos);
 
     free(shot);
+}
+
+void process_ability_command(struct thread_data *data, int socket)
+{
+    struct client *cl = data->client;
+
+    debug_d( 3, "ability: client #", cl->id);
+
+    lock_clients_array();                                        /* {{{ */
+    if (cl->player->ability.cooldown == 0) {
+        switch(cl->player->ability.type) {
+            case A_NONE:
+                break;
+            case A_DOUBLE_SHOT:
+                break;
+            case A_MOVE:
+                break;
+            case A_SNIPE:
+                break;
+            default:
+                debug_d( 5, "UnknownAbility", cl->player->ability.type);
+        }
+    } else {
+        debug_s( 3, "ability:", "still on cooldown");
+    }
+    unlock_clients_array();                                      /* }}} */
 }
 
 void process_get_changes_command(struct thread_data *data, int socket)
