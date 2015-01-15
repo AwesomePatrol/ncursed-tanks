@@ -109,7 +109,7 @@ void process_command(Command cmd)
     case C_SHOOT:
         process_shoot_command(data, socket);
         break;
-    case C_ABILITY:
+    case C_USE_ABILITY:
         process_ability_command(data, socket);
         break;
     case C_GET_CHANGES:
