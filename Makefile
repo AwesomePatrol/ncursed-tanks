@@ -10,7 +10,7 @@ else
 	CFLAGS += -O2 -std=c99
 endif
 
-OBJS_server := server.o common.o server_game.o server_abilities.o server_data.o server_net.o dyn_arr.o server_updates_queue.o config.o debug.o map.o shot.o
+OBJS_server := server.o common.o server_game.o server_abilities.o server_data.o server_net.o dyn_arr.o server_updates_queue.o config.o abilities_config.o debug.o map.o shot.o
 OBJS_client := client.o common.o debug.o dyn_arr.o map.o shot.o config.o client_net.o client_game.o client_scene.o client_render.o client_draw.o
 OBJS_config_menu := config_menu.o debug.o config.o
 
