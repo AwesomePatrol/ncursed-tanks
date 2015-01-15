@@ -129,7 +129,10 @@ struct shot
 /* U_EMPTY -- end of updates -- no pending updates left */
 typedef enum UpdateType
 {
-    U_EMPTY = 0, U_MAP, U_CONFIG, U_ABILITIES_CONFIG, U_SHOT, U_SHOT_IMPACT,
+    U_EMPTY = 0,
+    U_CONFIG, U_ADD_ABILITY,
+    U_SHOT, U_ABILITY_USE,
+    U_SHOT_IMPACT, U_MAP,
     U_PLAYER, U_ADD_PLAYER, U_DEL_PLAYER,
 } UpdateType;
 
@@ -138,28 +141,36 @@ struct update
     UpdateType type;
     union
     {
-        /* for U_*PLAYER */
-        struct player player;
-        /* for U_MAP */
-        struct
-        {
-            int16_t x;
-            int16_t new_height;
-        };
         /* for U_CONFIG */
         struct
         {
             char *opt_name;
             int32_t opt_value;
         };
-        /* for U_SHOT */
+        /* for U_ADD_ABILITY */
+        struct ability ability;
+        /* for U_{SHOT,ABILITY_USE} */
         struct
         {
-            struct shot shot;
             int16_t player_id;
+            union
+            {
+                /* for U_SHOT */
+                struct shot shot;
+                /* for U_ABILITY_USE */
+                int16_t ability_id;
+            };
         };
         /* for U_SHOT_IMPACT */
         int16_t impact_t;
+        /* for U_MAP */
+        struct
+        {
+            int16_t x;
+            int16_t new_height;
+        };
+        /* for U_*PLAYER */
+        struct player player;
     };
 };
 
