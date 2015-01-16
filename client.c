@@ -145,7 +145,7 @@ int main(int argc, char *argv[])
     while (loc_player->state)
     {
         if (loc_player->state == PS_READY ||
-            loc_player->state == PS_JOINED)lobby_scene();
+            loc_player->state == PS_JOINED) lobby_scene();
         if (loc_player->state == PS_WAITING ||
             loc_player->state == PS_DEAD) wait_scene();
         if (loc_player->state == PS_ACTIVE) shoot_menu_scene();

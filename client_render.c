@@ -165,10 +165,10 @@ void render_post_game()
 {
     for (int i=0; i<Players.count; i++) {
         struct player *cur_pl = dyn_arr_get(&Players, i);
-        attron(COLOR_PAIR((int) (cur_pl->state == PS_WINNER) ? COL_R : COL_Y));
-        mvprintw(1+i, 1, "%s:%s", cur_pl->nickname,
+        attron(COLOR_PAIR((int) (cur_pl->state == PS_WINNER) ? COL_G : COL_Y));
+        mvprintw(1+i, 1, "%s : %s", cur_pl->nickname,
             (cur_pl->state == PS_WINNER) ? "WINNER" : "LOSER");
-        attroff(COLOR_PAIR((int) (cur_pl->state == PS_WINNER) ? COL_R : COL_Y));
+        attroff(COLOR_PAIR((int) (cur_pl->state == PS_WINNER) ? COL_G : COL_Y));
     }
 }
 
@@ -198,8 +198,9 @@ void draw_lobby()
                 cur_pl->state == PS_READY ? "READY" : "NOT READY");
         /* render player's ability */
         struct ability *cur_a = find_ability(cur_pl->ability_id);
-        put_col_str((cur_pl == loc_player) ? COL_W : COL_Y,
-                1+i, 50, cur_a->name);
+        if (cur_a != NULL)
+            put_col_str((cur_pl == loc_player) ? COL_W : COL_Y,
+                    1+i, 50, cur_a->name);
     }
     /* render help */
     put_col_str(COL_W, LINES-3, 1,
