@@ -59,6 +59,7 @@ void post_game_scene();
 
 /* client_net.c */
 void fetch_map();
+void process_update(struct update *UpdateNet);
 void fetch_changes();
 void update_loc_player();
 int find_player(u_int16_t player_id);
