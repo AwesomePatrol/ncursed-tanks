@@ -1,5 +1,8 @@
 #include "client.h"
 
+struct dyn_arr NetUpdates = { sizeof(struct update) };
+bool save_updates=false;
+
 /* fetch map from server and generate it */
 void fetch_map()
 {
@@ -23,6 +26,15 @@ int find_player(u_int16_t player_id)
 void update_loc_player()
 {
     loc_player = dyn_arr_get(&Players, find_player(loc_player_id));
+}
+
+void process_saved_updates()
+{
+    for (int i=0; i<Updates.count; i++) {
+        struct update *update=dyn_arr_get(&Updates, i);
+        process_update(update);
+    }
+    dyn_arr_clear(&Updates);
 }
 
 void process_update(struct update *UpdateNet)
@@ -126,7 +138,6 @@ void process_update(struct update *UpdateNet)
         default:
             debug_d(5, "UnknownGetChangesType", UpdateNet->type);
     }
-    free(UpdateNet);
 }
 
 /* fetch changes and apply them */
@@ -136,9 +147,13 @@ void fetch_changes()
     struct update *UpdateNet;
     while (UpdateNet = recv_update(sock)) {
         if (UpdateNet->type) {
-            process_update(UpdateNet);
-        }
-        else {
+            if (save_updates)
+                dyn_arr_append(&Updates,&NetUpdate);
+            else {
+                process_update(UpdateNet);
+                free(UpdateNet);
+            }
+        } else {
             free(UpdateNet);
             break;
         }
