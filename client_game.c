@@ -161,6 +161,21 @@ int shoot_menu(int input_character)
 int lobby_menu(int input_character)
 {
     switch (input_character) {
+        case KEY_LEFT:
+            loc_player->ability_id--;
+            if (find_ability(loc_player->ability_id) == NULL) {
+                struct ability *tmp_a = dyn_arr_get(&Abilities,
+                        Abilities.count-1);
+                loc_player->ability_id = tmp_a->id;
+            }
+            break;
+        case KEY_RIGHT:
+            loc_player->ability_id++;
+            if (find_ability(loc_player->ability_id) == NULL) {
+                struct ability *tmp_a = dyn_arr_get(&Abilities, 0);
+                loc_player->ability_id = tmp_a->id;
+            }
+            break;
         case ' ':
             if (loc_player->state == PS_JOINED) {
                 send_int8(sock, C_READY);
