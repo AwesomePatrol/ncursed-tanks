@@ -1,15 +1,8 @@
 #include "client.h"
 
-void map_update()
-{
-    for (int i=0; i<MapUpdates.count; i++)
-    {
-        struct map_position *map_u = dyn_arr_get(&MapUpdates, i);
-        g_map[map_u->x]=map_u->y;
-    }
-    dyn_arr_clear(&MapUpdates);
-}
 
+
+/* general way to render scene based on ScrUpdates*/
 void render_scene()
 {
     /* TODO: shorten this code */
@@ -52,7 +45,11 @@ void render_scene()
         if (shoot) { /* it's a VERY special case */
             render_shot(&s_update.shot,
                         find_player(s_update.player_id));
+            /* for now on we want to process updates again
+             * and process already saved one*/
             map_update();
+            save_updates=false;
+            process_saved_updates();
         } else {
             switch (loc_player->state) {
                 case PS_JOINED:
@@ -88,6 +85,7 @@ void render_scene()
     }
 }
 
+/* scene shown in lobby */
 void lobby_scene()
 {
     int input_ch;
@@ -109,7 +107,7 @@ void lobby_scene()
     }
 }
 
-
+/* scene shown when player choose values for a shot */
 void shoot_menu_scene()
 {
     int input_ch;
@@ -135,6 +133,7 @@ void shoot_menu_scene()
     }
 }
 
+/* scene shown in lobby */
 void wait_scene()
 {
     int input_ch;
@@ -160,6 +159,7 @@ void wait_scene()
     }
 }
 
+/* scene shown when there are winners and losers */
 void post_game_scene()
 {
     int input_ch;

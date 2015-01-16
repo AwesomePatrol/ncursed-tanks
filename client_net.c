@@ -28,13 +28,23 @@ void update_loc_player()
     loc_player = dyn_arr_get(&Players, find_player(loc_player_id));
 }
 
+void map_update()
+{
+    for (int i=0; i<MapUpdates.count; i++)
+    {
+        struct map_position *map_u = dyn_arr_get(&MapUpdates, i);
+        g_map[map_u->x]=map_u->y;
+    }
+    dyn_arr_clear(&MapUpdates);
+}
+
 void process_saved_updates()
 {
-    for (int i=0; i<Updates.count; i++) {
-        struct update *update=dyn_arr_get(&Updates, i);
+    for (int i=0; i<NetUpdates.count; i++) {
+        struct update *update=dyn_arr_get(&NetUpdates, i);
         process_update(update);
     }
-    dyn_arr_clear(&Updates);
+    dyn_arr_clear(&NetUpdates);
 }
 
 void process_update(struct update *UpdateNet)
@@ -115,6 +125,8 @@ void process_update(struct update *UpdateNet)
         case U_SHOT:
             debug_d(1, "ShootingPlayerID", UpdateNet->player_id);
             s_update = *UpdateNet;
+            /* For now on we want to store updates, not process them */
+            save_updates = true;
             /* add SCR_SHOOT to screen update queue so that
              * the client won't hang at this stage */
             ScreenUpdate u_shot = SCR_SHOOT;
@@ -140,7 +152,9 @@ void process_update(struct update *UpdateNet)
     }
 }
 
-/* fetch changes and apply them */
+/* fetch changes and process
+ * when save_updates == false
+ * otherwise saves them*/
 void fetch_changes()
 {
     send_int8(sock, C_GET_CHANGES);
@@ -148,12 +162,15 @@ void fetch_changes()
     while (UpdateNet = recv_update(sock)) {
         if (UpdateNet->type) {
             if (save_updates)
-                dyn_arr_append(&Updates,&NetUpdate);
+                /* save update */
+                dyn_arr_append(&NetUpdates, UpdateNet);
             else {
+                /* process update and free memory */
                 process_update(UpdateNet);
                 free(UpdateNet);
             }
         } else {
+            /* free and exit loop when gets U_EMPTY */ 
             free(UpdateNet);
             break;
         }
@@ -175,6 +192,8 @@ int join_game(char *nickname)
             fetch_map(sock);
             fetch_changes(sock);
             break;
+        /* all other values of jr are considered error
+         * and quits the client */
         case JR_GAME_IN_PROGRESS:
             if (DEBUG <= 5) puts("Game in progress, cannot join!");
             return -1;
@@ -190,6 +209,7 @@ int join_game(char *nickname)
         default:
             debug_d(3, "JoinReplyNet", j_net);
             debug_d(3, "JoinReply", jr);
+            return -1;
     }
     return 0;
 }

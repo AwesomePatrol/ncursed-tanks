@@ -52,7 +52,6 @@ int shoot_menu(int input_character);
 int lobby_menu(int input_character);
 
 /* client_scene.c */
-void map_update();
 void render_scene();
 void shoot_menu_scene();
 void lobby_scene();
@@ -65,6 +64,7 @@ void process_saved_updates();
 void process_update(struct update *UpdateNet);
 void fetch_changes();
 void update_loc_player();
+void map_update();
 int find_player(u_int16_t player_id);
 int join_game(char *nickname);
 void send_shoot();
