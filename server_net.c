@@ -109,9 +109,9 @@ void process_command(Command cmd)
     case C_SHOOT:
         process_shoot_command(data, socket);
         break;
-    case C_USE_ABILITY:
-        process_ability_command(data, socket);
-        break;
+    /* case C_USE_ABILITY: */
+    /*     process_ability_command(data, socket); */
+    /*     break; */
     case C_GET_CHANGES:
         process_get_changes_command(data, socket);
         break;
@@ -272,45 +272,46 @@ void process_shoot_command(struct thread_data *data, int socket)
     free(shot);
 }
 
-void process_ability_command(struct thread_data *data, int socket)
-{
-    struct shot *shot = recv_shot(socket);
-    
-    struct client *cl = data->client;
 
-    debug_d( 3, "ability: client #", cl->id);
-
-    lock_clients_array();                                        /* {{{ */
-    if (cl->player->ability.cooldown == 0) {
-        switch(cl->player->ability.type) {
-            case A_NONE:
-                /* player has no ability in slot and still want to use one
-                 * prefer to do nothing
-                 */
-                break;
-            case A_DOUBLE_SHOT:
-                all_add_update(new_shot_update(shot, cl->id));
-                /* then we should add another one,
-                 * but in the next update client will receive
-                 * all_add_update(new_shot_update(shot, cl->id));
-                 */
-                break;
-            case A_MOVE:
-                ability_move(cl, shot);
-                break;
-            case A_SNIPE:
-                break;
-            default:
-                debug_d( 5, "UnknownAbility", cl->player->ability.type);
-        }
-        /* TODO: set cooldown to some configured value */
-    } else {
-        debug_s( 3, "ability:", "still on cooldown");
-    }
-    unlock_clients_array();                                      /* }}} */
+/* void process_ability_command(struct thread_data *data, int socket) */
+/* { */
+/*     struct shot *shot = recv_shot(socket); */
     
-    free(shot);
-}
+/*     struct client *cl = data->client; */
+
+/*     debug_d( 3, "ability: client #", cl->id); */
+
+/*     lock_clients_array();                                        /\* {{{ *\/ */
+/*     if (cl->player->ability.cooldown == 0) { */
+/*         switch(cl->player->ability.type) { */
+/*             case A_NONE: */
+/*                 /\* player has no ability in slot and still want to use one */
+/*                  * prefer to do nothing */
+/*                  *\/ */
+/*                 break; */
+/*             case A_DOUBLE_SHOT: */
+/*                 all_add_update(new_shot_update(shot, cl->id)); */
+/*                 /\* then we should add another one, */
+/*                  * but in the next update client will receive */
+/*                  * all_add_update(new_shot_update(shot, cl->id)); */
+/*                  *\/ */
+/*                 break; */
+/*             case A_MOVE: */
+/*                 ability_move(cl, shot); */
+/*                 break; */
+/*             case A_SNIPE: */
+/*                 break; */
+/*             default: */
+/*                 debug_d( 5, "UnknownAbility", cl->player->ability.type); */
+/*         } */
+/*         /\* TODO: set cooldown to some configured value *\/ */
+/*     } else { */
+/*         debug_s( 3, "ability:", "still on cooldown"); */
+/*     } */
+/*     unlock_clients_array();                                      /\* }}} *\/ */
+    
+/*     free(shot); */
+/* } */
 
 void process_get_changes_command(struct thread_data *data, int socket)
 {
