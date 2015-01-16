@@ -6,6 +6,7 @@ int camera_focus=0;
 struct dyn_arr ScrUpdates = { sizeof(ScreenUpdate) };
 struct dyn_arr MapUpdates = { sizeof(struct map_position) };
 struct dyn_arr Players = { sizeof(struct player) };
+struct dyn_arr Abilities = { sizeof(struct ability) };
 int shoot_last_key=0;
 unsigned int shoot_press_key=0;
 

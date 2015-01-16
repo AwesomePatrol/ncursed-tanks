@@ -130,6 +130,10 @@ void fetch_changes()
                     /* free name of the value */
                     free(UpdateNet->opt_name);
                     break;
+                case U_ADD_ABILITY:
+                    debug_s(1, "Add new ability", UpdateNet->ability.name);
+                    dyn_arr_append(&Abilities, UpdateNet->ability);
+                    break;
                 default:
                     debug_d(5, "UnknownGetChangesType", UpdateNet->type);
             }

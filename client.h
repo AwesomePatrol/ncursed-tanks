@@ -27,6 +27,7 @@ typedef enum ScreenMove {SCR_OK, SCR_UP, SCR_DOWN, SCR_LEFT,
 extern struct dyn_arr ScrUpdates;
 extern struct dyn_arr MapUpdates;
 extern struct dyn_arr Players;
+extern struct dyn_arr Abilities;
 extern struct player *loc_player;
 extern int16_t loc_player_id; 
 struct map_info *map_data;
