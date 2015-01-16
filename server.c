@@ -10,6 +10,7 @@ int main(int argc, char *argv[])
     debug_open("server.debug");
 
     read_config();
+    read_abilities();
 
     init_signals();
 

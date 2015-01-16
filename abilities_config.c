@@ -6,10 +6,11 @@ struct dyn_arr abilities = { sizeof(struct ability) };
 
 /*
  * abilities.conf file format:
- * name1 type1 cooldown1 params_count1 param11 param12 ...
- * name2 type2 cooldown2 params_count2 param21 param22 ...
+ * name1 type1 cooldown1 params_count1 param11 param12 ... 
+ * name2 type2 cooldown2 params_count2 param21 param22 ... 
  * ...
  *
+ * (For every line, a space before the newline is required)
  * (Newline at end of file mandatory)
  */
 
@@ -50,6 +51,9 @@ void read_abilities(void)
             a.params[i] = read_int_delimited(a_config_file, ' ');
             debug_d(0, "abilities: read param", a.params[i]);
         }
+        /* Get rid of the newline at the end of current line */
+        /* TODO make this better */
+        free(read_line(a_config_file));
 
         /* generate id after checking if name read (the check is above),
          * we don't need ids for abilities that won't be in the array */

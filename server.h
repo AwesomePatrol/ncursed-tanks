@@ -7,6 +7,7 @@
 #include <time.h>
 
 #include "server_data.h"
+#include "abilities_config.h"
 #include "server_net.h"
 
 #endif /* SERVER_H */
