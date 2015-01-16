@@ -2,6 +2,7 @@
     * server
         ** add lock-if-not-locked function for simplicity
         ** deal with end of game _properly_ (return to lobby)
+        ** add updates when updating player position (shot_update_map)
         ** fix shooting (e.g. when angle = 90°) (+ friendly fire)
         ** switch to using getaddrinfo for parsing IP, …
         ** end-game statistics

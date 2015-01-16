@@ -249,37 +249,45 @@ int send_update(int socket, struct update *u)
     switch(u->type)
     {
     case U_EMPTY:
-        //debug_s( 0, "send update: U_EMPTY", "");
-        break;
-    case U_PLAYER: case U_ADD_PLAYER: case U_DEL_PLAYER:
-        //debug_s( 0, "send update: U_*PLAYER", u->player.nickname);
-        if (send_player(socket, &u->player) == -1)
-            return -1;
-
-        break;
-    case U_MAP:
-        //debug_s( 0, "send update: U_MAP", "");
-        if (send_int16(socket, u->x) == -1          ||
-            send_int16(socket, u->new_height) == -1)
-            return -1;
-
         break;
     case U_CONFIG:
-        //debug_s( 0, "send update: U_CONFIG", u->opt_name);
         if (send_string(socket, u->opt_name) == -1 ||
             send_int32(socket, u->opt_value) == -1)
             return -1;
 
         break;
-    case U_SHOT:
-        //debug_s( 0, "send update: U_SHOT", "");
-        if (send_shot(socket, &u->shot) == -1      ||
-            send_int16(socket, u->player_id) == -1)
+    case U_ADD_ABILITY:
+        if (send_ability(socket, &u->ability) == -1)
             return -1;
 
         break;
+    /* ---  careful, code duplication */
+    case U_SHOT:
+        if (send_int16(socket, u->player_id) == -1 ||
+            send_shot(socket, &u->shot) == -1)
+            return -1;
+
+        break;
+    case U_ABILITY_USE:
+        if (send_int16(socket, u->player_id) == -1  ||
+            send_int16(socket, u->ability_id) == -1)
+            return -1;
+
+        break;
+    /* ---  end. */
     case U_SHOT_IMPACT:
         if (send_int16(socket, u->impact_t) == -1)
+            return -1;
+
+        break;
+    case U_MAP:
+        if (send_int16(socket, u->x) == -1          ||
+            send_int16(socket, u->new_height) == -1)
+            return -1;
+
+        break;
+    case U_PLAYER: case U_ADD_PLAYER: case U_DEL_PLAYER:
+        if (send_player(socket, &u->player) == -1)
             return -1;
 
         break;
@@ -291,8 +299,10 @@ struct update *recv_update(int socket)
 {
     struct update *result = malloc(sizeof(*result));
     int8_t type_net;
-    struct player *player;
+
+    struct ability *ability;
     struct shot *shot;
+    struct player *player;
 
     if (recv_int8(socket, &type_net) <= 0)
         goto fail;
@@ -302,12 +312,38 @@ struct update *recv_update(int socket)
     {
     case U_EMPTY:
         break;
-    case U_PLAYER: case U_ADD_PLAYER: case U_DEL_PLAYER:
-        if ((player = recv_player(socket)) == NULL)
+    case U_CONFIG:
+        if ((result->opt_name = recv_string(socket)) == NULL ||
+            recv_int32(socket, &result->opt_value) <= 0)
             goto fail;
 
-        result->player = *player;
-        free(player);
+        break;
+    case U_ADD_ABILITY:
+        if ((ability = recv_ability(socket)) == NULL)
+            goto fail;
+
+        result->ability = *ability;
+        free(ability);
+
+        break;
+    case U_SHOT:
+        if (recv_int16(socket, &result->player_id) <= 0 ||
+            (shot = recv_shot(socket)) == NULL)
+            goto fail;
+
+        result->shot = *shot;
+        free(shot);
+
+        break;
+    case U_ABILITY_USE:
+        if (recv_int16(socket, &result->player_id) <= 0  ||
+            recv_int16(socket, &result->ability_id) <= 0)
+            goto fail;
+
+        break;
+    case U_SHOT_IMPACT:
+        if(recv_int16(socket, &result->impact_t) <= 0)
+            goto fail;
 
         break;
     case U_MAP:
@@ -316,24 +352,12 @@ struct update *recv_update(int socket)
             goto fail;
 
         break;
-    case U_CONFIG:
-        if ((result->opt_name = recv_string(socket)) == NULL ||
-            recv_int32(socket, &result->opt_value) <= 0)
+    case U_PLAYER: case U_ADD_PLAYER: case U_DEL_PLAYER:
+        if ((player = recv_player(socket)) == NULL)
             goto fail;
 
-        break;
-    case U_SHOT:
-        if ((shot = recv_shot(socket)) == NULL          ||
-            recv_int16(socket, &result->player_id) <= 0)
-            goto fail;
-
-        result->shot = *shot;
-        free(shot);
-
-        break;
-    case U_SHOT_IMPACT:
-        if(recv_int16(socket, &result->impact_t) <= 0)
-            goto fail;
+        result->player = *player;
+        free(player);
 
         break;
     }

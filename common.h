@@ -104,7 +104,8 @@ struct ability
     char *name;
     AbilityType type;
     int16_t cooldown;
-    /* TODO ability parameter list */
+    int8_t params_count;
+    int32_t *params;
 };
 
 struct map_info
@@ -203,6 +204,9 @@ struct map_info *recv_map_info(int socket);
 
 int send_player(int socket, struct player *p);
 struct player *recv_player(int socket);
+
+int send_ability(int socket, struct ability *a);
+struct ability *recv_ability(int socket);
 
 int send_shot(int socket, struct shot *s);
 struct shot *recv_shot(int socket);
