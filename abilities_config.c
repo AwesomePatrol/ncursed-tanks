@@ -1,47 +1,67 @@
+#include "abilities_config.h"
+
 FILE *a_config_file = NULL;
 
 struct dyn_arr abilities = { sizeof(struct ability) };
+
+/*
+ * abilities.conf file format:
+ * name1 type1 cooldown1 params_count1 param11 param12 ...
+ * name2 type2 cooldown2 params_count2 param21 param22 ...
+ * ...
+ *
+ * (Newline at end of file mandatory)
+ */
 
 void read_abilities(void)
 {
     /* TODO error checking */
     a_config_file = fopen(ABILITIES_CONFIG_FILENAME, "r");
-    if (a_config_file != NULL)
+
+    if (!a_config_file) return;
+
+    while (true) /* exit with break when no more lines left */
     {
-        for (int i = 0; i < a_config_count; i++)
+        struct ability a = {0};
+
+        char *type_s;
+
+        /* read name, type_s, cooldown_s */
+        /* if can't read name, it means file ended */
+        if (!(a.name = read_delimited(a_config_file, ' ')))
+            break;
+        debug_s(0, "abilities: read name", a.name);
+
+        type_s = read_delimited(a_config_file, ' ');
+        debug_s(0, "abilities: read type (string)", type_s);
+        a.type = string_to_ability_type(type_s);
+        free(type_s);
+
+        a.cooldown = read_int_delimited(a_config_file, ' ');
+        debug_d(0, "abilities: read cooldown", a.cooldown);
+
+        a.params_count = read_int_delimited(a_config_file, ' ');
+        debug_d(0, "abilities: read params_count", a.params_count);
+
+        a.params = malloc(a.params_count * sizeof(*a.params));
+
+        for (int i = 0; i < a.params_count; i++)
         {
-            char *name;
-            char *value_s;
-            config_value_t value1;
-            config_value_t value2;
-
-            /* read name */
-            name = read_delimited(a_config_file, ' ');
-            if (!name)
-                break;
-
-            /* read value */
-            value_s = read_line(a_config_file);
-            if (!value_s)
-                break;
-            /* TODO what if the number is huge?
-             * Change value type to int16_t
-             */
-            if (sscanf(value_s, "%d %d", &value1, &value2) != 1)
-                break;
-            free(value_s);
-
-            debug_s(0, "a_config: read name", name);
-            debug_d(0, "a_config: read value1", value1);
-            debug_d(0, "a_config: read value2", value2);
-            a_config_set(name, value1, value2);
-
-            free(name);
+            a.params[i] = read_int_delimited(a_config_file, ' ');
+            debug_d(0, "abilities: read param", a.params[i]);
         }
-        fclose(a_config_file);
+
+        /* generate id after checking if name read (the check is above),
+         * we don't need ids for abilities that won't be in the array */
+        a.id = new_ability_id();
+
+        dyn_arr_append(&abilities, &a);
     }
+
+    fclose(a_config_file);
 }
 
+/*
 void a_write_config()
 {
     a_config_file = fopen(ABILITIES_CONFIG_FILENAME, "w");
@@ -50,29 +70,12 @@ void a_write_config()
                 abilities[i].name, abilities[i].cooldown, abilities[i].param);
     fclose(a_config_file);
 }
+*/
 
-struct a_config_item *a_config_get(char *name)
+ability_id_t new_ability_id(void)
 {
-    /* TODO Do something about the linear search. Use a hash table? */
-    for (int i = 0; i < a_config_count; i++)
-        if (strcmp(abilities[i].name, name) == 0)
-            return &abilities[i];
-    return 0; /* If nothing found. Not the best way to show it */
-}
+    static ability_id_t id_counter = 0;
 
-void a_config_set(char *name, config_value_t value1, config_value_t value2)
-{
-    /* find a config item whose name matches this name
-     * and place the value there */
-    for (int i = 0; i < a_config_count; i++)
-    {
-        if (strcmp(name, abilities[i].name) == 0)
-        {
-            abilities[i].cooldown = value1;
-            abilities[i].param = value2;
-            return;
-        }
-    }
-    /* No such name found. Doing nothing about it for now. */
-    debug_s(5, "config_set: No option found in config", name);
+    /* Assume id never overflows */
+    return ++id_counter;
 }
