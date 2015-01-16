@@ -41,6 +41,7 @@ int sock;
 struct update s_update;
 
 /* client_game.c */
+struct ability *find_ability(int16_t id);
 int camera_move(int input_character);
 int change_camera_focus(int input_character);
 void center_camera(struct map_position d_pos);

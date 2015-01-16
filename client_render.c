@@ -189,15 +189,19 @@ void draw_lobby()
 {
     for (int i=0; i<Players.count; i++) {
         struct player *cur_pl = dyn_arr_get(&Players, i);
+        /* render player's nickname */
         put_col_str((cur_pl->state == PS_READY) ? COL_G :
-                (cur_pl == loc_player) ? COL_W :COL_Y,
+                (cur_pl == loc_player) ? COL_W : COL_Y,
                 1+i, 1, cur_pl->nickname);
-    }
-    for (int i=0; i<Players.count; i++) {
-        struct player *cur_pl = dyn_arr_get(&Players, i);
+        /* render player's state */
         put_col_str(COL_W, 1+i, 30,
                 cur_pl->state == PS_READY ? "READY" : "NOT READY");
+        /* render player's ability */
+        struct ability *cur_a = find_ability(cur_pl->ability_id);
+        put_col_str((cur_pl == loc_player) ? COL_W : COL_Y,
+                1+i, 50, cur_a->name);
     }
+    /* render help */
     put_col_str(COL_W, LINES-3, 1,
             "Press space to mark yourself as ready");
 }

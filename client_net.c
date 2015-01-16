@@ -132,7 +132,7 @@ void fetch_changes()
                     break;
                 case U_ADD_ABILITY:
                     debug_s(1, "Add new ability", UpdateNet->ability.name);
-                    dyn_arr_append(&Abilities, UpdateNet->ability);
+                    dyn_arr_append(&Abilities, &UpdateNet->ability);
                     break;
                 default:
                     debug_d(5, "UnknownGetChangesType", UpdateNet->type);

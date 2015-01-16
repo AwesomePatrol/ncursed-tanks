@@ -10,6 +10,17 @@ struct dyn_arr Abilities = { sizeof(struct ability) };
 int shoot_last_key=0;
 unsigned int shoot_press_key=0;
 
+/* find ability by id */
+struct ability *find_ability(int16_t id)
+{
+    for (int i=0; i<Abilities.count; i++) {
+        struct ability *cur_a = dyn_arr_get(&Abilities, i);
+        if (cur_a->id == id)
+            return cur_a;
+    }
+    return NULL;
+}
+
 /* move camera using i,k,j,l keys */
 int camera_move(int input_character)
 {
