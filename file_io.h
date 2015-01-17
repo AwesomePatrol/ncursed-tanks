@@ -5,6 +5,7 @@
 #define _POSIX_C_SOURCE 200809L
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdint.h>
 
 /* Reads a whole line from stream, with trailing newline if it's present.
