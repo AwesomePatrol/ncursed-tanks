@@ -8,6 +8,7 @@ bool player_x_too_close(int16_t x)
 
     /* Find a player that is too close to x,
      * return true if found. */
+    lock_clients_array();                                        /* {{{ */
     for (int i = 0; i < clients.count; i++)
     {
         struct client *cl = p_dyn_arr_get(&clients, i);
@@ -19,6 +20,7 @@ bool player_x_too_close(int16_t x)
         }
     }
  end:
+    unlock_clients_array();                                      /* }}} */
     return result;
 }
 
@@ -153,11 +155,11 @@ struct map_position get_impact_pos(struct player *player, struct shot *shot,
     }
 }
 
-/* Doesn't lock clients array, must be already locked */
 map_t map_with_tanks(void)
 {
     map_t new_map = copy_map(map, &map_info);
 
+    lock_clients_array();                                        /* {{{ */
     for (int i = 0; i < clients.count; i++)
     {
         struct client *cl = p_dyn_arr_get(&clients, i);
@@ -169,6 +171,7 @@ map_t map_with_tanks(void)
         if (player->state != PS_DEAD)
             new_map[player->pos.x]--;
     }
+    unlock_clients_array();                                      /* }}} */
 
     return new_map;
 }
@@ -215,12 +218,12 @@ void game_cleanup(void)
     free(tanks_map); tanks_map = NULL;
 }
 
-/* Called by other functions, doesn't do locking */
 void start_game(void)
 {
     /* TODO move tanks_map creation to process_shoot_command? */
     tanks_map = map_with_tanks();
 
+    lock_clients_array();                                        /* {{{ */
     /* Mark all players as waiting for their turns */
     for (int i = 1; i < clients.count; i++)
     {
@@ -234,6 +237,7 @@ void start_game(void)
      * May become not true in the future?
      */
     struct client *cl = p_dyn_arr_get(&clients, 0);
+    unlock_clients_array();                                      /* }}} */
     player_change_state(cl->player, PS_ACTIVE);
 
     game_started = true;
@@ -350,7 +354,6 @@ void update_map_at(struct f_pair pos, struct map_position map_pos,
     double change_amount = 1;/* this could scale with radius */
     debug_f(0, "update_map_at: change amount", change_amount);
 
-    lock_clients_array();                                        /* {{{ */
     change_map(map_pos.x, map[map_pos.x] + change_amount);
     if (radius >= 3 && map_pos.x > 0 && map_pos.x < map_info.length) {
         change_map(map_pos.x-1, map[map_pos.x-1] + change_amount);
@@ -361,7 +364,6 @@ void update_map_at(struct f_pair pos, struct map_position map_pos,
         make_smooth(map_pos.x, 1);
         make_smooth(map_pos.x, 0);
     }
-    unlock_clients_array();                                      /* }}} */
 }
 
 void shot_update_map(struct map_position impact_pos)

@@ -13,6 +13,7 @@ struct thread_data
     int socket;
 
     struct client *client;
+    int clients_lock_count;
 };
 
 struct client
@@ -31,6 +32,8 @@ struct client
 extern pthread_key_t thread_data;
 extern pthread_mutex_t clients_array_mutex;
 
+/* You must lock_clients_array() when using this variable
+ * unless you have a good reason not to */
 extern struct p_dyn_arr clients;
 
 extern struct map_info map_info;

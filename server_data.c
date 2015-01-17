@@ -1,4 +1,5 @@
 #include "server_data.h"
+#include <assert.h>
 
 pthread_key_t thread_data;
 pthread_mutex_t clients_array_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -13,14 +14,26 @@ bool game_started = false;
 
 void lock_clients_array(void)
 {
-    //debug_s(0, "lock clients array", "Locking");
-    pthread_mutex_lock(&clients_array_mutex);
+    struct thread_data *d = pthread_getspecific(thread_data);
+
+    if (d->clients_lock_count == 0)
+        pthread_mutex_lock(&clients_array_mutex);
+
+    d->clients_lock_count++;
+    debug_d(0, "lock clients array: lock count now", d->clients_lock_count);
 }
 
 void unlock_clients_array(void)
 {
-    //debug_s(0, "unlock clients array", "Unlocking");
-    pthread_mutex_unlock(&clients_array_mutex);
+    struct thread_data *d = pthread_getspecific(thread_data);
+
+    /* Nobody is trying to unlock what isn't locked */
+    assert(d->clients_lock_count > 0);
+    if (d->clients_lock_count == 1)
+        pthread_mutex_unlock(&clients_array_mutex);
+
+    d->clients_lock_count--;
+    debug_d(0, "unlock clients array: lock count now", d->clients_lock_count);
 }
 
 void lock_updates(struct client *cl)
@@ -49,6 +62,7 @@ void add_update(struct client *cl, struct update *upd)
 /* clients_array must be locked already, doesn't do it on its own */
 void all_add_update(struct update *upd)
 {
+    lock_clients_array();                                        /* {{{ */
     for (int i = 0; i < clients.count; i++)
     {
         struct client *cl = p_dyn_arr_get(&clients, i);
@@ -56,6 +70,7 @@ void all_add_update(struct update *upd)
         struct update upd_copy = copy_update(upd);
         uq_append(cl->updates, &upd_copy);
     }
+    unlock_clients_array();                                      /* }}} */
 
     free(upd);
 }
@@ -103,6 +118,7 @@ void change_map(int16_t x, map_height_t new_height)
 
 /* Returns the pointer to the array element of the client that satisfies test.
  * Returns NULL if no such element found */
+/* Doesn't lock clients array because callers do it themselves */
 struct client **find_client_loc_by(int (*test)(struct client *))
 {
     for (int i = 0; i < clients.count; i++)

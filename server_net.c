@@ -204,11 +204,13 @@ join_ok:
     send_int16(socket, cl->id);
 
     /* Add all existing players to updates queue */
+    lock_clients_array();                                    /* {{{ */
     for (int i = 0; i < clients.count; i++)
     {
         struct client *other_cl = p_dyn_arr_get(&clients, i);
         add_update(cl, new_player_update(U_ADD_PLAYER, other_cl->player));
     }
+    unlock_clients_array();                                  /* }}} */
 
     /* Add current config to updates queue */
     for (int i = 0; i < config_count; i++)
@@ -249,9 +251,7 @@ void process_shoot_command(struct thread_data *data, int socket)
     debug_d( 0, "shot: angle", shot->angle);
     debug_d( 0, "shot: power", shot->power);
 
-    lock_clients_array();                                        /* {{{ */
     all_add_update(new_shot_update(shot, cl->id));
-    unlock_clients_array();                                      /* }}} */
 
     double impact_t;
     struct map_position impact_pos = get_impact_pos(cl->player, shot,
@@ -263,9 +263,7 @@ void process_shoot_command(struct thread_data *data, int socket)
     else
         debug_s(0, "shot", "Impact position outside map");
 
-    lock_clients_array();                                        /* {{{ */
     all_add_update(new_shot_impact_update(impact_t));
-    unlock_clients_array();                                      /* }}} */
 
     process_impact(impact_pos);
 
@@ -356,9 +354,7 @@ void disconnect_cur_client(void)
 
         debug_s( 3, "player disconnected", player->nickname);
 
-        lock_clients_array();                                        /* {{{ */
         player_set_connected(player, false);
-        unlock_clients_array();                                      /* }}} */
     }
 }
 

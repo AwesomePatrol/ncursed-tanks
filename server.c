@@ -63,6 +63,7 @@ void exit_cleanup(void)
     /* TODO close sockets from threads */
     /* for every player */
     debug_d(0, "cleanup: number of clients", clients.count);
+    /* Don't need to lock, because everything should be dead by now */
     for (int i = 0; i < clients.count; i++)
     {
         struct client *cl = p_dyn_arr_get(&clients, i);
