@@ -71,14 +71,14 @@ void send_shoot();
 
 /* client_draw.c */
 void put_col_str(Color color, int y, int x, const char *str);
-
-/* client_render.c */
 void draw_tank(Color color, int pos_x, int pos_y, int x, int y, int angle);
 void draw_map(map_t map, int pos_x, int pos_y, int width, int height);
 ScreenMove draw_bullet(int pos_x, int pos_y, int x, int y);
 void draw_blank_bullet(int pos_x, int pos_y, int x, int y);
 void draw_shoot_menu();
 void draw_bullet_explosion(int pos_x, int pos_y, int x, int y);
+
+/* client_render.c */
 void render_shot(struct shot *shot, int s_id);
 void render_post_game();
 void draw_stats();
