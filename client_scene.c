@@ -99,9 +99,7 @@ void lobby_scene()
         fetch_changes();
         render_scene();
         input_ch = getch();
-        if (input_ch == ERR)
-            continue;
-        if (loc_player->state == PS_JOINED && lobby_menu(input_ch))
+        if (input_ch == ERR || lobby_menu(input_ch))
             continue;
         quit_key(input_ch);
     }
@@ -124,10 +122,8 @@ void shoot_menu_scene()
         fetch_changes();
         render_scene();
         input_ch = getch();
-        if (input_ch == ERR)
-            continue;
-        if (camera_move(input_ch) || shoot_menu(input_ch)
-                || change_camera_focus(input_ch))
+        if (shoot_menu(input_ch) || input_ch == ERR
+                || camera_move(input_ch) || change_camera_focus(input_ch))
             continue;
         quit_key(input_ch);
     }

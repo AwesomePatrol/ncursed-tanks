@@ -163,6 +163,10 @@ int lobby_menu(int input_character)
     switch (input_character) {
         case KEY_LEFT:
             loc_player->ability_id--;
+            if (Abilities.count == 0) {
+                loc_player->ability_id++;
+                break;
+            }
             if (find_ability(loc_player->ability_id) == NULL) {
                 struct ability *tmp_a = dyn_arr_get(&Abilities,
                         Abilities.count-1);
@@ -171,6 +175,10 @@ int lobby_menu(int input_character)
             break;
         case KEY_RIGHT:
             loc_player->ability_id++;
+            if (Abilities.count == 0) {
+                loc_player->ability_id--;
+                break;
+            }
             if (find_ability(loc_player->ability_id) == NULL) {
                 struct ability *tmp_a = dyn_arr_get(&Abilities, 0);
                 loc_player->ability_id = tmp_a->id;
