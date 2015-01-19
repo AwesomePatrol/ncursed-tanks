@@ -1,4 +1,5 @@
 #include "client.h"
+#include "client_keys.h"
 
 #define MAX_POWER 100
 #define SHOOT_FAST_STEP 2
@@ -25,19 +26,19 @@ struct ability *find_ability(int16_t id)
 int camera_move(int input_character)
 {
     switch (input_character) {
-        case 'i':
+        case K_CAM_UP:
             if (dy > 0)
                 dy--;
             break;
-        case 'k':
+        case K_CAM_DOWN:
             if (dy < (map_data->height - LINES/2))
                 dy++;
             break;
-        case 'j':
+        case K_CAM_LEFT:
             if (dx > 0)
                 dx--;
             break;
-        case 'l':
+        case K_CAM_RIGHT:
             if (dx < (map_data->length - COLS))
                 dx++;
             break;
@@ -56,10 +57,10 @@ int camera_move(int input_character)
 int change_camera_focus(int input_character)
 {
     switch (input_character) {
-        case 'm':
+        case K_NEXT_PLAYER:
             camera_focus++;
             break;
-        case 'n':
+        case K_PREV_PLAYER:
             camera_focus--;
             break;
         default:
@@ -93,7 +94,7 @@ void center_camera(struct map_position d_pos)
 int quit_key(int input_character)
 {
     switch(input_character) {
-        case 'q':
+        case K_EXIT:
             loc_player->state = PS_NO_PLAYER;
             return 1;
             break;
@@ -120,7 +121,7 @@ int shoot_menu(int input_character)
         case KEY_LEFT:
             if (angle < 180) angle++;
             break;
-        case '\n': /* KEY_ENTER does not work */
+        case K_SHOOT: /* KEY_ENTER does not work */
             debug_s(1, "send", "shoot");
             send_shoot();
             break;
@@ -184,7 +185,7 @@ int lobby_menu(int input_character)
                 loc_player->ability_id = tmp_a->id;
             }
             break;
-        case ' ':
+        case K_SET_READY:
             if (loc_player->state == PS_JOINED) {
                 send_int8(sock, C_READY);
                 fetch_changes();
