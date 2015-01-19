@@ -73,6 +73,15 @@ void exit_cleanup(void)
     }
     p_dyn_arr_clear(&clients);
 
+    /* free all abilities */
+    for (int i = 0; i < abilities.count; i++)
+    {
+        struct ability *a = dyn_arr_get(&abilities, i);
+
+        clear_ability(a);
+    }
+    dyn_arr_clear(&abilities);
+
     close(server_socket);
 }
 

@@ -66,6 +66,7 @@ struct player *new_player(char *nickname, client_id_t id);
 map_height_t new_player_y(int16_t x);
 struct update *new_player_update(UpdateType type, struct player *player);
 struct update *new_config_update(struct config_item *opt);
+struct update *new_add_ability_update(struct ability *ability);
 struct update *new_shot_update(struct shot *shot, client_id_t id);
 struct update *new_shot_impact_update(double impact_t);
 struct update *new_map_update(int16_t x, int16_t new_height);

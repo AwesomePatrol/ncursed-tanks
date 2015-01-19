@@ -7,6 +7,12 @@ void clear_player(struct player *p)
     free(p->nickname);
 }
 
+void clear_ability(struct ability *a)
+{
+    free(a->name);
+    free(a->params);
+}
+
 /* function pointer to send or recv */
 typedef ssize_t (*socket_io_fun)(int, void *, size_t, int);
 
@@ -207,9 +213,11 @@ int send_ability(int socket, struct ability *a)
         send_int16(socket, a->cooldown) == -1    ||
         send_int8(socket, a->params_count) == -1)
         return -1;
+    /*
     for (int i = 0; i < a->params_count; i++)
         if (send_int32(socket, a->params[i]) == -1)
             return -1;
+    */
     return 0;
 }
 
@@ -217,10 +225,10 @@ struct ability *recv_ability(int socket)
 {
     struct ability *result = malloc(sizeof(*result));
     u_int8_t type_net;
-    if (recv_int16(socket, &result->id) <= 0 ||
-        (result->name = recv_string(socket)) == NULL ||
-        recv_int8(socket, &type_net) <= 0 ||
-        recv_int16(socket, &result->cooldown) <= 0 ||
+    if (recv_int16(socket, &result->id) <= 0          ||
+        (result->name = recv_string(socket)) == NULL  ||
+        recv_int8(socket, &type_net) <= 0             ||
+        recv_int16(socket, &result->cooldown) <= 0    ||
         recv_int8(socket, &result->params_count) <= 0)
     {
         goto fail;
@@ -229,9 +237,11 @@ struct ability *recv_ability(int socket)
     {
         result->type = type_net;
         /* Receive all the params */
+        /*
         for (int i = 0; i < result->params_count; i++)
             if (recv_int32(socket, &result->params[i]) <= 0)
                 goto fail;
+        */
         return result;
     }
 fail:

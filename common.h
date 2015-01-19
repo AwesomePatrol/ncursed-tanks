@@ -176,6 +176,7 @@ struct update
 };
 
 void clear_player(struct player *p);
+void clear_ability(struct ability *a);
 
 
 int sendall(int socket, void *data, int len);
