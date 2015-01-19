@@ -159,22 +159,17 @@ void fetch_changes()
 {
     send_int8(sock, C_GET_CHANGES);
     struct update *UpdateNet;
-    while (UpdateNet = recv_update(sock)) {
-        if (UpdateNet->type) {
-            if (save_updates)
-                /* save update */
-                dyn_arr_append(&NetUpdates, UpdateNet);
-            else {
-                /* process update and free memory */
-                process_update(UpdateNet);
-                free(UpdateNet);
-            }
-        } else {
-            /* free and exit loop when gets U_EMPTY */ 
+    while ((UpdateNet = recv_update(sock))->type) {
+        if (save_updates)
+            /* save update */
+            dyn_arr_append(&NetUpdates, UpdateNet);
+        else {
+            /* process update and free memory */
+            process_update(UpdateNet);
             free(UpdateNet);
-            break;
         }
     }
+    free(UpdateNet);
 }
 
 /* join the game. fetch map and changes if successful */

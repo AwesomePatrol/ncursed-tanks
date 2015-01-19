@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
 
 void init_signals(void)
 {
-    struct sigaction sigaction_new = {0};
+    struct sigaction sigaction_new = {{0}};
 
     /* Cleanup on normal exit */
     if (atexit(exit_cleanup) != 0)

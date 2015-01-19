@@ -25,12 +25,12 @@ int do_all(socket_io_fun action, int socket, void *data, int len,
 {
     int processed = 0;
     int bytesleft = len; // how many we have left to send/receive
-    int n;
+    int n = -1;
 
     while (processed < len)
     {
         n = action(socket, data + processed, bytesleft, 0);
-        if (n == -1 || check_for_0 && n == 0)
+        if (n == -1 || (check_for_0 && n == 0))
             break;
         processed += n;
         bytesleft -= n;

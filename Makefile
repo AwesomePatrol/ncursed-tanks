@@ -5,7 +5,7 @@ DOXYGENCONF=doxygen.conf
 -include localdefs.mk
 
 ifdef DEBUG
-	CFLAGS += -O1 -std=c99 -D _DEBUG #-Wall
+	CFLAGS += -O1 -std=c99 -D _DEBUG -Wall -Wno-switch
 else
 	CFLAGS += -O2 -std=c99
 endif
