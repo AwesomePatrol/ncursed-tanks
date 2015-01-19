@@ -20,7 +20,7 @@ void lock_clients_array(void)
         pthread_mutex_lock(&clients_array_mutex);
 
     d->clients_lock_count++;
-    debug_d(0, "lock clients array: lock count now", d->clients_lock_count);
+    //debug_d(0, "lock clients array: lock count now", d->clients_lock_count);
 }
 
 void unlock_clients_array(void)
@@ -33,7 +33,7 @@ void unlock_clients_array(void)
         pthread_mutex_unlock(&clients_array_mutex);
 
     d->clients_lock_count--;
-    debug_d(0, "unlock clients array: lock count now", d->clients_lock_count);
+    //debug_d(0, "unlock clients array: lock count now", d->clients_lock_count);
 }
 
 void lock_updates(struct client *cl)
