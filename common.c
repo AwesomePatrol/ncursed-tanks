@@ -213,11 +213,9 @@ int send_ability(int socket, struct ability *a)
         send_int16(socket, a->cooldown) == -1    ||
         send_int8(socket, a->params_count) == -1)
         return -1;
-    /*
     for (int i = 0; i < a->params_count; i++)
         if (send_int32(socket, a->params[i]) == -1)
             return -1;
-    */
     return 0;
 }
 
@@ -237,11 +235,10 @@ struct ability *recv_ability(int socket)
     {
         result->type = type_net;
         /* Receive all the params */
-        /*
+        result->params = malloc(result->params_count * sizeof(*result->params));
         for (int i = 0; i < result->params_count; i++)
             if (recv_int32(socket, &result->params[i]) <= 0)
                 goto fail;
-        */
         return result;
     }
 fail:
