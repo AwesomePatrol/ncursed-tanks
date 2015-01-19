@@ -33,6 +33,7 @@ clean:
 	rm -rf $(OBJS_server) $(OBJS_client) $(OBJS_config_menu)
 	rm -rf *.d
 	rm -rf server client config_menu
+	rm *.debug
 
 test: all
 

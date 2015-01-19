@@ -95,7 +95,7 @@ void lobby_scene()
         fetch_changes();
         render_scene();
         input_ch = getch();
-        if (input_ch == ERR || lobby_menu(input_ch))
+        if (lobby_menu(input_ch) || input_ch == ERR)
             continue;
         quit_key(input_ch);
     }
