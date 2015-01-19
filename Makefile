@@ -7,7 +7,7 @@ DOXYGENCONF=doxygen.conf
 ifdef DEBUG
 	CFLAGS += -O1 -std=c99 -D _DEBUG -Wall -Wno-switch
 else
-	CFLAGS += -O2 -std=c99
+	CFLAGS += -O2 -std=c99 -D NDEBUG
 endif
 
 OBJS_server := server.o common.o server_game.o server_abilities.o server_data.o server_net.o dyn_arr.o server_updates_queue.o config.o abilities_config.o file_io.o debug.o map.o shot.o

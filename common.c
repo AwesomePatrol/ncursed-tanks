@@ -108,7 +108,7 @@ int send_bool(int socket, bool b)
 int recv_bool(int socket, bool *b)
 {
     u_int8_t b_net;
-    int test = recv_int8(socket, &b_net);
+    int test = recv_int8(socket, (int8_t *)&b_net);
 
     if (test > 0)
         *b = b_net;
@@ -158,9 +158,9 @@ struct map_info *recv_map_info(int socket)
 {
     struct map_info *result = malloc(sizeof(*result));
 
-    if (recv_int32(socket, &result->seed) <= 0   ||
-        recv_int16(socket, &result->length) <= 0 ||
-        recv_int16(socket, &result->height) <= 0)
+    if (recv_int32(socket, (int32_t *)&result->seed) <= 0   ||
+        recv_int16(socket, (int16_t *)&result->length) <= 0 ||
+        recv_int16(socket, (int16_t *)&result->height) <= 0)
     {
         free(result);
         return NULL;
@@ -186,7 +186,7 @@ struct player *recv_player(int socket)
     u_int8_t state_net;
     struct map_position *pos;
 
-    if (recv_int8(socket, &state_net) <= 0               ||
+    if (recv_int8(socket, (int8_t *)&state_net) <= 0     ||
         recv_bool(socket, &result->is_connected) <= 0    ||
         recv_int16(socket, &result->id) <= 0             ||
         (result->nickname = recv_string(socket)) == NULL ||
@@ -227,7 +227,7 @@ struct ability *recv_ability(int socket)
     u_int8_t type_net;
     if (recv_int16(socket, &result->id) <= 0          ||
         (result->name = recv_string(socket)) == NULL  ||
-        recv_int8(socket, &type_net) <= 0             ||
+        recv_int8(socket, (int8_t *)&type_net) <= 0   ||
         recv_int16(socket, &result->cooldown) <= 0    ||
         recv_int8(socket, &result->params_count) <= 0)
     {
