@@ -174,6 +174,8 @@ int shoot_menu(int input_character)
 /* manage space in lobby */
 int lobby_menu(int input_character)
 {
+    if (loc_player->state != PS_JOINED)
+        return 0;
     switch (input_character) {
         case KEY_LEFT:
             loc_player->ability_id--;
@@ -201,6 +203,8 @@ int lobby_menu(int input_character)
         case K_SET_READY:
             if (loc_player->state == PS_JOINED) {
                 send_int8(sock, C_READY);
+                send_int8(sock, C_SET_ABILITY);
+                send_int8(sock, loc_player->ability_id);
                 fetch_changes();
             }
             break;

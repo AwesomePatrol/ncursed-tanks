@@ -9,7 +9,6 @@
         ** end-game statistics
         ** make tanks not just 1 point on the map + detect collisions with them
     * client
-        ** support abilities
         ** statistics in end-game screen
         ** on-screen keyboard (for touch capable devices)
     * dyn_arr
