@@ -47,7 +47,6 @@ void render_scene()
                         find_player(s_update.player_id));
             /* for now on we want to process updates again
              * and process already saved one*/
-            map_update();
             save_updates=false;
             process_saved_updates();
         } else {

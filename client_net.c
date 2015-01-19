@@ -28,16 +28,6 @@ void update_loc_player()
     loc_player = dyn_arr_get(&Players, find_player(loc_player_id));
 }
 
-void map_update()
-{
-    for (int i=0; i<MapUpdates.count; i++)
-    {
-        struct map_position *map_u = dyn_arr_get(&MapUpdates, i);
-        g_map[map_u->x]=map_u->y;
-    }
-    dyn_arr_clear(&MapUpdates);
-}
-
 void process_saved_updates()
 {
     for (int i=0; i<NetUpdates.count; i++) {
@@ -52,9 +42,7 @@ void process_update(struct update *UpdateNet)
     switch (UpdateNet->type) {
         case U_MAP:
             debug_s(1, "Update", "map");
-            struct map_position map_u = (struct map_position) {
-            UpdateNet->x, UpdateNet->new_height};
-            dyn_arr_append(&MapUpdates, &map_u);
+            g_map[UpdateNet->x]=UpdateNet->new_height;
             break;
         case U_ADD_PLAYER:
             debug_s(1, "AddPlayer", UpdateNet->player.nickname);

@@ -25,7 +25,6 @@ typedef enum ScreenUpdate {SCR_SHOOT, SCR_LOBBY, SCR_STATS,
 typedef enum ScreenMove {SCR_OK, SCR_UP, SCR_DOWN, SCR_LEFT,
     SCR_RIGHT} ScreenMove;
 extern struct dyn_arr ScrUpdates;
-extern struct dyn_arr MapUpdates;
 extern struct dyn_arr NetUpdates;
 extern bool save_updates;
 extern struct dyn_arr Players;
@@ -64,7 +63,6 @@ void process_saved_updates();
 void process_update(struct update *UpdateNet);
 void fetch_changes();
 void update_loc_player();
-void map_update();
 int find_player(u_int16_t player_id);
 int join_game(char *nickname);
 void send_shoot();
