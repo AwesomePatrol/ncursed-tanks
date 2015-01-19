@@ -14,8 +14,7 @@ void fetch_map()
 /* find the address of player with a given id */
 int find_player(u_int16_t player_id)
 {
-    for (int i=0; i<Players.count; i++)
-    {
+    for (int i=0; i<Players.count; i++) {
         struct player *pl = dyn_arr_get(&Players, i);
         if (player_id == pl->id)
             return i;
@@ -79,8 +78,12 @@ void process_update(struct update *UpdateNet)
                 *u_player = UpdateNet->player;
                 /* add ScreenUpdate to queue based on state */ 
                 ScreenUpdate scr_u_player;
-                switch (u_player->state)
-                {
+                switch (u_player->state) {
+                    case PS_WINNER:
+                    case PS_LOSER:
+                        if (check_end_game_state())
+                            save_updates=true;
+                        break;
                     case PS_DEAD:
                         scr_u_player = SCR_TANKS;
                         dyn_arr_append(&ScrUpdates, &scr_u_player);
@@ -150,6 +153,8 @@ void process_update(struct update *UpdateNet)
  * otherwise saves them*/
 void fetch_changes()
 {
+    if (save_updates == false && NetUpdates.count > 0)
+        process_saved_updates();
     send_int8(sock, C_GET_CHANGES);
     struct update *UpdateNet;
     while ((UpdateNet = recv_update(sock))->type) {
@@ -170,7 +175,7 @@ int join_game(char *nickname)
 {
     send_int8(sock, C_JOIN);
     send_string(sock, nickname);
-    u_int8_t j_net;
+    int8_t j_net;
     recv_int8(sock, &j_net);
     JoinReply jr = j_net;
     switch (jr) {

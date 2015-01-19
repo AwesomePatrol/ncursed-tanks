@@ -12,9 +12,8 @@
 
 #include "debug.h"
 #include "dyn_arr.h"
-#include "colors.h"
 #include "map.h"
-#include "shot.h"
+#include "config.h"
 
 #define DEFAULT_TIMEOUT 2000
 #define SHOOT_TIMEOUT 100 //200 = 5fps, 100 = 10fps
@@ -43,6 +42,7 @@ struct update s_update;
 
 /* client_game.c */
 struct ability *find_ability(int16_t id);
+bool check_end_game_state();
 int camera_move(int input_character);
 int change_camera_focus(int input_character);
 void center_camera(struct map_position d_pos);
@@ -67,17 +67,9 @@ int find_player(u_int16_t player_id);
 int join_game(char *nickname);
 void send_shoot();
 
-/* client_draw.c */
-void put_col_str(Color color, int y, int x, const char *str);
-void draw_tank(Color color, int pos_x, int pos_y, int x, int y, int angle);
-void draw_map(map_t map, int pos_x, int pos_y, int width, int height);
-ScreenMove draw_bullet(int pos_x, int pos_y, int x, int y);
-void draw_blank_bullet(int pos_x, int pos_y, int x, int y);
-void draw_shoot_menu();
-void draw_bullet_explosion(int pos_x, int pos_y, int x, int y);
-
 /* client_render.c */
 void render_shot(struct shot *shot, int s_id);
+void render_shoot_menu();
 void render_post_game();
 void draw_stats();
 void draw_lobby();

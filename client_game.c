@@ -21,6 +21,19 @@ struct ability *find_ability(int16_t id)
     return NULL;
 }
 
+/* returns true if all players received their end-game updates */
+bool check_end_game_state()
+{
+    for (int i=0; i<Players.count; i++) {
+        struct player *tmp_p = dyn_arr_get(&Players, i);
+        if (tmp_p->state == PS_WINNER || tmp_p->state == PS_LOSER)
+            continue;
+        else
+            return false;
+    }
+    return true;
+}
+
 /* move camera using i,k,j,l keys */
 int camera_move(int input_character)
 {
@@ -72,6 +85,7 @@ int change_camera_focus(int input_character)
     return 1;
 }
 
+/* try to have given point in the center of the screen */
 void center_camera(struct map_position d_pos)
 {
     dx = d_pos.x - COLS/2;
@@ -89,7 +103,7 @@ void center_camera(struct map_position d_pos)
     dyn_arr_append(&ScrUpdates, &camera_move);
 }
 
-/* start quit or write debug, always run on the end of all key functions*/
+/* start quit or write debug, always run at the end of all key functions*/
 int quit_key(int input_character)
 {
     switch(input_character) {
@@ -128,6 +142,7 @@ int shoot_menu(int input_character)
             if (shoot_press_key>0) shoot_press_key--;
             return 0;
     }
+    /* in case given key was pressed multiple times or long-pressed */
     if (shoot_last_key == input_character) {
         if (shoot_press_key > 3) {
             switch (input_character) {
@@ -144,8 +159,7 @@ int shoot_menu(int input_character)
                 if (angle < 180-SHOOT_FAST_STEP) angle+=SHOOT_FAST_STEP;
                 break;
             }
-        }
-        else
+        } else
             shoot_press_key++;
     } else {
         shoot_last_key=input_character;

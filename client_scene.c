@@ -1,14 +1,12 @@
 #include "client.h"
 
-
-
 /* general way to render scene based on ScrUpdates*/
 void render_scene()
 {
     /* TODO: shorten this code */
-    bool shoot=false, lobby=false, stats=false, tanks=false, shoot_menu=false, map=false;
-    for (int i = false; i < ScrUpdates.count; i++)
-    {
+    bool shoot=false, lobby=false, stats=false,
+         tanks=false, shoot_menu=false, map=false;
+    for (int i = false; i < ScrUpdates.count; i++) {
         ScreenUpdate *scr_u = dyn_arr_get(&ScrUpdates, i);
         switch (*scr_u) {
             case SCR_SHOOT:
@@ -74,7 +72,7 @@ void render_scene()
                     }
                     if (tanks) render_tanks();
                     if (stats) draw_stats();
-                    if (shoot_menu) draw_shoot_menu();
+                    if (shoot_menu) render_shoot_menu();
                     break;
                 default:
                     debug_d(5, "UnknownState", loc_player->state);
@@ -93,8 +91,7 @@ void lobby_scene()
     draw_lobby();
     refresh();
     while (loc_player->state == PS_JOINED
-            || loc_player->state == PS_READY)
-    {
+            || loc_player->state == PS_READY) {
         fetch_changes();
         render_scene();
         input_ch = getch();
@@ -114,10 +111,9 @@ void shoot_menu_scene()
     render_map();
     render_tanks();
     draw_stats();
-    draw_shoot_menu();
+    render_shoot_menu();
     refresh();
-    while (loc_player->state == PS_ACTIVE)
-    {
+    while (loc_player->state == PS_ACTIVE) {
         fetch_changes();
         render_scene();
         input_ch = getch();
@@ -141,8 +137,7 @@ void wait_scene()
     draw_stats();
     refresh();
     while (loc_player->state == PS_WAITING
-            || loc_player->state == PS_DEAD)
-    {
+            || loc_player->state == PS_DEAD) {
         fetch_changes();
         render_scene();
         input_ch = getch();
@@ -162,9 +157,10 @@ void post_game_scene()
     clear();
     render_post_game();
     refresh();
+    input_ch = getch();
+    save_updates=false;
     while (loc_player->state == PS_WINNER
-            || loc_player->state == PS_LOSER)
-    {
+            || loc_player->state == PS_LOSER) {
         fetch_changes();
         input_ch = getch();
         if (input_ch == ERR)

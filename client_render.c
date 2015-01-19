@@ -1,4 +1,7 @@
 #include "client.h"
+#include "shot.h"
+#include "client_draw.h"
+
 /* the best value of RENDER_MARGIN is 0 for time being
  * other values cause SCR_ALL multiple times */
 
@@ -29,8 +32,7 @@ void render_shot(struct shot *shot, int s_id)
     input_ch = getch();
     if (input_ch != ERR)
         quit_key(input_ch);
-    while (loc_player->state)
-    {
+    while (loc_player->state) {
         /* remove drew bullet */
         draw_blank_bullet(dx, dy, map_pos.x, map_pos.y);
         debug_d(1, "BulletX", map_pos.x);
@@ -76,6 +78,11 @@ void render_shot(struct shot *shot, int s_id)
     center_camera(c_player->pos);
     /* SCR_ALL is already in screen update queue by center_camera*/
     timeout(DEFAULT_TIMEOUT); //back to original
+}
+
+void render_shoot_menu()
+{
+    draw_shoot_menu();
 }
 
 void render_post_game()

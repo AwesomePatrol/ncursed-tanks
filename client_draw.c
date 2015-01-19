@@ -1,5 +1,5 @@
 #include "client.h"
-
+#include "client_draw.h"
 #define RENDER_MARGIN 0
 
 void put_col_str(Color color, int y, int x, const char *str)
@@ -13,7 +13,7 @@ void draw_tank(Color color, int pos_x, int pos_y, int x, int y, int angle)
 {
     int xx = x-pos_x;
     int yy = y-pos_y;
-    if (yy > 0 && yy < (LINES-1))
+    if (yy > 0 && yy < (LINES-1)) {
         if (xx > 0 && xx < (COLS-1))
             put_col_str(color, yy, xx-1, "<*>");
         else
@@ -21,13 +21,13 @@ void draw_tank(Color color, int pos_x, int pos_y, int x, int y, int angle)
                 put_col_str(color, yy, xx, "*>");
             else if (xx == (COLS-1))
                 put_col_str(color, yy, xx-1, "<*");
+    }
 }
 
 void draw_map(map_t map, int pos_x, int pos_y, int width, int height)
 {
     int end = pos_x+width;
-    for (int i = pos_x; i < end && i < map_data->length; i++)
-    {
+    for (int i = pos_x; i < end && i < map_data->length; i++) {
         int yy = map[i]-pos_y;
         int xx = i-pos_x;
         put_col_str(COL_G, yy, xx, "V");

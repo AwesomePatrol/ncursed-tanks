@@ -1,4 +1,5 @@
 #include "client.h"
+#include "colors.h"
 
 /* initialize GLOBAL variables */
 int dx = 0, dy = 0;
@@ -78,8 +79,7 @@ int main(int argc, char *argv[])
 {
 
     /* Too few arguments error */
-    if ( argc <= 2 )
-    {
+    if ( argc <= 2 ) {
         if (DEBUG <= 5) puts("Too few arguments!");
         return EXIT_FAILURE;
     }
@@ -144,8 +144,7 @@ int main(int argc, char *argv[])
     debug_d( 1, "columns", COLS);
 
     /* main loop */
-    while (loc_player->state)
-    {
+    while (loc_player->state) {
         if (loc_player->state == PS_READY ||
             loc_player->state == PS_JOINED) lobby_scene();
         if (loc_player->state == PS_WAITING ||
