@@ -145,6 +145,11 @@ void process_update(struct update *UpdateNet)
             break;
         case U_ADD_ABILITY:
             debug_s(1, "Add new ability", UpdateNet->ability.name);
+            debug_d(1, "add ability: id", UpdateNet->ability.id);
+            debug_d(1, "add ability: type", UpdateNet->ability.type);
+            debug_d(1, "add ability: cooldown", UpdateNet->ability.cooldown);
+            debug_d(1, "add ability: params_count",
+                    UpdateNet->ability.params_count);
             dyn_arr_append(&Abilities, &UpdateNet->ability);
             break;
         default:

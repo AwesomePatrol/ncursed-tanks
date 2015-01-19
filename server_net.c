@@ -1,5 +1,5 @@
 #include "server_net.h"
-#include "server_abilities.h"
+#include "abilities_config.h"
 
 int server_socket; /* socket used to listen for incoming connections */
 /* socket info about the machine connecting to us */
@@ -215,6 +215,10 @@ join_ok:
     /* Add current config to updates queue */
     for (int i = 0; i < config_count; i++)
         add_update(cl, new_config_update(&config[i]));
+    /* Add abilities to updates */
+    for (int i = 0; i < abilities.count; i++)
+        add_update(cl, new_add_ability_update(
+                           dyn_arr_get(&abilities, i)));
 }
 
 void process_ready_command(struct thread_data *data)

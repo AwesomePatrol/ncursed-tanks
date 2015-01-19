@@ -210,7 +210,8 @@ struct player *new_player(char *nickname, client_id_t id)
         .nickname = nickname,
         .hitpoints = config_get("tank_hp"),
         .pos = { player_x,
-                 new_player_y(player_x) }
+                 new_player_y(player_x) },
+        .ability_id = 0,
     };
 
     return result;
@@ -238,6 +239,16 @@ struct update *new_config_update(struct config_item *opt)
         .type = U_CONFIG,
         .opt_name = opt->name,
         .opt_value = opt->value,
+    };
+    return result;
+}
+
+struct update *new_add_ability_update(struct ability *ability)
+{
+    struct update *result = malloc(sizeof(*result));
+    *result = (struct update) {
+        .type = U_ADD_ABILITY,
+        .ability = *ability,
     };
     return result;
 }
@@ -280,6 +291,8 @@ struct update copy_update(struct update *u)
 
     switch (u->type)
     {
+    /* Don't need to copy for U_ADD_ABILITY,
+     * because we free abilities only on exit */
     case U_PLAYER: case U_ADD_PLAYER: case U_DEL_PLAYER:
         ;
         struct player player_copy = u->player;
