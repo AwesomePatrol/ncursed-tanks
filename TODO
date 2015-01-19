@@ -1,16 +1,19 @@
 #TRY to keep the list in order
     * server
-        ** add lock-if-not-locked function for simplicity
+        ** fix bug with ability send/recv
         ** deal with end of game _properly_ (return to lobby)
+        ** support abilities
         ** add updates when updating player position (shot_update_map)
-        ** fix shooting (e.g. when angle = 90°) (+ friendly fire)
+        ** fix shooting (when angle is close to 0°, 90°, 180°) (+ friendly fire)
         ** switch to using getaddrinfo for parsing IP, …
         ** end-game statistics
-        ** support multiple games
         ** make tanks not just 1 point on the map + detect collisions with them
     * client
+        ** support abilities
         ** statistics in end-game screen
         ** on-screen keyboard (for touch capable devices)
+    * dyn_arr
+        ** change allocated size in chunks
     * common
         ** write documentation (gameplay, usage, syntax, …)
         ** replace nested functions (GCC extension) with another method
@@ -21,4 +24,5 @@
         ** write code for every ability in server_abilities 
     * later
         ** port to PSP
+        ** support multiple games
         ** test under different compilers?
