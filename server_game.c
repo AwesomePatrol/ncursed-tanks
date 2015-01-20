@@ -377,12 +377,15 @@ void update_map_at(struct f_pair pos, struct map_position map_pos,
     debug_f(0, "update_map_at: change amount", change_amount);
 
     change_map(map_pos.x, map[map_pos.x] + change_amount);
-    if (radius >= 3 && map_pos.x > 0 && map_pos.x < map_info.length) {
+    if (radius >= 3 && map_pos.x > 0 && map_pos.x < map_info.length)
+    {
         change_map(map_pos.x-1, map[map_pos.x-1] + change_amount);
         change_map(map_pos.x+1, map[map_pos.x+1] + change_amount);
         make_smooth(map_pos.x+1, 1);
         make_smooth(map_pos.x-1, 0);
-    } else {
+    }
+    else
+    {
         make_smooth(map_pos.x, 1);
         make_smooth(map_pos.x, 0);
     }
@@ -421,7 +424,10 @@ void shot_update_map(struct map_position impact_pos)
         map_height_t map_y = map[player->pos.x];
 
         if (player->pos.y < map_y)
+        {
             player->pos.y = new_player_y(player->pos.x);
+            all_add_update(new_player_update(U_PLAYER, player));
+        }
     }
     unlock_clients_array();                                      /* }}} */
 }

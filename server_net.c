@@ -80,7 +80,7 @@ void *connection_thread(void *thr_data)
     /* process commands until disconnect */
     while (recv_int8(socket, &command) != 0)
     {
-        debug_c( 0, "received command", command);
+        //debug_c( 0, "received command", command);
         process_command(command);
     }
     close(socket);

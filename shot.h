@@ -22,7 +22,4 @@ double map_y_to_float(map_height_t y);
 struct f_pair map_pos_to_float(struct map_position map_pos);
 struct map_position round_to_map_pos(struct f_pair pos);
 
-double distance(struct f_pair a, struct f_pair b);
-int damage(struct player *p, struct f_pair s);
-
 #endif /* SHOT_H */
