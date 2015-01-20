@@ -63,6 +63,7 @@ void render_shot(struct shot *shot, int s_id)
         if (t > g_impact_t) {
             b_pos = shot_pos(init_pos, init_v, acc, g_impact_t);
             map_pos = round_to_map_pos(b_pos);
+            center_camera(map_pos);
             draw_bullet_explosion(dx, dy, map_pos.x, map_pos.y);
             refresh();
             break;

@@ -157,7 +157,12 @@ void post_game_scene()
     clear();
     render_post_game();
     refresh();
+    /* wait for player to press some key */
+    timeout(5*DEFAULT_TIMEOUT);
     input_ch = getch();
+    /* back to original value
+     * stop saving updates, process old on next fetch_changes() */
+    timeout(DEFAULT_TIMEOUT);
     save_updates=false;
     while (loc_player->state == PS_WINNER
             || loc_player->state == PS_LOSER) {
@@ -166,6 +171,5 @@ void post_game_scene()
         if (input_ch == ERR)
             continue;
         quit_key(input_ch);
-        break;
     }
 }

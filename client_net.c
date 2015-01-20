@@ -81,8 +81,10 @@ void process_update(struct update *UpdateNet)
                 switch (u_player->state) {
                     case PS_WINNER:
                     case PS_LOSER:
-                        if (check_end_game_state())
-                            save_updates=true;
+                        if (check_end_game_state()) {
+                            debug_s(1, "EndGame", "start saving updates");
+                            save_updates = true;
+                        }
                         break;
                     case PS_DEAD:
                         scr_u_player = SCR_TANKS;
@@ -154,11 +156,14 @@ void fetch_changes()
     send_int8(sock, C_GET_CHANGES);
     struct update *UpdateNet;
     while ((UpdateNet = recv_update(sock))->type) {
-        if (save_updates)
+        if (save_updates) {
             /* save update */
+            debug_s(1, "NetUpdates", "save");
             dyn_arr_append(&NetUpdates, UpdateNet);
-        else {
+            free(UpdateNet);
+        } else {
             /* process update and free memory */
+            debug_s(1, "NetUpdates", "process");
             process_update(UpdateNet);
             free(UpdateNet);
         }
