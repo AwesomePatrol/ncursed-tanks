@@ -1,6 +1,5 @@
 #TRY to keep the list in order
     * server
-        ** deal with end of game _properly_ (return to lobby)
         ** support abilities
         ** fix shooting (when angle is close to 0°, 90°, 180°) (+ friendly fire)
         ** switch to using getaddrinfo for parsing IP, …
@@ -13,7 +12,6 @@
         ** change allocated size in chunks
     * common
         ** write documentation (gameplay, usage, syntax, …)
-        ** replace nested functions (GCC extension) with another method
     * abilities
         ** gather ideas for weaponry and abilities.
         ** document every weapon and ability.
@@ -22,4 +20,7 @@
     * later
         ** port to PSP
         ** support multiple games
-        ** test under different compilers?
+        ** test under different compilers
+        ** replace GCC-specific feature usage with other methods
+	    *** nested functions (GCC extension)
+	    *** anonymous structs/unions (GCC / C11)
