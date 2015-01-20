@@ -3,6 +3,10 @@
 
 #include "server_data.h"
 
+/* more -> better */
+#define COLLISION_X_PRECISION 16
+
+
 int16_t new_player_x(void);
 struct map_position get_impact_pos(struct player *player, struct shot *shot,
                                    double *impact_t);
