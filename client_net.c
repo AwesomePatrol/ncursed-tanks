@@ -116,8 +116,6 @@ void process_update(struct update *UpdateNet)
         case U_SHOT:
             debug_d(1, "ShootingPlayerID", UpdateNet->player_id);
             s_update = *UpdateNet;
-            /* For now on we want to store updates, not process them */
-            save_updates = true;
             /* add SCR_SHOOT to screen update queue so that
              * the client won't hang at this stage */
             ScreenUpdate u_shot = SCR_SHOOT;
@@ -127,6 +125,8 @@ void process_update(struct update *UpdateNet)
             debug_d(1, "ImpactTime*Precision", UpdateNet->impact_t);
             g_impact_t= (float) UpdateNet->impact_t / IMPACT_T_NET_PRECISION;
             debug_f(1, "impact_t (converted)", g_impact_t);
+            /* For now on we want to store updates, not process them */
+            save_updates = true;
             break;
         case U_CONFIG:
             debug_s(1, "ValueName", UpdateNet->opt_name);
