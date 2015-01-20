@@ -64,6 +64,9 @@ void render_shot(struct shot *shot, int s_id)
             b_pos = shot_pos(init_pos, init_v, acc, g_impact_t);
             map_pos = round_to_map_pos(b_pos);
             center_camera(map_pos);
+            clear();
+            render_map();
+            render_tanks();
             draw_bullet_explosion(dx, dy, map_pos.x, map_pos.y);
             refresh();
             break;

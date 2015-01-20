@@ -125,7 +125,7 @@ struct shot
 
 /* Precision for sending/receiving impact time through the net.
  * Higher value -> higher precision. */
-#define IMPACT_T_NET_PRECISION 100
+#define IMPACT_T_NET_PRECISION 128
 
 /* U_EMPTY -- end of updates -- no pending updates left */
 typedef enum UpdateType
