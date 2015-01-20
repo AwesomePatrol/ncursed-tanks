@@ -126,6 +126,7 @@ void process_update(struct update *UpdateNet)
         case U_SHOT_IMPACT:
             debug_d(1, "ImpactTime*Precision", UpdateNet->impact_t);
             g_impact_t= (float) UpdateNet->impact_t / IMPACT_T_NET_PRECISION;
+            debug_f(1, "impact_t (converted)", g_impact_t);
             break;
         case U_CONFIG:
             debug_s(1, "ValueName", UpdateNet->opt_name);
@@ -136,11 +137,6 @@ void process_update(struct update *UpdateNet)
             break;
         case U_ADD_ABILITY:
             debug_s(1, "Add new ability", UpdateNet->ability.name);
-            debug_d(1, "add ability: id", UpdateNet->ability.id);
-            debug_d(1, "add ability: type", UpdateNet->ability.type);
-            debug_d(1, "add ability: cooldown", UpdateNet->ability.cooldown);
-            debug_d(1, "add ability: params_count",
-                    UpdateNet->ability.params_count);
             dyn_arr_append(&Abilities, &UpdateNet->ability);
             break;
         default:
