@@ -91,6 +91,8 @@ void *connection_thread(void *thr_data)
     disconnect_cur_client();
 
     free(data);
+
+    return NULL;
 }
 
 void process_command(Command cmd)

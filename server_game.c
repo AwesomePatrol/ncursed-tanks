@@ -423,7 +423,7 @@ void shot_update_map(struct map_position impact_pos)
         struct player *player = cl->player;
         map_height_t map_y = map[player->pos.x];
 
-        if (player->pos.y < map_y)
+        if (player->pos.y < map_y - 1)
         {
             player->pos.y = new_player_y(player->pos.x);
             all_add_update(new_player_update(U_PLAYER, player));
