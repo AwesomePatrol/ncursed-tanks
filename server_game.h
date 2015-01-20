@@ -16,6 +16,8 @@ void game_cleanup(void);
 void start_game(void);
 void next_turn(void);
 bool end_game_if_needed(void);
+void end_game(void);
+void reset_game(void);
 
 void shot_update_map(struct map_position impact_pos);
 void shot_deal_damage(struct map_position impact_pos);

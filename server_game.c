@@ -210,12 +210,10 @@ void init_game(void)
 /* Cleans up the game state */
 void game_cleanup(void)
 {
-    game_started = false; /* Allow threads to remove players on disconnection */
-
-    /* TODO Need to somehow get rid of all the remaining players later */
-
     free(map);       map = NULL;
     free(tanks_map); tanks_map = NULL;
+
+    game_started = false;
 }
 
 void start_game(void)
@@ -309,12 +307,21 @@ bool end_game_if_needed(void)
             return false;
         }
     }
+    unlock_clients_array();                                      /* }}} 2 */
     /* At this point, only one living player remains */
 
     /***** GAME OVER *****/
     debug_s(3, "only one living player remains", "Game over");
 
+    end_game();
+
+    return true;
+}
+
+void end_game(void)
+{
     /* Mark dead players as PS_LOSER and living players as PS_WINNER */
+    lock_clients_array();                                        /* {{{ */
     for (int i = 0; i < clients.count; i++)
     {
         struct client *cl = p_dyn_arr_get(&clients, i);
@@ -327,8 +334,23 @@ bool end_game_if_needed(void)
     unlock_clients_array();                                      /* }}} 2 */
 
     game_cleanup();
+    reset_game();
+}
 
-    return true;
+/* Returns the game back to lobby */
+void reset_game(void)
+{
+    init_game();
+
+    /* Set all players as PS_JOINED */
+    lock_clients_array();                                        /* {{{ */
+    for (int i = 0; i < clients.count; i++)
+    {
+        struct client *cl = p_dyn_arr_get(&clients, i);
+
+        player_change_state(cl->player, PS_JOINED);
+    }
+    unlock_clients_array();                                      /* }}} 2 */
 }
 
 double min(double a, double b)
