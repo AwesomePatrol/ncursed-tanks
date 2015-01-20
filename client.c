@@ -151,7 +151,7 @@ int main(int argc, char *argv[])
             loc_player->state == PS_DEAD) wait_scene();
         if (loc_player->state == PS_ACTIVE) shoot_menu_scene();
         if (loc_player->state == PS_WINNER ||
-            loc_player->state == PS_LOSER)post_game_scene();
+            loc_player->state == PS_LOSER) post_game_scene();
     }
 
     /* free! */
