@@ -16,6 +16,7 @@ void *connection_thread(void *thr_data);
 
 void process_command(Command cmd);
 void process_join_command(struct thread_data *data, int socket);
+void process_set_ability_command(struct thread_data *data, int socket);
 void process_ready_command(struct thread_data *data);
 void process_shoot_command(struct thread_data *data, int socket);
 void process_ability_command(struct thread_data *data, int socket);

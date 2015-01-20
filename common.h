@@ -26,7 +26,7 @@
  *   \- requirements
  * C_JOIN          string nickname     JoinReply[, int16_t id]
  *   sends id only if JoinReply is JR_OK
- * C_SET_ABILITY   int8_t ability_id
+ * C_SET_ABILITY   int16_t ability_id
  * C_READY
  * C_GET_MAP                           struct map_info
  * C_GET_CHANGES                       list(struct update)

@@ -83,3 +83,15 @@ ability_id_t new_ability_id(void)
     /* Assume id never overflows */
     return ++id_counter;
 }
+
+struct ability *find_ability(ability_id_t id)
+{
+    for (int i = 0; i < abilities.count; i++)
+    {
+        struct ability *a = dyn_arr_get(&abilities, i);
+
+        if (id == a->id)
+            return a;
+    }
+    return NULL;
+}

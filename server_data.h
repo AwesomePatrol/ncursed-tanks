@@ -20,6 +20,7 @@ struct client
 {
     client_id_t id;
     struct player *player;
+    struct ability *ability;
     struct updates_queue *updates;
 
     pthread_mutex_t updates_mutex;

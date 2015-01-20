@@ -103,6 +103,9 @@ void process_command(Command cmd)
     case C_JOIN:
         process_join_command(data, socket);
         break;
+    case C_SET_ABILITY:
+        process_set_ability_command(data, socket);
+        break;
     case C_READY:
         process_ready_command(data);
         break;
@@ -219,6 +222,19 @@ join_ok:
     for (int i = 0; i < abilities.count; i++)
         add_update(cl, new_add_ability_update(
                            dyn_arr_get(&abilities, i)));
+}
+
+void process_set_ability_command(struct thread_data *data, int socket)
+{
+    struct client *cl = data->client;
+    struct player *player = cl->player;
+
+    recv_int16(socket, &player->ability_id);
+
+    /* Notify all the clients of the change of ability */
+    all_add_update(new_player_update(U_PLAYER, player));
+
+    cl->ability = find_ability(player->ability_id);
 }
 
 void process_ready_command(struct thread_data *data)
