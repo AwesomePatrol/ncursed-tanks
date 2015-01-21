@@ -237,6 +237,12 @@ void process_set_ability_command(struct thread_data *data, int socket)
     all_add_update(new_player_update(U_PLAYER, player));
 
     cl->ability = find_ability(player->ability_id);
+
+    debug_s(3, "set ability: player", player->nickname);
+    if (cl->ability)
+        debug_s(3, "set ability: ability", cl->ability->name);
+    else
+        debug_s(3, "set ability: no ability", "");
 }
 
 void process_ready_command(struct thread_data *data)

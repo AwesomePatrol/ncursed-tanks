@@ -86,6 +86,7 @@ ability_id_t new_ability_id(void)
 
 struct ability *find_ability(ability_id_t id)
 {
+    /* Replace the whole function with with dyn_arr_get(&abilities, id-1) ? */
     for (int i = 0; i < abilities.count; i++)
     {
         struct ability *a = dyn_arr_get(&abilities, i);
