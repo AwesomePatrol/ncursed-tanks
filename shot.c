@@ -15,9 +15,16 @@ struct f_pair initial_v(struct shot *shot)
     int power_c = config_get("power_c");
     double angle_rad = deg_to_rad(shot->angle);
 
-    return (struct f_pair) {
-        shot->power * cos(angle_rad) / power_c,
-        -shot->power * sin(angle_rad) / power_c
+    if (shot->angle == 90 || shot->angle == 270)
+        /* Precise result for vertical angles */
+        return (struct f_pair) {
+            0,
+            (double)-shot->power / power_c
+        };
+    else
+        return (struct f_pair) {
+            shot->power * cos(angle_rad) / power_c,
+            -shot->power * sin(angle_rad) / power_c
     };
 }
 
