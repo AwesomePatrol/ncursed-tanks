@@ -1,1 +1,63 @@
 See common.h for protocol specs
+
++------------+       +------+
+|local client|<----->|server|
++------------+       +------+
++---------+           |
+| client 1|<--------->|
++---------+           |
+                      |
++---------+           |
+| client n|<--------->|
++---------+
+
+-> send
+<- receive
+
+client
+------
+start connection (client side):
+    getaddrinfo() - get list of addrinfo structures
+    socket()      - opens socket (until succesful)
+    connect()     - connects through earlier socket
+
+function fetch_changes() is run in at most 2s intervals
+all structs used in communication protocol are defined and described in common.h
+
+join_game:
+    -> C_JOIN
+    -> nickname                         /*nickname is set via command line argument
+                                        * it is obligatory*/
+    <- JoinReply
+    -> loc_player_id                    /*ID number of local client
+                                        * used later to recognize local client
+                                        * in updates (U_ADD_PLAYER) */
+    fetch_map:
+        -> C_GET_MAP
+        <- map_info                     //map is generated right fter
+    fetch_changes:
+        -> C_GET_CHANGES
+        <- struct update
+        …                               //multiple updates
+        <- NetUpdate->type == U_EMPTY   //at the end always receive empty update
+
+lobby_scene:
+    fetch_changes                       //function is described earlier
+    lobby_menu:
+        -> C_SET_ABILITY
+        -> loc_player->ability_id
+        -> C_READY
+        fetch_changes
+
+wait_scene:
+    fetch_changes
+
+shoot_menu_scene:
+    fetch_changes
+    shoot_menu:
+        send_shoot:
+            -> C_SHOOT
+            -> struct shot
+
+post_game_scene:
+    fetch_changes
