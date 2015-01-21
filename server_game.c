@@ -1,5 +1,4 @@
 #include "server_game.h"
-#include <assert.h>
 
 /* Helper for new_player_x */
 bool player_x_too_close(int16_t x)
@@ -76,19 +75,7 @@ double get_t_step(double prev_delta_x, double prev_t,
         c1 = prev_delta_x + *x_step - init_v.x*prev_t;
         c2 = init_v.x;
 
-        if (c2)
-        {
-            t_step1 = t_step2 = c1 / c2;
-        }
-        else
-        {
-            /* Vertical shot: 
-             * need to turn around to the opposite direction,
-             * but return 0 so that get_impact_pos() continues */
-            debug_s(0, "get_t_step", "Turning back");
-            *x_step = -(*x_step);
-            return 0;
-        }
+        t_step1 = t_step2 = c1 / c2;
 
         debug_f(0, "t step", t_step1);
     }
@@ -113,21 +100,18 @@ double get_t_step(double prev_delta_x, double prev_t,
         else
         {
             debug_s(5, "wtf", "Haven't found a valid t_step!");
-            assert(false);
-            return 0;
         }
     }
 }
 
+/* Move to server_game.c or something? */
 /* Sets *impact_t to impact time, returns impact position */
 struct map_position get_impact_pos(struct player *player, struct shot *shot,
                                    double *impact_t)
 {
     struct f_pair init_v = initial_v(shot);
     struct f_pair acc = acceleration();
-    short init_direction = init_v.x ?
-        fabs(init_v.x) / init_v.x :
-        1;
+    short init_direction = fabs(init_v.x) / init_v.x;
 
     struct f_pair init_pos = map_pos_to_float(player->pos);
     double x_step = (double)init_direction / COLLISION_X_PRECISION;
