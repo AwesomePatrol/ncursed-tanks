@@ -78,7 +78,7 @@ void *connection_thread(void *thr_data)
 
     /* receive command - 1 char */
     /* process commands until disconnect */
-    while (recv_int8(socket, &command) != 0)
+    while (recv_int8(socket, (int8_t *)&command) != 0)
     {
         //debug_c( 0, "received command", command);
         process_command(command);

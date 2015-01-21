@@ -120,6 +120,10 @@ struct map_position get_impact_pos(struct player *player, struct shot *shot,
     double cur_delta_x = 0;
     double cur_t = 0;
 
+    debug_f(0, "shot: initial pos.x", init_pos.x);
+    debug_f(0, "shot: initial pos.y", init_pos.y);
+    debug_f(0, "shot: initial v.x", init_v.x);
+    debug_f(0, "shot: initial v.y", init_v.y);
     debug_f(0, "shot: wind", acc.x);
 
     while (true) /* exit with return */
@@ -374,10 +378,10 @@ void update_map_at(struct f_pair pos, struct map_position map_pos,
                    config_value_t radius)/* too many arguments */
 {
     double change_amount = 1;/* this could scale with radius */
-    debug_f(0, "update_map_at: change amount", change_amount);
+    //debug_f(0, "update_map_at: change amount", change_amount);
 
     change_map(map_pos.x, map[map_pos.x] + change_amount);
-    if (radius >= 3 && map_pos.x > 0 && map_pos.x < map_info.length)
+    if (radius >= 3 && is_inside_map(map_pos, &map_info))
     {
         change_map(map_pos.x-1, map[map_pos.x-1] + change_amount);
         change_map(map_pos.x+1, map[map_pos.x+1] + change_amount);
@@ -402,13 +406,13 @@ void shot_update_map(struct map_position impact_pos)
     struct f_pair orig_pos = map_pos_to_float(impact_pos);
     double left_x = orig_pos.x - radius;
     double right_x = orig_pos.x + radius;
-    debug_f(0, "left x", left_x);
-    debug_f(0, "right x", right_x);
+    //debug_f(0, "left x", left_x);
+    //debug_f(0, "right x", right_x);
 
     struct f_pair pos = { left_x, orig_pos.y };
     for (; pos.x <= right_x; pos.x += 1)
     {
-        debug_f(0, "update map: current x", pos.x);
+        //debug_f(0, "update map: current x", pos.x);
         struct map_position map_pos = round_to_map_pos(pos);
 
         if (is_inside_map(map_pos, &map_info))
