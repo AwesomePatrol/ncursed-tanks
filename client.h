@@ -39,6 +39,10 @@ int camera_focus;
 float g_impact_t;
 int sock;
 struct update s_update;
+char *g_servername;
+
+/* client.c */
+bool client_connect(char *servername);
 
 /* client_game.c */
 struct ability *find_ability(int16_t id);

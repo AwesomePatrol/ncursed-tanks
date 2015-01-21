@@ -158,7 +158,11 @@ void fetch_changes()
 {
     if (save_updates == false && NetUpdates.count > 0)
         process_saved_updates();
-    send_int8(sock, C_GET_CHANGES);
+    if (send_int8(sock, C_GET_CHANGES) == -1) {
+        /* try to reconnect */
+        if (!client_connect(g_servername))
+            return ;
+    }
     struct update *UpdateNet;
     while ((UpdateNet = recv_update(sock))->type) {
         if (save_updates) {

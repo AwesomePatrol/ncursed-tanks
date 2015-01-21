@@ -75,6 +75,40 @@ void init_curses()
     init_pair(COL_B, -1, -1);
 }
 
+bool client_connect(char *servername)
+{
+    /* Get connection to server */
+    int cl_sock;
+    struct addrinfo hints, *servlist, *p;
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = AF_UNSPEC; /* IPv4 or IPv6 */
+    hints.ai_socktype = SOCK_STREAM;
+
+    if (getaddrinfo(servername, portnum, &hints, &servlist) != 0)
+        return false;
+
+    for (p = servlist; p != NULL; p = p->ai_next) {
+           cl_sock = socket(p->ai_family, p->ai_socktype, p->ai_protocol);
+            if (cl_sock == -1)
+                continue;
+            if (connect(cl_sock, p->ai_addr, p->ai_addrlen) != -1)
+                break; /* for now on we have connection with server */
+    }
+
+    /* in case socket or connection is broken we should fail here */
+    if ( p == NULL ) {
+        if (DEBUG <= 5) puts("Socket or connection is broken!");
+        return false;
+    }
+    
+    /* for now on we use sock (a global variable) instead of cl_sock */
+    sock = cl_sock;
+
+    /* this is no longer needed, free! */
+    freeaddrinfo(servlist);
+    return true;
+}
+
 int main(int argc, char *argv[])
 {
 
@@ -100,35 +134,11 @@ int main(int argc, char *argv[])
         debug_open(debug_filename);
     
     /* Get connection to server */
-    int cl_sock;
-    struct addrinfo hints, *servlist, *p;
-    memset(&hints, 0, sizeof(hints));
-    hints.ai_family = AF_UNSPEC; /* IPv4 or IPv6 */
-    hints.ai_socktype = SOCK_STREAM;
-
-    if (getaddrinfo(argv[argc-2], portnum, &hints, &servlist) != 0)
+    if (!client_connect(argv[argc-2]))
         return EXIT_FAILURE;
 
-    for (p = servlist; p != NULL; p = p->ai_next) {
-           cl_sock = socket(p->ai_family, p->ai_socktype, p->ai_protocol);
-            if (cl_sock == -1)
-                continue;
-            if (connect(cl_sock, p->ai_addr, p->ai_addrlen) != -1)
-                break; /* for now on we have connection with server */
-    }
+    g_servername=argv[argc-2];
 
-    /* in case socket or connection is broken we should fail here */
-    if ( p == NULL ) {
-        if (DEBUG <= 5) puts("Socket or connection is broken!");
-        return EXIT_FAILURE;
-    }
-    
-    /* this is no longer needed, free! */
-    freeaddrinfo(servlist);
-
-    /* for now on we use sock (a global variable) instead of cl_sock */
-    sock = cl_sock;
-    
     /* join_game */
     if (join_game(argv[argc-1]) < 0)
         return EXIT_FAILURE;/* some errors occured */
@@ -162,7 +172,7 @@ int main(int argc, char *argv[])
     free(map_data);
 
     /* Close connection */
-    close(cl_sock);
+    close(sock);
     endwin();
     return EXIT_SUCCESS;
 }
