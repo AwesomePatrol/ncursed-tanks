@@ -112,7 +112,12 @@ void process_update(struct update *UpdateNet)
             /* free player's nickname from update */
             clear_player(&UpdateNet->player);
             /* add SCR_TANKS to screen update queue */
-            ScreenUpdate del_player = SCR_TANKS;
+            ScreenUpdate del_player;
+            if (loc_player->state == PS_READY ||
+                loc_player->state == PS_JOINED)
+                del_player = SCR_LOBBY;
+            else
+                del_player = SCR_TANKS;
             dyn_arr_append(&ScrUpdates, &del_player);
             break;
         case U_SHOT:
