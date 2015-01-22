@@ -205,10 +205,6 @@ int join_game(char *nickname)
             if (DEBUG <= 5) puts("Nickname's already taken!");
             return -1;
             break;
-        case JR_FORBIDDEN:
-            if (DEBUG <= 5) puts("Join forbidden!");
-            return -1;
-            break;
         default:
             debug_d(3, "JoinReplyNet", j_net);
             debug_d(3, "JoinReply", jr);

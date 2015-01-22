@@ -138,6 +138,7 @@ void process_join_command(struct thread_data *data, int socket)
      * no different client with the same nickname can join */
     lock_clients_array();                                        /* {{{ */
     cl = find_client_by_nickname(nickname);
+    /* Whether there is already a client with this nickname */
     bool nickname_found = (bool) cl;
 
     if (game_started)

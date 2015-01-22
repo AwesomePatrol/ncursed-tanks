@@ -170,12 +170,14 @@ struct map_info *recv_map_info(int socket)
 
 int send_player(int socket, struct player *p)
 {
-    if (send_int8(socket, p->state) == -1        ||
-        send_bool(socket, p->is_connected) == -1 ||
-        send_int16(socket, p->id) == -1          ||
-        send_string(socket, p->nickname) == -1   ||
-        send_int16(socket, p->hitpoints) == -1   ||
-        send_map_position(socket, &p->pos) == -1)
+    if (send_int8(socket, p->state) == -1             ||
+        send_bool(socket, p->is_connected) == -1      ||
+        send_int16(socket, p->id) == -1               ||
+        send_string(socket, p->nickname) == -1        ||
+        send_int16(socket, p->hitpoints) == -1        ||
+        send_map_position(socket, &p->pos) == -1      ||
+        send_int16(socket, p->ability_id) == -1       ||
+        send_int16(socket, p->ability_cooldown) == -1)
         return -1;
     return 0;
 }
@@ -186,12 +188,14 @@ struct player *recv_player(int socket)
     u_int8_t state_net;
     struct map_position *pos;
 
-    if (recv_int8(socket, (int8_t *)&state_net) <= 0     ||
-        recv_bool(socket, &result->is_connected) <= 0    ||
-        recv_int16(socket, &result->id) <= 0             ||
-        (result->nickname = recv_string(socket)) == NULL ||
-        recv_int16(socket, &result->hitpoints) <= 0      ||
-        (pos = recv_map_position(socket)) == NULL)
+    if (recv_int8(socket, (int8_t *)&state_net) <= 0       ||
+        recv_bool(socket, &result->is_connected) <= 0      ||
+        recv_int16(socket, &result->id) <= 0               ||
+        (result->nickname = recv_string(socket)) == NULL   ||
+        recv_int16(socket, &result->hitpoints) <= 0        ||
+        (pos = recv_map_position(socket)) == NULL          ||
+        recv_int16(socket, &result->ability_id) <= 0       ||
+        recv_int16(socket, &result->ability_cooldown) <= 0)
     {
         free(result);
         return NULL;
