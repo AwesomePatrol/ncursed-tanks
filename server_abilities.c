@@ -16,7 +16,18 @@ AbilityType string_to_ability_type(char *str)
         return A_NONE;
 }
 
-void ability_move(struct client *cl, struct shot *shot)
+void ability_double_shot(struct client *cl, struct shot *shot, int socket)
+{
+    /* first shot */
+    shot->angle+=rand()%5-2;
+    all_add_update(new_shot_update(shot, cl->id));
+
+    /* second shot */
+    shot->angle+=rand()%5-2;
+    all_add_update(new_shot_update(shot, cl->id));
+}
+
+void ability_move(struct client *cl, struct shot *shot, int socket)
 {
     /*TODO: move tank by cl->player->ability.parameter*/
 }

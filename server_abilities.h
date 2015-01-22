@@ -12,6 +12,7 @@ typedef int16_t ability_id_t;
  * [(type, str_type)*] list */
 AbilityType string_to_ability_type(char *str);
 
-void ability_move(struct client *cl, struct shot *shot);
+void ability_double_shot(struct client *cl, struct shot *shot, int socket);
+void ability_move(struct client *cl, struct shot *shot, int socket);
 
 #endif /* SERVER_ABILITIES_H */

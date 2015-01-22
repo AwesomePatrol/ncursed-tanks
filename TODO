@@ -10,6 +10,7 @@
     * client
         ** statistics in end-game screen
         ** on-screen keyboard (for touch capable devices)
+        ** change map (and everything else) gradually
     * dyn_arr
         ** change allocated size in chunks
     * common
