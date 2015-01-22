@@ -1,6 +1,7 @@
 #TRY to keep the list in order
     * server
         ** support abilities
+	** generate player position _on game start_
         ** fix shooting (when angle is close to 0°, 90°, 180°) (+ friendly fire)
         ** switch to using getaddrinfo for parsing IP, …
         ** end-game statistics
