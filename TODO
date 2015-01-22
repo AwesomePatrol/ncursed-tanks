@@ -3,6 +3,8 @@
         ** support abilities
         ** generate player position _on game start_
         ** don't change map when impact position outside map
+        ** fix invalid memory reads (shot_update_map)
+           when impact pos close to edge
         ** fix shooting (when angle is close to 0°, 90°, 180°) (+ friendly fire)
         ** switch to using getaddrinfo for parsing IP, …
         ** end-game statistics
@@ -25,5 +27,5 @@
         ** support multiple games
         ** test under different compilers
         ** replace GCC-specific feature usage with other methods
-	    *** nested functions (GCC extension)
-	    *** anonymous structs/unions (GCC / C11)
+            *** nested functions (GCC extension)
+            *** anonymous structs/unions (GCC / C11)
