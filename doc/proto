@@ -61,3 +61,43 @@ shoot_menu_scene:
 
 post_game_scene:
     fetch_changes
+
+server
+------
+init_server:
+    socket()
+    setsockopt()
+    bind()       - bind the socket to port
+
+server_listen:
+    listen()     - listen for incoming connections
+    /* for every client */
+    accept()
+    create connection thread
+    /* end */
+
+connection_thread:
+    /* while connected */
+    <- command
+    process_command()
+    /* end */
+    disconnect_cur_client()
+
+process_command:
+    /* based on command, e.g. C_JOIN => process_join_command() */
+
+process_ready_command:
+    change player state to PS_READY
+    if all the players are ready, start_game()
+
+process_shoot_command:
+    add U_SHOT update
+    find impact position
+    add U_SHOT_IMPACT update with the position
+    process_impact()
+
+process_impact:
+    deal damage to players
+    update map
+    end_game_if_needed()
+

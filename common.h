@@ -45,10 +45,15 @@ typedef enum Command
     C_SHOOT = 'F', C_USE_ABILITY = 'A',
 } Command;
 
-/* JR_GAME_IN_PROGRESS - not allowed to join because game already started */
+/* JR_OK - allowed to join
+ * not allowed to join:
+ * JR_GAME_IN_PROGRESS - game already started
+ *                       and the client hasn't connected before game start
+ * JR_NICKNAME_TAKEN   - there is already a client with this nickname connected
+ */
 typedef enum JoinReply
 {
-    JR_OK, JR_GAME_IN_PROGRESS, JR_NICKNAME_TAKEN, JR_FORBIDDEN
+    JR_OK, JR_GAME_IN_PROGRESS, JR_NICKNAME_TAKEN,
 } JoinReply;
 
 /*
