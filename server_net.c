@@ -281,28 +281,8 @@ void process_shoot_command(struct thread_data *data, int socket)
     debug_d( 0, "shot: power", shot->power);
 
     all_add_update(new_shot_update(shot, cl->id));
-
-    double impact_t;
-    struct map_position impact_pos = get_impact_pos(cl->player, shot,
-                                                    &impact_t);
-    debug_f(0, "shot: impact t", impact_t);
-    struct map_position d_pos =
-        round_to_map_pos(shot_pos(map_pos_to_float(cl->player->pos),
-                                  initial_v(shot),
-                                  acceleration(),
-                                  impact_t));
-    debug_d(0, "shot: x @ impact t", d_pos.x);
-    debug_d(0, "shot: y @ impact t", d_pos.y);
-    debug_d(0, "shot: impact x", impact_pos.x);
-    debug_d(0, "shot: impact y", impact_pos.y);
-    if (is_inside_map(impact_pos, &map_info))
-        debug_d(0, "shot: map y @ impact pos", map[impact_pos.x]);
-    else
-        debug_s(0, "shot", "Impact position outside map");
-
-    all_add_update(new_shot_impact_update(impact_t));
-
-    process_impact(impact_pos);
+ 
+    process_impact(shot_without_dmg(cl->player, shot));
 
     free(shot);
 }

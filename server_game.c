@@ -38,6 +38,31 @@ int16_t new_player_x(void)
     return x;
 }
 
+struct map_position shot_without_dmg(struct player *player, struct shot *shot)
+{
+    double impact_t;
+    struct map_position impact_pos = get_impact_pos(player, shot,
+                                                    &impact_t);
+    debug_f(0, "shot: impact t", impact_t);
+    struct map_position d_pos =
+        round_to_map_pos(shot_pos(map_pos_to_float(player->pos),
+                                  initial_v(shot),
+                                  acceleration(),
+                                  impact_t));
+    debug_d(0, "shot: x @ impact t", d_pos.x);
+    debug_d(0, "shot: y @ impact t", d_pos.y);
+    debug_d(0, "shot: impact x", impact_pos.x);
+    debug_d(0, "shot: impact y", impact_pos.y);
+    if (is_inside_map(impact_pos, &map_info))
+        debug_d(0, "shot: map y @ impact pos", map[impact_pos.x]);
+    else
+        debug_s(0, "shot", "Impact position outside map");
+
+    all_add_update(new_shot_impact_update(impact_t));
+    return impact_pos;
+}
+
+
 /* helper for get_impact_pos() */
 double get_t_step(double prev_delta_x, double prev_t,
                   double *x_step, bool *one_side_clear,

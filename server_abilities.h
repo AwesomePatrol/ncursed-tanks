@@ -4,6 +4,7 @@
 #include "common.h"
 #include "server_net.h"
 #include "server_data.h"
+#include "server_game.h"
 
 typedef int16_t ability_id_t;
 
