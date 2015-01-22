@@ -93,6 +93,7 @@ void process_update(struct update *UpdateNet)
                         dyn_arr_append(&ScrUpdates, &scr_u_player);
                         break;
                     case PS_READY:
+                    case PS_JOINED:
                         scr_u_player = SCR_LOBBY;
                         dyn_arr_append(&ScrUpdates, &scr_u_player);
                         break;
