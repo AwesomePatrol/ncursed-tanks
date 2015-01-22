@@ -31,6 +31,8 @@ void process_saved_updates()
 {
     for (int i=0; i<NetUpdates.count; i++) {
         struct update *update=dyn_arr_get(&NetUpdates, i);
+        if (save_updates)
+            return;
         process_update(update);
     }
     dyn_arr_clear(&NetUpdates);
