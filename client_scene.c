@@ -53,7 +53,7 @@ void render_scene()
                 case PS_READY:
                     if (lobby) {
                         clear();
-                        draw_lobby();
+                        render_lobby();
                     }
                     break;
                 case PS_DEAD:
@@ -63,7 +63,7 @@ void render_scene()
                         render_map();
                     }
                     if (tanks) render_tanks();
-                    if (stats) draw_stats();
+                    if (stats) render_stats();
                     break;
                 case PS_ACTIVE:
                     if (map) {
@@ -71,7 +71,7 @@ void render_scene()
                         render_map();
                     }
                     if (tanks) render_tanks();
-                    if (stats) draw_stats();
+                    if (stats) render_stats();
                     if (shoot_menu) render_shoot_menu();
                     break;
                 default:
@@ -88,7 +88,7 @@ void lobby_scene()
     int input_ch;
     /* initial render */
     clear();
-    draw_lobby();
+    render_lobby();
     refresh();
     while (loc_player->state == PS_JOINED
             || loc_player->state == PS_READY) {
@@ -110,7 +110,7 @@ void shoot_menu_scene()
     clear();
     render_map();
     render_tanks();
-    draw_stats();
+    render_stats();
     render_shoot_menu();
     refresh();
     while (loc_player->state == PS_ACTIVE) {
@@ -134,7 +134,7 @@ void wait_scene()
     clear();
     render_map();
     render_tanks();
-    draw_stats();
+    render_stats();
     refresh();
     while (loc_player->state == PS_WAITING
             || loc_player->state == PS_DEAD) {

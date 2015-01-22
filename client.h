@@ -75,9 +75,9 @@ void send_shoot();
 void render_shot(struct shot *shot, int s_id);
 void render_shoot_menu();
 void render_post_game();
-void draw_stats();
-void draw_lobby();
 void render_map();
 void render_tanks();
+void render_stats();
+void render_lobby();
 
 #endif /* CLIENT_H */

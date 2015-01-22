@@ -11,6 +11,8 @@ ScreenMove draw_bullet(int pos_x, int pos_y, int x, int y);
 void draw_blank_bullet(int pos_x, int pos_y, int x, int y);
 void draw_shoot_menu();
 void draw_bullet_explosion(int pos_x, int pos_y, int x, int y);
-
+void draw_stats();
+void draw_lobby();
+void draw_post_game();
 
 #endif /* CLIENT_DRAW_H */

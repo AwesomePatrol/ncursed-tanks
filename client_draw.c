@@ -90,3 +90,49 @@ void draw_bullet_explosion(int pos_x, int pos_y, int x, int y)
         put_col_str(COL_RR, yy+1, xx-1, "X");
     }
 }
+
+void draw_stats()
+{
+    for (int i=0; i<Players.count; i++) {
+        struct player *cur_pl = dyn_arr_get(&Players, i);
+        attron(COLOR_PAIR((int) (cur_pl->state == PS_DEAD) ? COL_R :
+                    (cur_pl == loc_player) ? COL_W : COL_Y));
+        mvprintw(1+i, COLS-strlen(cur_pl->nickname)-6,
+                "%s:%d    ", cur_pl->nickname, cur_pl->hitpoints);
+        attroff(COLOR_PAIR((int) (cur_pl->state == PS_DEAD) ? COL_R :
+                    (cur_pl == loc_player) ? COL_W : COL_Y));
+    }
+}
+
+void draw_post_game()
+{
+    for (int i=0; i<Players.count; i++) {
+        struct player *cur_pl = dyn_arr_get(&Players, i);
+        attron(COLOR_PAIR((int) (cur_pl->state == PS_WINNER) ? COL_G : COL_Y));
+        mvprintw(1+i, 1, "%s : %s", cur_pl->nickname,
+            (cur_pl->state == PS_WINNER) ? "WINNER" : "LOSER");
+        attroff(COLOR_PAIR((int) (cur_pl->state == PS_WINNER) ? COL_G : COL_Y));
+    }
+}
+
+void draw_lobby()
+{
+    for (int i=0; i<Players.count; i++) {
+        struct player *cur_pl = dyn_arr_get(&Players, i);
+        /* render player's nickname */
+        put_col_str((cur_pl->state == PS_READY) ? COL_G :
+                (cur_pl == loc_player) ? COL_W : COL_Y,
+                1+i, 1, cur_pl->nickname);
+        /* render player's state */
+        put_col_str(COL_W, 1+i, 30,
+                cur_pl->state == PS_READY ? "READY" : "NOT READY");
+        /* render player's ability */
+        struct ability *cur_a = find_ability(cur_pl->ability_id);
+        if (cur_a != NULL)
+            put_col_str((cur_pl == loc_player) ? COL_W : COL_Y,
+                    1+i, 50, cur_a->name);
+    }
+    /* render help */
+    put_col_str(COL_W, LINES-3, 1,
+            "Press space to mark yourself as ready");
+}
