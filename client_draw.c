@@ -71,9 +71,11 @@ void draw_shoot_menu()
     /* print values to the screen, add spaces to overwrite previous values */
     mvprintw(1, 2, "ANGLE: %d   ", angle);
     mvprintw(2, 2, "POWER: %d   ", power);
-    mvprintw(1, 14, "ABILITY: %s",
-            (find_ability(loc_player->ability_id)->name));
-    mvprintw(2, 14, "COOLDOWN: %d", loc_player->ability_cooldown);
+    struct ability *a_tmp = find_ability(loc_player->ability_id);
+    if (a_tmp != NULL) {
+        mvprintw(1, 14, "ABILITY: %s", a_tmp->name);
+        mvprintw(2, 14, "COOLDOWN: %d", loc_player->ability_cooldown);
+    }
     attroff(COLOR_PAIR((int) COL_W));
 }
 
