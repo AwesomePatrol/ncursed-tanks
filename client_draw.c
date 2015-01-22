@@ -135,4 +135,6 @@ void draw_lobby()
     /* render help */
     put_col_str(COL_W, LINES-3, 1,
             "Press space to mark yourself as ready");
+    put_col_str(COL_W, LINES-2, 1,
+            "Use right and left arrows to choose ability");
 }
