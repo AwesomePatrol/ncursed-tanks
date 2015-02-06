@@ -130,7 +130,7 @@ int main(int argc, char *argv[])
     char *debug_filename = malloc(strlen(argv[argc-1])+strlen(".debug")+1);
     strcpy(debug_filename, argv[argc-1]);
     strcat(debug_filename, ".debug");
-    if (DEBUG <= 3)
+    if (DEBUG <= 5)
         debug_open(debug_filename);
     
     /* Get connection to server */

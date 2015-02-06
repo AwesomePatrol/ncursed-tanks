@@ -13,6 +13,11 @@ void debug_open(const char *filename) {
 void debug_do(int lvl, const char *name, void (*action)(void))
 {
     if (DEBUG <= lvl) {
+        if(!debug_file) {
+            fprintf(stderr, "FATAL: Tried emitting debug message, but debug file not opened.\n"
+                    "Something is fucked up. Ragequit.\n");
+            exit(1);
+        }
         time_t tmp = time(NULL);
         struct tm *t = localtime(&tmp);
         char date[100];
