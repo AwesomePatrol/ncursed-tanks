@@ -21,7 +21,7 @@ client: $(OBJS_client) $(COBJS_client)
 	gcc -o $@ -lm -lncurses $(OBJS_client) $(COBJS_client)
 
 config_menu: $(OBJS_config_menu) $(COBJS_config_menu)
-	gcc -o $@ -lmenu -lncurses -L/usr/lib $(OBJS_config_menu) $(COBJS_config_menu)
+	gcc -o $@ -lmenu -lncurses $(OBJS_config_menu) $(COBJS_config_menu)
 
 -include *.d
 
