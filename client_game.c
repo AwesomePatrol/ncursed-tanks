@@ -91,12 +91,12 @@ void center_camera(struct map_position d_pos)
     dx = d_pos.x - COLS/2;
     if (dx > (map_data->length - COLS))
         dx = map_data->length - COLS;
-    else if (dx < 0)
+    if (dx < 0) /* remove else before if, casued dx to be < 0 */
         dx = 0;
     dy = d_pos.y - LINES/2;
     if (dy > (map_data->height - LINES/2))
         dy = map_data->height - LINES/2;
-    else if (dy < 0)
+    if (dy < 0) /* same here, safety measure */
         dy = 0;
     /* add SCR_ALL to screen update queue */
     ScreenUpdate camera_move = SCR_ALL;
