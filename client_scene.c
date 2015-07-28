@@ -164,12 +164,13 @@ void post_game_scene()
      * stop saving updates, process old on next fetch_changes() */
     timeout(DEFAULT_TIMEOUT);
     save_updates=false;
-    while (loc_player->state == PS_WINNER
+/*    while (loc_player->state == PS_WINNER
             || loc_player->state == PS_LOSER) {
         fetch_changes();
         input_ch = getch();
         if (input_ch == ERR)
             continue;
         quit_key(input_ch);
-    }
+    }*/
+    loc_player->state=PS_NO_PLAYER;
 }

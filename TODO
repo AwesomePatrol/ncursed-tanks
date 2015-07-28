@@ -13,6 +13,7 @@
         ** statistics in end-game screen
         ** on-screen keyboard (for touch capable devices)
         ** change map (and everything else) gradually
+        ** fix end-game screen bug (corruption of memory: players array)
     * dyn_arr
         ** change allocated size in chunks
     * common
