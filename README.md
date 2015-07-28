@@ -8,20 +8,22 @@ This solution gives a user capability to run it on all *nix platforms.
 Usage
 -----
 
-> ./menu
-run config creator/modifier in user-friendly mode
-config is saved in "server.conf", which is automatically read by server
+```bash
+> ./config_menu
+## run config creator/modifier in user-friendly mode
+## config is saved in "server.conf", which is read by the server
 
-> ./client SERVER_IP NAME
-run game's client and connect it to server specified by SERVER_IP, sets NAME
+> ./client SERVER_IP NICKNAME
+## run game's client and connect it to the server specified by SERVER_IP, using NICKNAME
 
 > ./server
-run server which hosts the game, parameters are specified in "server.conf"
+## run the server which hosts the game, parameters are specified in "server.conf"
+```
 
 
 Gameplay
 --------
-Gameplay is explained in 'doc/game'.
+Gameplay is explained in `doc/game`.
 
 
 Demo
@@ -31,28 +33,14 @@ Demo
 
 Dependencies
 ------------
-##make
-> Build managemen tool
-https://www.gnu.org/software/make/
-
-##ncurses
-> Free software emulation of curses
-http://www.gnu.org/software/ncurses/ncurses.html
-
-##POSIX
-> system support for POSIX
-http://www.unix.org/
-
-
-Optional dependencies
----------------------
-##doxygen
-> Standard tool for generating documentation
-http://www.stack.nl/~dimitri/doxygen/
+* [make](https://www.gnu.org/software/make/) - Build management tool
+* [ncurses](http://www.gnu.org/software/ncurses/ncurses.html) - Free software emulation of curses
+* system support for [POSIX](http://www.unix.org/)
+* [doxygen](http://www.stack.nl/~dimitri/doxygen/) (optional) - Standard tool for generating documentation
 
 
 Build
 -----
-run "make" to build whole project
-run "make clean" to remove build files
-run "make doc" to generate documentation
+* run `make` to build the whole project
+* run `make clean` to remove build files
+* run `make doc` to generate documentation
