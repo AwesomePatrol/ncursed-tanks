@@ -1,6 +1,4 @@
-#include "client.h"
-
-struct dyn_arr NetUpdates = { sizeof(struct update) };
+#include "bot.h"
 
 /* fetch map from server and generate it */
 void fetch_map()
@@ -68,6 +66,7 @@ void process_update(struct update *UpdateNet)
                     case PS_LOSER:
                         if (check_end_game_state()) {
                             debug_s(1, "EndGame", "Quit?");
+                            games_num--;
                         }
                         break;
                     case PS_DEAD:

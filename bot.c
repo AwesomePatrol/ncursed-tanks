@@ -20,7 +20,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  * */
-#include "client.h"
+#include "bot.h"
 
 /* initialize GLOBAL variables */
 int angle = 90, power = 50;
@@ -30,11 +30,18 @@ int16_t loc_player_id =0;
 char default_portnum[] = "7979";
 char *portnum = default_portnum;
 
+int games_num = 1;
+int difficulty = 0;
+
 void print_help()
 {
     puts("Usage: bot [OPTION]... SERVER_IP PLAYER_NAME");
     puts("OPTION may be:");
     puts("-p, --port PORT\t specify on what port client connects a server");
+    puts("-g, --games GAMES_NUM\t number of games bot will play,");
+    puts("\t\t 1 (default)");
+    puts("-d, --difficulty DIFF\t difficulty of the bot, 0 will snipe you");
+    puts("\t\t every time, 10 will be easy");
     puts("--help\t show this message");
     puts("");
     puts("For complete documentation look for ./doc in project's files");
@@ -54,6 +61,12 @@ bool parse_cmd(int argc, char *argv[])
         if (strcmp(argv[i],"--port") == 0
                 || strcmp(argv[i],"-p") == 0)
             portnum=argv[i+1];
+        if (strcmp(argv[i],"--games") == 0
+                || strcmp(argv[i],"-g") == 0)
+            games_num=atoi(argv[i+1]);
+        if (strcmp(argv[i],"--difficulty") == 0
+                || strcmp(argv[i],"-d") == 0)
+            difficulty=atoi(argv[i+1]);
     }
     return false;
 }
@@ -94,7 +107,6 @@ bool client_connect(char *servername)
 
 int main(int argc, char *argv[])
 {
-
     /* Too few arguments error */
     if ( argc <= 2 ) {
         if (DEBUG <= 5) puts("Too few arguments!");
@@ -122,7 +134,7 @@ int main(int argc, char *argv[])
     if (join_game(argv[argc-1]) < 0)
         return EXIT_FAILURE;/* some errors occured */
 
-    while (loc_player->state) {
+    while (loc_player->state && games_num > 0) {
         if (loc_player->state == PS_JOINED) send_ready();
         if (loc_player->state == PS_READY ||
             loc_player->state == PS_WAITING ||
@@ -130,6 +142,9 @@ int main(int argc, char *argv[])
         if (loc_player->state == PS_ACTIVE) shoot();
         if (loc_player->state == PS_WINNER ||
             loc_player->state == PS_LOSER) loc_player->state=PS_NO_PLAYER;
+            /* above states are invalid
+             * because bot does not save the updates
+             * so it process them immediately */
     }
 
     /* free! */
@@ -141,6 +156,5 @@ int main(int argc, char *argv[])
 
     /* Close connection */
     close(sock);
-    endwin();
     return EXIT_SUCCESS;
 }

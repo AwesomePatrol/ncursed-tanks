@@ -24,6 +24,8 @@ map_t g_map;
 extern int angle, power;
 extern u_int16_t players_size;
 float g_impact_t;
+extern int games_num;
+extern int difficulty;
 int sock;
 struct update s_update;
 char *g_servername;
