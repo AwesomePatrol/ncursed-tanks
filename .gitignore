@@ -23,10 +23,13 @@ tags
 localdefs.mk
 
 # Compiled binary
-bot
-server
-client
-config_menu
+src/bot
+src/server
+src/client
+src/config_menu
+
+#compiled staff
+bin/
 
 # Server configuration
 server.conf
