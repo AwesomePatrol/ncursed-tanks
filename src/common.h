@@ -34,6 +34,7 @@
  * C_SHOOT         struct shot
  *   \- game started, state == PS_ACTIVE
  * C_USE_ABILITY   struct shot
+ * C_GET_IMPACT    struct shot         impact_x(int16_t)
  * 
  * list(X) means sending / receiving a series of X with an empty X in the end.
  */
