@@ -31,7 +31,7 @@ char default_portnum[] = "7979";
 char *portnum = default_portnum;
 
 int games_num = 1;
-int difficulty = 0;
+int difficulty = 2;
 
 void print_help()
 {
@@ -41,7 +41,7 @@ void print_help()
     puts("-g, --games GAMES_NUM\t number of games bot will play,");
     puts("\t\t 1 (default)");
     puts("-d, --difficulty DIFF\t difficulty of the bot, 0 will snipe you");
-    puts("\t\t every time, 10 will be easy");
+    puts("\t\t every time, 10 will be easy; 2 is default");
     puts("--help\t show this message");
     puts("");
     puts("For complete documentation look for ./doc in project's files");

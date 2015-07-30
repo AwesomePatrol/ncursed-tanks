@@ -114,6 +114,9 @@ void process_command(Command cmd)
     case C_SHOOT:
         process_shoot_command(data, socket);
         break;
+    case C_GET_IMPACT:
+        process_get_impact_command(data, socket);
+        break;
     /* case C_USE_ABILITY: */
     /*     process_ability_command(data, socket); */
     /*     break; */
@@ -267,6 +270,19 @@ void process_ready_command(struct thread_data *data)
 
 end:
     unlock_clients_array();                                      /* }}} */
+}
+
+void process_get_impact_command(struct thread_data *data, int socket)
+{
+    struct shot *shot = recv_shot(socket);
+    
+    double impact_t;
+    struct map_position impact_pos = get_impact_pos(data->client->player,
+        shot, &impact_t);
+
+    send_int16(socket, impact_pos.x);
+
+    free(shot);
 }
 
 void process_shoot_command(struct thread_data *data, int socket)

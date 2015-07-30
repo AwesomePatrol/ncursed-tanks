@@ -23,6 +23,7 @@ tags
 localdefs.mk
 
 # Compiled binary
+bot
 server
 client
 config_menu

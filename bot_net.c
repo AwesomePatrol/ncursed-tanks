@@ -168,6 +168,20 @@ int join_game(char *nickname)
     return 0;
 }
 
+int16_t get_impact_x()
+{
+    debug_d(1, "GetImpactAngle", angle);
+    debug_d(1, "GetImpactPower", power);
+    struct shot shot = { angle, power };
+    send_int8(sock, C_GET_IMPACT);
+    send_shot(sock, &shot);
+
+    int16_t impact_x;
+    recv_int16(sock, &impact_x);
+    debug_d(1, "GetImpactX", impact_x);
+    return impact_x;
+}
+
 void send_shoot()
 {
     debug_d(1, "ShootAngle", angle);

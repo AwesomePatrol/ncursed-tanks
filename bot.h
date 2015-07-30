@@ -47,6 +47,7 @@ void fetch_changes();
 void update_loc_player();
 int find_player(u_int16_t player_id);
 int join_game(char *nickname);
+int16_t get_impact_x();
 void send_shoot();
 void send_ready();
 

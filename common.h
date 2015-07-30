@@ -43,6 +43,7 @@ typedef enum Command
     C_SET_ABILITY = 'a',
     C_GET_MAP = 'M', C_GET_CHANGES = 'C',
     C_SHOOT = 'F', C_USE_ABILITY = 'A',
+    C_GET_IMPACT = 'i', /* used only by bots */
 } Command;
 
 /* JR_OK - allowed to join
