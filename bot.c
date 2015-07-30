@@ -135,7 +135,10 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;/* some errors occured */
 
     while (loc_player->state && games_num > 0) {
-        if (loc_player->state == PS_JOINED) send_ready();
+        if (loc_player->state == PS_JOINED) {
+            if (Players.count > 1) send_ready();
+            else wait_state();
+        }
         if (loc_player->state == PS_READY ||
             loc_player->state == PS_WAITING ||
             loc_player->state == PS_DEAD) wait_state();

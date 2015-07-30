@@ -31,12 +31,12 @@ bool check_end_game_state()
 
 void wait_state()
 {
-    while (loc_player->state == PS_READY ||
-            loc_player->state == PS_WAITING ||
-            loc_player->state == PS_DEAD) {
+    do {
         fetch_changes();
         sleep(1);
-    }
+    } while (loc_player->state == PS_READY ||
+            loc_player->state == PS_WAITING ||
+            loc_player->state == PS_DEAD);
 }
 
 void shoot()

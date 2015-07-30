@@ -9,6 +9,7 @@
         ** switch to using getaddrinfo for parsing IP, …
         ** end-game statistics
         ** make tanks not just 1 point on the map + detect collisions with them
+        ** update tank's position when new round starts
     * client
         ** statistics in end-game screen
         ** on-screen keyboard (for touch capable devices)
