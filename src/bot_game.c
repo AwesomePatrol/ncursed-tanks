@@ -53,11 +53,11 @@ void shoot()
     int16_t target_x = target->pos.x;
     debug_d(1, "TargetX", target_x);
     if (target->pos.x > target_x)
-        angle = rand() % 40 + 40;
+        angle = rand() % 30 + 40;
     else
-        angle = rand() % 40 + 100;
+        angle = rand() % 30 + 100;
     
-    /* calculate angle */
+    /* estimate proper angle and power values */
     int16_t impact_x = get_impact_x();
     while (abs(impact_x - target_x)  > difficulty+MIN_DIFFICULTY) {
         if (impact_x > target_x) {
