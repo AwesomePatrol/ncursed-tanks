@@ -211,7 +211,7 @@ int lobby_menu(int input_character)
         default:
             return 0;
     }
-    debug_d(5, "LocAbilityID", loc_player->ability_id);
+    debug_d(1, "LocAbilityID", loc_player->ability_id);
     /* add SCR_LOBBY to screen update queue */
     ScreenUpdate u_lobby = SCR_LOBBY;
     dyn_arr_append(&ScrUpdates, &u_lobby);

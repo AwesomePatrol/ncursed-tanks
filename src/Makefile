@@ -1,4 +1,5 @@
 all: server client bot config_menu
+	mkdir -p ../bin
 	cp client server bot config_menu ../bin
 
 DOXYGENCONF=doxygen.conf

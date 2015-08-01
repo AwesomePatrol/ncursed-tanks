@@ -19,6 +19,7 @@
         ** change allocated size in chunks
     * common
         ** write documentation (gameplay, usage, syntax, …)
+        ** do not create .debug files when compiled without _DEBUG
     * abilities
         ** gather ideas for weaponry and abilities.
         ** document every weapon and ability.
