@@ -1,6 +1,8 @@
+BIN := ../bin
+
 all: server client bot config_menu
-	mkdir -p ../bin
-	cp client server bot config_menu ../bin
+	mkdir -p $(BIN)
+	cp client server bot config_menu $(BIN)
 
 DOXYGENCONF=doxygen.conf
 
@@ -36,10 +38,9 @@ config_menu: $(OBJS_config_menu) $(COBJS_config_menu)
 	gcc -MM $< > $*.d
 
 clean:
-	rm -rf $(OBJS_server) $(OBJS_client) $(OBJS_bot) $(OBJS_config_menu)
-	rm -rf *.d
-	rm -rf server client config_menu bot
-	rm *.debug
+	rm -f $(OBJS_server) $(OBJS_client) $(OBJS_bot) $(OBJS_config_menu)
+	rm -f *.d
+	rm -f $(BIN)/server $(BIN)/client $(BIN)/config_menu $(BIN)/bot
 
 test: all
 
