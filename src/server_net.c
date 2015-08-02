@@ -1,6 +1,7 @@
 #include "server_net.h"
 #include "abilities_config.h"
 
+int server_port; // initialized from commandline args
 int server_socket; /* socket used to listen for incoming connections */
 /* socket info about the machine connecting to us */
 struct sockaddr_in client_sa;
@@ -14,8 +15,8 @@ void init_server(void)
     serv.sin_family = AF_INET;
     /* set our address to any interface */
     serv.sin_addr.s_addr = htonl(INADDR_ANY);
-    /* set the server port number */ 
-    serv.sin_port = htons(PORTNUM);
+    /* set the server port number */
+    serv.sin_port = htons(server_port);
 
     server_socket = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -41,7 +42,8 @@ void server_listen(void)
 {
     /* start listening, allowing a queue of up to 16 pending connection */
     listen(server_socket, 16);
-    debug_s(3, "listen", "Server started listening");
+    debug_s( 3, "listen", "Server started listening");
+    debug_d( 3, "listen port", server_port);
 
     /* listen until terminated */
     while (true)

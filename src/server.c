@@ -21,6 +21,7 @@
  * */
 #include "server.h"
 
+void parse_commandline(int argc, char *argv[]);
 void init_signals(void);
 
 void exit_cleanup(void);
@@ -28,6 +29,8 @@ void terminate_handler(int signum);
 
 int main(int argc, char *argv[])
 {
+    parse_commandline(argc, argv);
+
     debug_open("server.debug");
 
     read_config();
@@ -44,6 +47,42 @@ int main(int argc, char *argv[])
     server_listen();
 
     pthread_exit(NULL);
+}
+
+void print_usage(char *argv[])
+{
+    printf(
+"Usage: %s [-p PORT]\n\
+	-p PORT		Listen on PORT\n\
+",
+argv[0]);
+
+    exit(EXIT_FAILURE);
+}
+
+void parse_commandline(int argc, char *argv[])
+{
+    const char *opt_string = "p:h?";
+    int opt = 0;
+
+    server_port = 7979;
+
+    do
+    {
+        opt = getopt(argc, argv, opt_string);
+
+        switch (opt)
+        {
+        case 'p':
+            server_port = atoi(optarg);
+            break;
+
+        case 'h':
+        case '?':
+            print_usage(argv);
+            break;
+        }
+    } while (opt != -1);
 }
 
 void init_signals(void)
