@@ -24,17 +24,17 @@ void *da_get(size_t i, void *data, size_t el_size)
     return data + i * el_size;
 }
 
-void *dyn_arr_get(struct dyn_arr *arr, size_t i)
+void *dyn_arr_get(const struct dyn_arr *arr, size_t i)
 {
     return da_get(i, arr->data, arr->el_size);
 }
 
-void **p_dyn_arr_get_location(struct p_dyn_arr *arr, size_t i)
+void **p_dyn_arr_get_location(const struct p_dyn_arr *arr, size_t i)
 {
     return da_get(i, arr->data, sizeof(*arr->data));
 }
 
-void *p_dyn_arr_get(struct p_dyn_arr *arr, size_t i)
+void *p_dyn_arr_get(const struct p_dyn_arr *arr, size_t i)
 {
     return *p_dyn_arr_get_location(arr, i);
 }
