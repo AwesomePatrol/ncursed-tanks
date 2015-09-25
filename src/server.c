@@ -49,15 +49,18 @@ int main(int argc, char *argv[])
     pthread_exit(NULL);
 }
 
+/* Prints usage and exits */
 void print_usage(char *argv[])
 {
     printf(
-"Usage: %s [-p PORT]\n\
+"Usage: %s [OPTION]...\n\
+OPTION may be:\n\
 	-p, --port PORT		Listen on PORT\n\
 	-h, -?, --help		Display this message\n\
 ",
 argv[0]);
 
+    // exit required because we'll be called by getopt on wrong arguments
     exit(EXIT_FAILURE);
 }
 

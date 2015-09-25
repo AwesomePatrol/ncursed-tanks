@@ -33,44 +33,85 @@ int16_t loc_player_id =0;
 unsigned int cmd_lines=0, cmd_cols=0;
 char default_portnum[] = "7979";
 char *portnum = default_portnum;
+char *nick;
+char *debug_filename;
 
-void print_help()
+/* Prints usage and exits */
+void print_usage(char *argv[])
 {
-    puts("Usage: client [OPTION]... SERVER_IP PLAYER_NAME");
-    puts("OPTION may be:");
-    puts("-w, --width WIDTH\t specify width (number of columns) of a window");
-    puts("-h, --height HEIGHT\t specify height (number of lines) of a window");
-    puts("-p, --port PORT\t specify on what port client connects a server");
-    puts("--help\t show this message");
-    puts("");
-    puts("Terminal size must be at least 24x20");
-    puts("Wrong values will be ignored");
-    puts("");
-    puts("For complete documentation look for ./doc in project's files");
+    printf(
+"Usage: %s [OPTION]... SERVER_ADDR PLAYER_NAME\n\
+OPTION may be:\n\
+	-c, --cols WIDTH	specify width (number of columns) of a window\n\
+	-l, --lines HEIGHT	specify height (number of lines) of a window\n\
+	-p, --port PORT		specify on what port client connects a server\n\
+	-h, -?, --help		show this message\n\
+\n\
+Terminal size must be at least 24x20\n\
+Wrong values will be ignored\n\
+\n\
+For complete documentation look for ./doc in project's files\n\
+",
+argv[0]);
+
+    // exit required because we'll be called by getopt on wrong arguments
+    exit(EXIT_FAILURE);
 }
 
-bool parse_cmd(int argc, char *argv[])
+void parse_commandline(int argc, char *argv[])
 {
-    if (argc == 2 && strcmp(argv[1],"--help")) {
-        print_help();
-        return true;
-    }
-    for (int i=1; i<(argc-2); i++) {
-        if (strcmp(argv[i],"--help") == 0) {
-            print_help();
-            return 1;
+    const char *opt_string = "c:l:p:h?";
+    const struct option long_opts[] = {
+        { "cols",  required_argument, NULL, 'c' },
+        { "lines", required_argument, NULL, 'l' },
+        { "port",  required_argument, NULL, 'p' },
+        { "help",  no_argument,       NULL, 'h' },
+    };
+
+    int opt = 0;
+    do
+    {
+        opt = getopt_long(argc, argv, opt_string, long_opts, NULL);
+
+        switch (opt)
+        {
+        case 'c':
+            cmd_cols = atoi(optarg);
+            break;
+
+        case 'l':
+            cmd_lines = atoi(optarg);
+            break;
+
+        case 'p':
+            portnum = optarg;
+            break;
+
+        case 'h':
+            print_usage(argv);
+            break;
         }
-        if (strcmp(argv[i],"--width") == 0
-                || strcmp(argv[i],"-w") == 0)
-            cmd_cols=atoi(argv[i+1]);
-        if (strcmp(argv[i],"--height") == 0
-                || strcmp(argv[i],"-h") == 0)
-            cmd_lines=atoi(argv[i+1]);
-        if (strcmp(argv[i],"--port") == 0
-                || strcmp(argv[i],"-p") == 0)
-            portnum=argv[i+1];
+    } while (opt != -1);
+
+    /* We require 2 arguments */
+    if (argc - optind < 2) {
+        if (DEBUG <= 5) fputs("Too few arguments!\n", stderr);
+        print_usage(argv);
     }
-    return false;
+
+    /* Ignore values that are not proper */
+    if (cmd_cols < 24) cmd_cols=0;
+    if (cmd_lines < 20) cmd_lines=0;
+
+    g_servername=argv[optind];
+    optind++;
+
+    nick = argv[optind];
+
+    debug_filename = malloc(strlen(nick) +
+                            strlen(".debug") + 1);
+    strcpy(debug_filename, nick);
+    strcat(debug_filename, ".debug");
 }
 
 void init_curses()
@@ -133,36 +174,18 @@ bool client_connect(char *servername)
 
 int main(int argc, char *argv[])
 {
-
-    /* Too few arguments error */
-    if ( argc <= 2 ) {
-        if (DEBUG <= 5) puts("Too few arguments!");
-        return EXIT_FAILURE;
-    }
-
-    /* Parse command line arguments */
-    if (parse_cmd(argc, argv))
-        return EXIT_SUCCESS;
-
-    /* Ignore values that are not proper */
-    if (cmd_cols < 24) cmd_cols=0;
-    if (cmd_lines < 20) cmd_lines=0;
+    parse_commandline(argc, argv);
 
     /* Open debug_file */
-    char *debug_filename = malloc(strlen(argv[argc-1])+strlen(".debug")+1);
-    strcpy(debug_filename, argv[argc-1]);
-    strcat(debug_filename, ".debug");
     if (DEBUG <= 5)
         debug_open(debug_filename);
     
     /* Get connection to server */
-    if (!client_connect(argv[argc-2]))
+    if (!client_connect(g_servername))
         return EXIT_FAILURE;
 
-    g_servername=argv[argc-2];
-
     /* join_game */
-    if (join_game(argv[argc-1]) < 0)
+    if (join_game(nick) < 0)
         return EXIT_FAILURE;/* some errors occured */
 
     /* Init ncurses */

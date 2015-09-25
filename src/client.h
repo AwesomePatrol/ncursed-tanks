@@ -10,6 +10,7 @@
 #include <netinet/in.h>
 #include <ncurses.h>
 
+#include "platform.h"
 #include "debug.h"
 #include "dyn_arr.h"
 #include "map.h"
