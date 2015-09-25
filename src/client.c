@@ -95,7 +95,7 @@ void parse_commandline(int argc, char *argv[])
 
     /* We require 2 arguments */
     if (argc - optind < 2) {
-        if (DEBUG <= 5) fputs("Too few arguments!\n", stderr);
+        if (DEBUG <= 5) fputs("2 arguments are required!\n", stderr);
         print_usage(argv);
     }
 

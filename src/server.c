@@ -55,8 +55,8 @@ void print_usage(char *argv[])
     printf(
 "Usage: %s [OPTION]...\n\
 OPTION may be:\n\
-	-p, --port PORT		Listen on PORT\n\
-	-h, -?, --help		Display this message\n\
+	-p, --port PORT		listen on PORT\n\
+	-h, -?, --help		display this message\n\
 ",
 argv[0]);
 
