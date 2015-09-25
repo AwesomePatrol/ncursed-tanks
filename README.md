@@ -42,5 +42,7 @@ Dependencies
 Build
 -----
 * run `make` to build the whole project
+  * if your platform doesn't have getopt_long,
+    run `CFLAGS="-DPLATFORM_NO_GETOPT_LONG" make` instead
 * run `make clean` to remove build files
 * run `make doc` to generate documentation

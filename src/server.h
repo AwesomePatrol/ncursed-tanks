@@ -5,7 +5,7 @@
 
 // For getting seed for random
 #include <time.h>
-#include <getopt.h>
+#include "platform.h"
 
 #include "server_data.h"
 #include "abilities_config.h"
