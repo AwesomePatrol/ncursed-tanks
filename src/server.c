@@ -53,7 +53,8 @@ void print_usage(char *argv[])
 {
     printf(
 "Usage: %s [-p PORT]\n\
-	-p PORT		Listen on PORT\n\
+	-p, --port PORT		Listen on PORT\n\
+	-h, -?, --help		Display this message\n\
 ",
 argv[0]);
 
@@ -63,13 +64,17 @@ argv[0]);
 void parse_commandline(int argc, char *argv[])
 {
     const char *opt_string = "p:h?";
-    int opt = 0;
+    const struct option long_opts[] = {
+        { "port", required_argument, NULL, 'p' },
+        { "help", no_argument,       NULL, 'h' },
+    };
 
     server_port = 7979;
 
+    int opt = 0;
     do
     {
-        opt = getopt(argc, argv, opt_string);
+        opt = getopt_long(argc, argv, opt_string, long_opts, NULL);
 
         switch (opt)
         {
