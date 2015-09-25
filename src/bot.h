@@ -9,6 +9,7 @@
 #include <netdb.h>
 #include <netinet/in.h>
 
+#include "platform.h"
 #include "debug.h"
 #include "dyn_arr.h"
 #include "map.h"

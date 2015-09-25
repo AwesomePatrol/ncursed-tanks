@@ -32,43 +32,79 @@ char *portnum = default_portnum;
 
 int games_num = 1;
 int difficulty = 2;
+char *nick;
+char *debug_filename;
 
-void print_help()
+void print_usage(char *argv[])
 {
-    puts("Usage: bot [OPTION]... SERVER_IP PLAYER_NAME");
-    puts("OPTION may be:");
-    puts("-p, --port PORT\t specify on what port client connects a server");
-    puts("-g, --games GAMES_NUM\t number of games bot will play,");
-    puts("\t\t 1 (default)");
-    puts("-d, --difficulty DIFF\t difficulty of the bot, 0 will snipe you");
-    puts("\t\t every time, 10 will be easy; 2 is default");
-    puts("--help\t show this message");
-    puts("");
-    puts("For complete documentation look for ./doc in project's files");
+    printf(
+"Usage: %s [OPTION]... SERVER_ADDR PLAYER_NAME\n\
+OPTION may be:\n\
+	-g, --games GAMES_NUM  	number of games bot will play,\n\
+				default: 1\n\
+	-d, --difficulty DIFF	difficulty of the bot, 0 will snipe you\n\
+				every time, 10 will be easy; 2 is the default\n\
+	-p, --port PORT		specify on what port client connects to a server\n\
+	-h, -?, --help		show this message\n\
+\n\
+For complete documentation look for ./doc in project's files\n\
+",
+argv[0]);
+
+    // exit required because we'll be called by getopt on wrong arguments
+    exit(EXIT_FAILURE);
 }
 
-bool parse_cmd(int argc, char *argv[])
+void parse_commandline(int argc, char *argv[])
 {
-    if (argc == 2 && strcmp(argv[1],"--help")) {
-        print_help();
-        return true;
-    }
-    for (int i=1; i<(argc-2); i++) {
-        if (strcmp(argv[i],"--help") == 0) {
-            print_help();
-            return 1;
+    const char *opt_string = "g:d:p:h?";
+    const struct option long_opts[] = {
+        { "games",      required_argument, NULL, 'g' },
+        { "difficulty", required_argument, NULL, 'd' },
+        { "port",       required_argument, NULL, 'p' },
+        { "help",       no_argument,       NULL, 'h' },
+    };
+
+    int opt = 0;
+    do
+    {
+        opt = getopt_long(argc, argv, opt_string, long_opts, NULL);
+
+        switch (opt)
+        {
+        case 'g':
+            games_num = atoi(optarg);
+            break;
+
+        case 'd':
+            difficulty = atoi(optarg);
+            break;
+
+        case 'p':
+            portnum = optarg;
+            break;
+
+        case 'h':
+            print_usage(argv);
+            break;
         }
-        if (strcmp(argv[i],"--port") == 0
-                || strcmp(argv[i],"-p") == 0)
-            portnum=argv[i+1];
-        if (strcmp(argv[i],"--games") == 0
-                || strcmp(argv[i],"-g") == 0)
-            games_num=atoi(argv[i+1]);
-        if (strcmp(argv[i],"--difficulty") == 0
-                || strcmp(argv[i],"-d") == 0)
-            difficulty=atoi(argv[i+1]);
+    } while (opt != -1);
+
+    /* We require 2 arguments */
+    if (argc - optind < 2) {
+        if (DEBUG <= 5) fputs("2 arguments are required!\n", stderr);
+        print_usage(argv);
     }
-    return false;
+
+    g_servername=argv[optind];
+    optind++;
+
+    nick = argv[optind];
+
+    debug_filename = malloc(strlen(nick) +
+                            strlen(".debug") + 1);
+    strcpy(debug_filename, nick);
+    strcat(debug_filename, ".debug");
 }
 
 bool client_connect(char *servername)
@@ -107,32 +143,19 @@ bool client_connect(char *servername)
 
 int main(int argc, char *argv[])
 {
-    /* Too few arguments error */
-    if ( argc <= 2 ) {
-        if (DEBUG <= 5) puts("Too few arguments!");
-        return EXIT_FAILURE;
-    }
-
-    /* Parse command line arguments */
-    if (parse_cmd(argc, argv))
-        return EXIT_SUCCESS;
+    parse_commandline(argc, argv);
 
     /* Open debug_file */
-    char *debug_filename = malloc(strlen(argv[argc-1])+strlen(".debug")+1);
-    strcpy(debug_filename, argv[argc-1]);
-    strcat(debug_filename, ".debug");
     if (DEBUG <= 5)
         debug_open(debug_filename);
     
     /* Get connection to server */
-    if (!client_connect(argv[argc-2]))
+    if (!client_connect(g_servername))
         return EXIT_FAILURE;
 
-    g_servername=argv[argc-2];
-
     /* join_game */
-    if (join_game(argv[argc-1]) < 0)
-        return EXIT_FAILURE;/* some errors occured */
+    if (join_game(nick) < 0)
+        return EXIT_FAILURE; /* some errors occured */
 
     while (loc_player->state && games_num > 0) {
         if (loc_player->state == PS_JOINED) {
@@ -141,13 +164,16 @@ int main(int argc, char *argv[])
         }
         if (loc_player->state == PS_READY ||
             loc_player->state == PS_WAITING ||
-            loc_player->state == PS_DEAD) wait_state();
-        if (loc_player->state == PS_ACTIVE) shoot();
+            loc_player->state == PS_DEAD)
+           wait_state();
+        if (loc_player->state == PS_ACTIVE)
+            shoot();
         if (loc_player->state == PS_WINNER ||
-            loc_player->state == PS_LOSER) loc_player->state=PS_NO_PLAYER;
+            loc_player->state == PS_LOSER)
+           loc_player->state=PS_NO_PLAYER;
             /* above states are invalid
              * because bot does not save the updates
-             * so it process them immediately */
+             * so it processes them immediately */
     }
 
     /* free! */
