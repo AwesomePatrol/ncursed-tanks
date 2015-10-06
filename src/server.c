@@ -53,11 +53,11 @@ int main(int argc, char *argv[])
 void print_usage(char *argv[])
 {
     printf(
-"Usage: %s [OPTION]...\n\
-OPTION may be:\n\
-	-p, --port PORT		listen on PORT\n\
-	-h, -?, --help		display this message\n\
-",
+"Usage: %s [OPTION]...\n"
+"OPTION may be:\n"
+"	-p, --port PORT		listen on PORT\n"
+"	-h, -?, --help		display this message\n"
+"",
 argv[0]);
 
     // exit required because we'll be called by getopt on wrong arguments

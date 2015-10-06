@@ -40,18 +40,18 @@ char *debug_filename;
 void print_usage(char *argv[])
 {
     printf(
-"Usage: %s [OPTION]... SERVER_ADDR PLAYER_NAME\n\
-OPTION may be:\n\
-	-c, --cols COLS		specify width (number of columns) of a window\n\
-	-l, --lines LINES	specify height (number of lines) of a window\n\
-	-p, --port PORT		specify on what port client connects to a server\n\
-	-h, -?, --help		show this message\n\
-\n\
-Terminal size must be at least 24x20\n\
-Wrong values will be ignored\n\
-\n\
-For complete documentation look for ./doc in project's files\n\
-",
+"Usage: %s [OPTION]... SERVER_ADDR PLAYER_NAME\n"
+"OPTION may be:\n"
+"	-c, --cols COLS		specify width (number of columns) of a window\n"
+"	-l, --lines LINES	specify height (number of lines) of a window\n"
+"	-p, --port PORT		specify on what port client connects to a server\n"
+"	-h, -?, --help		show this message\n"
+"\n"
+"Terminal size must be at least 24x20\n"
+"Wrong values will be ignored\n"
+"\n"
+"For complete documentation look for ./doc in project's files\n"
+"",
 argv[0]);
 
     // exit required because we'll be called by getopt on wrong arguments

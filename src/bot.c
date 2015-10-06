@@ -38,17 +38,17 @@ char *debug_filename;
 void print_usage(char *argv[])
 {
     printf(
-"Usage: %s [OPTION]... SERVER_ADDR PLAYER_NAME\n\
-OPTION may be:\n\
-	-g, --games GAMES_NUM  	number of games bot will play,\n\
-				default: 1\n\
-	-d, --difficulty DIFF	difficulty of the bot, 0 will snipe you\n\
-				every time, 10 will be easy; 2 is the default\n\
-	-p, --port PORT		specify on what port client connects to a server\n\
-	-h, -?, --help		show this message\n\
-\n\
-For complete documentation look for ./doc in project's files\n\
-",
+"Usage: %s [OPTION]... SERVER_ADDR PLAYER_NAME\n"
+"OPTION may be:\n"
+"	-g, --games GAMES_NUM  	number of games bot will play,\n"
+"				default: 1\n"
+"	-d, --difficulty DIFF	difficulty of the bot, 0 will snipe you\n"
+"				every time, 10 will be easy; 2 is the default\n"
+"	-p, --port PORT		specify on what port client connects to a server\n"
+"	-h, -?, --help		show this message\n"
+"\n"
+"For complete documentation look for ./doc in project's files\n"
+"",
 argv[0]);
 
     // exit required because we'll be called by getopt on wrong arguments
